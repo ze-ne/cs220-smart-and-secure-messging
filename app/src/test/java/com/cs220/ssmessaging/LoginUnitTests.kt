@@ -1,9 +1,10 @@
 package com.cs220.ssmessaging
+import com.cs220.ssmessaging.presenters.LoginActivityPresenter
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
+import org.junit.Before
 import org.junit.Test
 
-@LargeTest
 class LoginUnitTests {
     private lateinit var presenter: LoginActivityPresenter
     private lateinit var view: LoginActivityPresenter.View
@@ -31,23 +32,9 @@ class LoginUnitTests {
     }
 
     @Test
-    fun login_nullUsername ()
-    {
-        presenter.handleLogin (null, "abc")
-        verify(view).loginFail()
-    }
-
-    @Test
     fun login_emptyUsername ()
     {
         presenter.handleLogin ("", "abc")
-        verify(view).loginFail()
-    }
-
-    @Test
-    fun login_nullPassword ()
-    {
-        presenter.handleLogin ("abc", null)
         verify(view).loginFail()
     }
 
