@@ -1,4 +1,4 @@
-package com.example.ssmessaging
+package com.cs220.ssmessaging
 
 import org.junit.Test
 
