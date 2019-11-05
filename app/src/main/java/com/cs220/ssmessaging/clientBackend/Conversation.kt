@@ -3,10 +3,14 @@ import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.clientBackend.Message
 
 class Conversation() {
-    /* Note, all accesses (except for the constructor) in Kotlin must go through the getter and setter.
+    /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
      * This is because variables are properties and all properties have a private field.
      * Therefore we achieve encapsulation Kotlin by defining custom getters and setters.
-     * That is why in most cases we don't need to declare private variables.
+     * This style is standard Kotlin convention called "Backing Fields".
+     * That is why in some cases we don't need to declare variables with private modifiers.
+     * In the cases that we do need private modifiers, it is when we need "Backing Properties" OR
+     * when we want the variable getter and setter to be private.
+     * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
 
     constructor(firstUser : User, secondUser : User, msgs : MutableList<Message>) : this(){
@@ -40,7 +44,22 @@ class Conversation() {
             // TODO
             return mutableListOf()
         }
-        private set(messageList){
+        set(messageList){
+            // TODO
+        }
+
+    val convoId : String
+        get() {
+            // TODO
+            return ""
+        }
+
+    var lastTimeSynced : Int
+        get() {
+            // TODO
+            return -1
+        }
+        set(timeSynced : Int){
             // TODO
         }
 
