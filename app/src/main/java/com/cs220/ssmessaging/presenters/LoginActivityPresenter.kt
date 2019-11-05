@@ -8,8 +8,7 @@ class LoginActivityPresenter {
     }
 
     interface View {
-        fun showValidationErrorMsg()
-        fun loginSuccessFully()
         fun loginFail()
+        fun loginSuccessful()
     }
 }
