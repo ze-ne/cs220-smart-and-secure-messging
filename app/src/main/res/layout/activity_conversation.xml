@@ -3,11 +3,11 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context=".fragments.SearchFragment">
+             tools:context=".activities.ConversationActivity">
 
     <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Search screen"/>
+            android:text="Conversation screen"/>
 
 </FrameLayout>

@@ -21,8 +21,34 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        button3.setOnClickListener {
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent)
+        }
+
+
         button4.setOnClickListener {
             val intent = Intent(this, ConversationsListActivity::class.java)
+            startActivity(intent)
+        }
+
+        button5.setOnClickListener {
+            val intent = Intent(this, ConversationActivity::class.java)
+            startActivity(intent)
+        }
+
+        button6.setOnClickListener {
+            val intent = Intent(this, ContactsActivity::class.java)
+            startActivity(intent)
+        }
+
+        button7.setOnClickListener {
+            val intent = Intent(this, BlockListActivity::class.java)
+            startActivity(intent)
+        }
+
+        button9.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
     }
