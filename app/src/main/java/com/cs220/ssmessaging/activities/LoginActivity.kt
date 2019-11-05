@@ -13,11 +13,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityPresenter.View {
         setContentView(R.layout.activity_login)
     }
 
-    override fun showValidationErrorMsg() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun loginSuccessFully() {
+    override fun loginSuccessful() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
