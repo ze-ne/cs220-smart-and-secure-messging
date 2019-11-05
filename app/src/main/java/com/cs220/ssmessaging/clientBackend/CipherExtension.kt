@@ -5,8 +5,13 @@ import java.security.Provider
 import javax.crypto.Cipher
 import javax.crypto.CipherSpi
 
-class CipherExtension(cipherSpi : CipherSpi, provider : Provider, transformation : String) :
-    Cipher(cipherSpi, provider, transformation){
+class CipherExtension() {
+
+    val javaCipher : Cipher
+        get(){
+            // TODO - placeholder transformation for skeleton code
+            return Cipher.getInstance("AES")
+        }
 
     fun decryptEncryptedMessage(encryptedMsg : EncryptedMessage) : UnencryptedMessage{
         // TODO

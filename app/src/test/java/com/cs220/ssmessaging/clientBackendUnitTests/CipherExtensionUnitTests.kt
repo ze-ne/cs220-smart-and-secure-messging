@@ -11,10 +11,16 @@ import com.cs220.ssmessaging.clientBackend.CipherExtension
 
 @RunWith(MockitoJUnitRunner::class)
 class CipherExtensionUnitTests{
+
     @Test
-    fun dummy_test() {
-        // Delete this test when you have added actual tests!
-        // This is just to allow for the program to compile.
+    fun testConstructor() {
+        // Test the constructor for correct platform.
+        // There is only one constructor test case because the constructor takes in no parameters
+        val testCipherExtension = CipherExtension()
+        assertEquals("RSA", testCipherExtension.javaCipher.algorithm)
     }
+
+    //@Test
+    //fun testEncryption
     // Add your unit tests here!
 }
