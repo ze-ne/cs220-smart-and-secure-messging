@@ -86,6 +86,21 @@ class User() {
             // TODO
         }
 
+    fun addConversation(convo : Conversation) : Boolean {
+        // TODO
+        return false
+    }
+
+    fun getConversationByUserId(recipientId : String) : Conversation? {
+        // TODO
+        return null
+    }
+
+    fun getConversationByConversationId(convoId: String) : Conversation? {
+        // TODO
+        return null
+    }
+
     fun addContact(user : User) : Boolean {
         // TODO
         return false
