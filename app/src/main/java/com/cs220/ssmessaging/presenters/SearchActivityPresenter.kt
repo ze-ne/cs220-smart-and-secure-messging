@@ -1,6 +1,6 @@
 package com.cs220.ssmessaging.presenters
 
-class SearchFragmentPresenter {
+class SearchActivityPresenter {
     private var view: View? = null
 
     fun attachView(view: View) {

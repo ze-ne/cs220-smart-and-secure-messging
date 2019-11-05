@@ -1,5 +1,5 @@
 package com.cs220.ssmessaging
-import com.cs220.ssmessaging.presenters.SearchFragmentPresenter
+import com.cs220.ssmessaging.presenters.SearchActivityPresenter
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
@@ -8,12 +8,12 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 
 class SearchUnitTests {
-    private lateinit var presenter : SearchFragmentPresenter
-    private lateinit var view : SearchFragmentPresenter.View
+    private lateinit var presenter : SearchActivityPresenter
+    private lateinit var view : SearchActivityPresenter.View
 
     @Before
     fun setup() {
-        presenter = SearchFragmentPresenter()
+        presenter = SearchActivityPresenter()
         view = mock()
         presenter.attachView(view)
     }
