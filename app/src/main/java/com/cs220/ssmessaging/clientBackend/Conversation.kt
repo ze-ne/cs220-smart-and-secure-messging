@@ -8,6 +8,15 @@ class Conversation() {
      * Therefore we achieve encapsulation Kotlin by defining custom getters and setters.
      * That is why in most cases we don't need to declare private variables.
      */
+
+    constructor(firstUser : User, secondUser : User, msgs : MutableList<Message>) : this(){
+        // TODO
+    }
+
+    constructor(firstUser : User, secondUser : User) : this(){
+        // TODO
+    }
+
     var user1 : User
         get(){
             // TODO
