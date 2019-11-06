@@ -26,6 +26,8 @@ class CipherExtensionUnitTests{
     private var testPrivateKey2 : PrivateKey = keyPair2.private
     private var testPublicKey : PublicKey = keyPair1.public
     private var testPublicKey2 : PublicKey = keyPair2.public
+    private var sendUser : User = User("person1", "test", "User")
+    private var receiveUser : User = User("person2", "test", "User2")
 
     @Test
     fun testConstructorAndKeyAndCipherGetters() {
@@ -46,16 +48,45 @@ class CipherExtensionUnitTests{
     fun testSetPublicKeyRings(){
         // Test setting the public key rings for 0 size, 1 size, and multiple size
         var testCipherExtension =
-            CipherExtension(testPrivateKey, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+            CipherExtension(testPrivateKey, mutableMapOf())
+
+        testCipherExtension.publicKeyRing = mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2)
+        assertEquals(mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2), testCipherExtension.publicKeyRing)
+
+        testCipherExtension.publicKeyRing = mutableMapOf("person1" to testPublicKey)
+        assertEquals(mutableMapOf("person1" to testPublicKey), testCipherExtension.publicKeyRing)
+
+        testCipherExtension.publicKeyRing = mutableMapOf()
+        assertEquals(mutableMapOf<String, PublicKey>(), testCipherExtension.publicKeyRing)
     }
 
     @Test
     fun testSetPrivateKey(){
+        // Test private key override
+        var testCipherExtension =
+            CipherExtension(testPrivateKey, mutableMapOf())
+        testCipherExtension.privateKey = testPrivateKey2
+        assertEquals(testPrivateKey2, testCipherExtension.privateKey)
     }
 
     @Test
     fun testAddPublicKeyToKeyRing(){
-        // Test
+        // Test adding a key to the key ring with no keys in ring, one key in ring, and multiple keys in ring, and same key but different person
+        // Also test key overriding.
+        var testCipherExtension =
+            CipherExtension(testPrivateKey, mutableMapOf())
+
+        testCipherExtension.addKeyToPublicKeyRing("person1",testPublicKey)
+        assertEquals(testPublicKey, testCipherExtension.publicKeyRing["person1"])
+
+        testCipherExtension.addKeyToPublicKeyRing("person2", testPublicKey)
+        assertEquals(testPublicKey, testCipherExtension.publicKeyRing["person2"])
+
+        testCipherExtension.addKeyToPublicKeyRing("person3", testPublicKey2)
+        assertEquals(testPublicKey, testCipherExtension.publicKeyRing["person3"])
+
+        testCipherExtension.addKeyToPublicKeyRing("person1", testPublicKey2)
+        assertEquals(testPublicKey, testCipherExtension.publicKeyRing["person1"])
     }
 
     @Test
@@ -64,9 +95,6 @@ class CipherExtensionUnitTests{
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
 
-        // Create new user
-        var sendUser : User = User("person1", "test", "User")
-        var receiveUser : User = User("person2", "test", "User2")
         // Create new unencrypted text messages
         var textMessage : TextMessage = TextMessage("ABC", "testId", sendUser, receiveUser, 0)
         var textMessage2 : TextMessage = TextMessage("sad46546 ----", "testId2", sendUser, receiveUser, 123)
@@ -100,9 +128,6 @@ class CipherExtensionUnitTests{
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
 
-        // Create new user
-        var sendUser : User = User("person1", "test", "User")
-        var receiveUser : User = User("person2", "test", "User2")
         // Create new unencrypted text messages
         var imgMessage : ImageMessage = ImageMessage(ByteArray(10), "testId", sendUser, receiveUser, 0)
         var imgMessage2 : ImageMessage = ImageMessage(ByteArray(10), "testId2", sendUser, receiveUser, 123)
@@ -118,30 +143,124 @@ class CipherExtensionUnitTests{
         var message2 : ByteArray = (decryptedMessage as ImageMessage).message
 
         assertEquals(imgMessage.message, message)
-        assertEquals("testId", encryptedMessage?.conversationId)
-        assertEquals("person1", encryptedMessage?.sender?.userId)
-        assertEquals("person2", encryptedMessage?.sender?.userId)
-        assertEquals(0, encryptedMessage?.timestamp)
+        assertEquals("testId", encryptedMessage.conversationId)
+        assertEquals("person1", encryptedMessage.sender.userId)
+        assertEquals("person2", encryptedMessage.sender.userId)
+        assertEquals(0, encryptedMessage.timestamp)
 
         assertEquals(imgMessage2.message, message2)
-        assertEquals("testId2", encryptedMessage2?.conversationId)
-        assertEquals("person1", encryptedMessage2?.sender?.userId)
-        assertEquals("person2", encryptedMessage2?.sender?.userId)
-        assertEquals(123, encryptedMessage?.timestamp)
+        assertEquals("testId2", encryptedMessage2.conversationId)
+        assertEquals("person1", encryptedMessage2.sender.userId)
+        assertEquals("person2", encryptedMessage2.sender.userId)
+        assertEquals(123, encryptedMessage.timestamp)
     }
 
     // The next tests test the case where encryption/decryption can fail
     // (e.g. public key not found in key ring, or message is bad)
     @Test(expected = Exception::class)
     fun testEncryptUnencryptedMessageFailNoPublicKey(){
+        // Tests the case when only one message encrypted and multiple messages encrypted.
+        var testCipherExtension =
+            CipherExtension(testPrivateKey2, mutableMapOf())
+
+        var imgMessage : ImageMessage = ImageMessage(ByteArray(10), "testId", sendUser, receiveUser, 0)
+        testCipherExtension.encryptUnencryptedMessage(imgMessage)
+
+        var textMessage : TextMessage = TextMessage("ABC", "testId", sendUser, receiveUser, 0)
+        testCipherExtension.encryptUnencryptedMessage(textMessage)
     }
 
     @Test(expected = Exception::class)
-    fun testEncryptUnencryptedMessageFailBadMessage(){
-        // No Bytes in message
+    fun testEncryptImageMessageFailBadMessage(){
+        // No Bytes or string in message
+        var testCipherExtension =
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+
+        var imgMessage : ImageMessage = ImageMessage(ByteArray(0), "testId", sendUser, receiveUser, 0)
+        testCipherExtension.encryptUnencryptedMessage(imgMessage)
     }
 
     @Test(expected = Exception::class)
-    fun testDecryptEncryptedMessageFailBadMessage(){
+    fun testEncryptImageMessageFailBadConversationId(){
+        // No conversation Id
+        var testCipherExtension =
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+
+        var imgMessage : ImageMessage = ImageMessage(ByteArray(61), "", sendUser, receiveUser, 0)
+        testCipherExtension.encryptUnencryptedMessage(imgMessage)
+    }
+
+    @Test(expected = Exception::class)
+    fun testEncryptImageMessageFailBadUser(){
+        // At least one user is null
+        var testCipherExtension =
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+
+        var imgMessage : ImageMessage = ImageMessage(ByteArray(61), "sad", User(), receiveUser, 0)
+        testCipherExtension.encryptUnencryptedMessage(imgMessage)
+    }
+
+    @Test(expected = Exception::class)
+    fun testEncryptImageMessageFailBadTimestamp(){
+        // time is < 0
+        var testCipherExtension =
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+
+        var imgMessage : ImageMessage = ImageMessage(ByteArray(61), "sad", sendUser, receiveUser, -1)
+        testCipherExtension.encryptUnencryptedMessage(imgMessage)
+    }
+
+    @Test(expected = Exception::class)
+    fun testEncryptTextMessageFailBadMessage(){
+        // No Bytes or string in message
+        var testCipherExtension =
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+        var textMessage : TextMessage = TextMessage("", "testId", sendUser, receiveUser, 0)
+        testCipherExtension.encryptUnencryptedMessage(textMessage)
+    }
+
+    @Test(expected = Exception::class)
+    fun testEncryptTextMessageFailBadUser(){
+        // Bad user in message
+        var testCipherExtension =
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+        var textMessage : TextMessage = TextMessage("dsadsa", "testId", User(), receiveUser, 0)
+        testCipherExtension.encryptUnencryptedMessage(textMessage)
+    }
+
+    @Test(expected = Exception::class)
+    fun testEncryptTextMessageFailBadConversationId(){
+        // Bad user in message
+        var testCipherExtension =
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+        var textMessage : TextMessage = TextMessage("dsadsa", "", User(), receiveUser, 0)
+        testCipherExtension.encryptUnencryptedMessage(textMessage)
+    }
+
+    @Test(expected = Exception::class)
+    fun testEncryptTextMessageFailBadTimestamp(){
+        // bad time
+        var testCipherExtension =
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+        var textMessage : TextMessage = TextMessage("sda", "testId", sendUser, receiveUser, -1)
+        testCipherExtension.encryptUnencryptedMessage(textMessage)
+    }
+
+    @Test(expected = Exception::class)
+    fun testDecryptEncryptedImageMessageFailBadMessage(){
+        // Unlike encryption, decryption should only fail when there is a bad message or bad type
+        var testCipherExtension =
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+        var encryptedMessage : EncryptedMessage = EncryptedMessage(ByteArray(0), "testId", "image", sendUser, receiveUser, -1)
+        testCipherExtension.decryptEncryptedMessage(encryptedMessage)
+    }
+
+    @Test(expected = Exception::class)
+    fun testDecryptEncryptedTextMessageFailBadType(){
+        // Unlike encryption, decryption should only fail when there is a bad message or bad type
+        var testCipherExtension =
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+        var encryptedMessage : EncryptedMessage = EncryptedMessage(ByteArray(566), "testId", "", sendUser, receiveUser, -1)
+        testCipherExtension.decryptEncryptedMessage(encryptedMessage)
     }
 }

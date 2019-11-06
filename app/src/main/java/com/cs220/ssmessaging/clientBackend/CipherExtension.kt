@@ -44,7 +44,7 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             return Cipher.getInstance("AES")
         }
 
-    fun addKeyToPublicKeyRing(publicKey: PublicKey) : Boolean {
+    fun addKeyToPublicKeyRing(userId : String, publicKey: PublicKey) : Boolean {
         return false
     }
 
