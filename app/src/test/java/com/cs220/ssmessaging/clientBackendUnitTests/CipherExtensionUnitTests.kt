@@ -24,25 +24,18 @@ class CipherExtensionUnitTests{
     private var testPublicKey2 : PublicKey = keyPair2.public
 
     @Test
-    fun testConstructor() {
+    fun testConstructorAndKeyAndCipherGetters() {
         // Test normal conditions
-        var testCipherExtension = CipherExtension(testPrivateKey, mutableListOf(testPublicKey, testPublicKey2))
+        // Note that this test also tests the key and getters because it uses the
+        // getters to verify results.
+        var testCipherExtension =
+            CipherExtension(testPrivateKey, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
         assertEquals("RSA", testCipherExtension.decryptorCipher.algorithm)
         assertEquals("RSA", testCipherExtension.encryptorCipher.algorithm)
         assertEquals(testCipherExtension.publicKeyRing.size, 2)
-        assertEquals(testCipherExtension.publicKeyRing[0].encoded, testPublicKey.encoded)
-        assertEquals(testCipherExtension.publicKeyRing[1].encoded, testPublicKey2.encoded)
-        // Note: Private Key is not supposed to be exposed. Therefore we do not assert the private key here.
-    }
-
-    @Test
-    fun testGetDecryptorCipher() {
-
-    }
-
-    @Test
-    fun testGetEncryptorCipher() {
-
+        assertEquals(testCipherExtension.publicKeyRing["person1"]?.encoded, testPublicKey.encoded)
+        assertEquals(testCipherExtension.publicKeyRing["person2"]?.encoded, testPublicKey2.encoded)
+        assertEquals(testCipherExtension.privateKey.encoded, testPublicKey2.encoded)
     }
 
     @Test

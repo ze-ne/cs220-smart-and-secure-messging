@@ -1,5 +1,6 @@
 package com.cs220.ssmessaging.clientBackend
 import com.cs220.ssmessaging.clientBackend.Message
+import java.security.KeyPairGenerator
 import java.security.PrivateKey
 
 import java.security.Provider
@@ -7,15 +8,24 @@ import java.security.PublicKey
 import javax.crypto.Cipher
 import javax.crypto.CipherSpi
 
-class CipherExtension(privateKey: PrivateKey, publicKeys : MutableList<PublicKey>) {
+class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, PublicKey>) {
 
-    var publicKeyRing : MutableList<PublicKey>
+    // The key is the userId and the value is the public key
+    var publicKeyRing : MutableMap<String, PublicKey>
         get(){
             // TODO
-            return mutableListOf()
+            return mutableMapOf()
         }
-        set(keys : MutableList<PublicKey>){
+        set(keysMap : MutableMap<String, PublicKey>){
             // TODO
+        }
+
+    var privateKey : PrivateKey
+        get(){
+            // TODO
+            return KeyPairGenerator.getInstance("RSA").generateKeyPair().private
+        }
+        set(privtKey : PrivateKey){
         }
 
     // Device should init this member with private key
@@ -32,6 +42,10 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableList<PublicKey
             // TODO - placeholder transformation for skeleton code
             return Cipher.getInstance("AES")
         }
+
+    fun addKeyToPublicKeyRing(publicKey: PublicKey) : Boolean {
+        return false
+    }
 
     fun decryptEncryptedMessage(encryptedMsg : EncryptedMessage) : UnencryptedMessage? {
         // TODO
