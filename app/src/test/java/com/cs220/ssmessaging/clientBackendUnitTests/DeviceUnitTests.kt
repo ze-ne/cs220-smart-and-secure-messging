@@ -141,6 +141,7 @@ class DeviceUnitTests{
 
     }
 
+    @Test
     fun testGenerateKeyPairInvalidPath(){
         var testDevice = Device()
         testDevice.generateKeyPair("DeviceUnitTestsResources/")

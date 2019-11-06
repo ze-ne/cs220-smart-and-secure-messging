@@ -146,7 +146,7 @@ class User() {
 
     fun receiveMsg(encryptedMsg: EncryptedMessage) : Message {
         // TODO
-        return ImageMessage()
+        return ImageMessage(ByteArray(0),"", User(), -1)
     }
 
     fun addPublicKeyToServer(key : String, user : User) : Boolean {

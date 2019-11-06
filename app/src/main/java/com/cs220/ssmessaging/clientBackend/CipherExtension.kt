@@ -15,11 +15,11 @@ class CipherExtension() {
 
     fun decryptEncryptedMessage(encryptedMsg : EncryptedMessage) : UnencryptedMessage{
         // TODO
-        return TextMessage()
+        return TextMessage("", "", User(), -1)
     }
 
     fun encryptEncryptedMessage(unencryptedMsg: UnencryptedMessage) : EncryptedMessage {
         // TODO
-        return EncryptedMessage()
+        return EncryptedMessage(ByteArray(0), "", User(), -1)
     }
 }
