@@ -25,10 +25,14 @@ class CipherExtensionUnitTests{
 
     @Test
     fun testConstructor() {
-        // Test the constructor for correct platform.
+        // Test normal conditions
         var testCipherExtension = CipherExtension(testPrivateKey, mutableListOf(testPublicKey, testPublicKey2))
         assertEquals("RSA", testCipherExtension.decryptorCipher.algorithm)
         assertEquals("RSA", testCipherExtension.encryptorCipher.algorithm)
+        assertEquals(testCipherExtension.publicKeyRing.size, 2)
+        assertEquals(testCipherExtension.publicKeyRing[0].encoded, testPublicKey.encoded)
+        assertEquals(testCipherExtension.publicKeyRing[1].encoded, testPublicKey2.encoded)
+        // Note: Private Key is not supposed to be exposed. Therefore we do not assert the private key here.
     }
 
     @Test
