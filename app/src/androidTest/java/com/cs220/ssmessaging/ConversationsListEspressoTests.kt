@@ -45,7 +45,7 @@ class ConversationsListEspressoTests {
     }
 
     @Test
-    fun openMessage() {
+    fun openConversation() {
         Espresso.onView(withId(R.id.scroll_view))
             .perform(RecyclerViewActions.actionOnItemAtPosition(3, click()));
 

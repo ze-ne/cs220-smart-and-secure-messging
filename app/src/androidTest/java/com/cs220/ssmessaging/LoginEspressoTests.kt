@@ -37,7 +37,7 @@ class LoginEspressoTests {
     }
 
     @Test
-    fun loginIsNotEmptyLogin() {
+    fun usernameIsNotEmptyRegistration() {
         onView(withId(R.id.username))
             .perform(typeText("myUsername"))
 

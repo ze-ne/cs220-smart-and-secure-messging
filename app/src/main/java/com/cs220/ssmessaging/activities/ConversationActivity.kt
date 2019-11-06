@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.cs220.ssmessaging.R
+import com.cs220.ssmessaging.clientBackend.Message
 import com.cs220.ssmessaging.presenters.ConversationActivityPresenter
 
 class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.View {
@@ -15,7 +16,7 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
         setContentView(R.layout.activity_conversation)
     }
 
-    /*override fun updateDisplayedMessages() {
+    override fun updateDisplayedMessages(message: Message) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }*/
+    }
 }
