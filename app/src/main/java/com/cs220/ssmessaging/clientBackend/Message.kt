@@ -18,7 +18,7 @@ interface Message {
 }
 
 class EncryptedMessage(message : ByteArray, conversationId : String,
-                       sender : User, timestamp : Int) : Message {
+                       messageType : String, sender : User, timestamp : Int) : Message {
 
     override val conversationId : String
         get(){
@@ -42,6 +42,13 @@ class EncryptedMessage(message : ByteArray, conversationId : String,
         get(){
             // TODO
             return ByteArray(0)
+        }
+
+    // Message type can only be "image" or "text"
+    val messageType : String
+        get(){
+            // TODO
+            return "TODO"
         }
 }
 

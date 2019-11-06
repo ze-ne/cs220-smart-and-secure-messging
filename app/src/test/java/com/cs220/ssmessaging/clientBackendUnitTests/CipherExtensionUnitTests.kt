@@ -20,7 +20,18 @@ class CipherExtensionUnitTests{
         assertEquals("RSA", testCipherExtension.javaCipher.algorithm)
     }
 
-    //@Test
-    //fun testEncryption
-    // Add your unit tests here!
+    @Test
+    fun testEncryptUnencryptedMessageText(){
+
+    }
+
+    @Test
+    fun testEncryptUnencryptedMessageImage(){
+
+    }
+
+    @Test
+    fun testDecryptEncryptedMessageImage(){
+
+    }
 }

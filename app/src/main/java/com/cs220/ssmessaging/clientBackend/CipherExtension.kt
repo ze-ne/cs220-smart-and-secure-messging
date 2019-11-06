@@ -18,8 +18,8 @@ class CipherExtension() {
         return TextMessage("", "", User(), -1)
     }
 
-    fun encryptEncryptedMessage(unencryptedMsg: UnencryptedMessage) : EncryptedMessage {
+    fun encryptUnencryptedMessage(unencryptedMsg: UnencryptedMessage) : EncryptedMessage {
         // TODO
-        return EncryptedMessage(ByteArray(0), "", User(), -1)
+        return EncryptedMessage(ByteArray(0), "", "", User(), -1)
     }
 }
