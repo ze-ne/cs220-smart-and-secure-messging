@@ -155,7 +155,7 @@ class User() {
     // Handle incoming message from server
     fun receiveMsg(encryptedMsg: EncryptedMessage) : Message {
         // TODO
-        return ImageMessage(ByteArray(0),"", User(), -1)
+        return ImageMessage(ByteArray(0),"", User(), User(), -1)
     }
 
     // Add your own public key to server
