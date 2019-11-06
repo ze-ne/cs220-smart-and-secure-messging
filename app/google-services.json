@@ -34,35 +34,6 @@
           ]
         }
       }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:37605088101:android:07ea7ad301aa7857a11f8c",
-        "android_client_info": {
-          "package_name": "edu.uchicago.chat"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "37605088101-ccrd0fst7rdkfcg9nlhvvist0plm477o.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC40AVHZAeQI2USG62fmUx2Lme5JbGArrE"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "37605088101-ccrd0fst7rdkfcg9nlhvvist0plm477o.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
     }
   ],
   "configuration_version": "1"
