@@ -1,5 +1,6 @@
 package com.cs220.ssmessaging.presenters
 
+// TODO: Implementation moved to iteration 2
 class SearchActivityPresenter {
     private var view: View? = null
 

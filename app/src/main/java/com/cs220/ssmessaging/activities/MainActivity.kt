@@ -6,9 +6,7 @@ import android.os.Bundle
 import com.cs220.ssmessaging.R
 import kotlinx.android.synthetic.main.activity_main.*
 
-
-
-
+// NOTE: Not part of main implementation, currently in place for testing purposes only
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +21,6 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, SearchActivity::class.java)
             startActivity(intent)
         }
-
 
         button4.setOnClickListener {
             val intent = Intent(this, ConversationsListActivity::class.java)

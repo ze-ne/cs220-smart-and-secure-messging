@@ -10,15 +10,7 @@ class ConversationActivityPresenter : BasePresenter<ConversationActivityPresente
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    fun deleteSentTextMessage(text: String){
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    fun deleteSentImageMessage(image: Array<Byte>){
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     interface View {
-        fun updateDisplayedMessages()
+        //fun updateDisplayedMessages(newMessage: Message)
     }
 }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.presenters.SearchActivityPresenter
 
+// TODO: Implementation moved to iteration 2
 class SearchActivity : AppCompatActivity(), SearchActivityPresenter.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

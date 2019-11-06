@@ -7,6 +7,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 
+// TODO: Implementation moved to iteration 2
 class SearchUnitTests {
     private lateinit var presenter : SearchActivityPresenter
     private lateinit var view : SearchActivityPresenter.View
