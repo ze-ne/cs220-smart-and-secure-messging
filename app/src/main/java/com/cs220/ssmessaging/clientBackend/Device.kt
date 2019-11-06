@@ -22,14 +22,14 @@ class Device(){
     lateinit var cipher : CipherExtension
         private set
 
-    // The paths to the keys should always be set to the res/keys folder in app
-    val pathToPrivateKey : String
+    // The paths to the keys should always be set to app/res/keys/myKey.<type>key
+    val pathToMyPrivateKey : String
         get() {
             // TODO
             return "TODO"
         }
 
-    val pathToPublicKey : String
+    val pathToMyPublicKey : String
         get() {
             // TODO
             return "TODO"

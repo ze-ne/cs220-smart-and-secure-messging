@@ -134,21 +134,31 @@ class User() {
         return false
     }*/
 
+    // Sends text message to server
     fun sendTextMsg(msg : String, convo : Conversation) : Boolean {
         // TODO
         return false
     }
 
+    // Sends image message to server
     fun sendImageMsg(bitmap: Bitmap, convo : Conversation) : Boolean {
         // TODO
         return false
     }
 
+    // Gets and stores public key of user from server
+    fun getUserPublicKey(userId : String) : Boolean{
+        // TODO
+        return false
+    }
+
+    // Handle incoming message from server
     fun receiveMsg(encryptedMsg: EncryptedMessage) : Message {
         // TODO
         return ImageMessage(ByteArray(0),"", User(), -1)
     }
 
+    // Add your own public key to server
     fun addPublicKeyToServer(key : String, user : User) : Boolean {
         // TODO
         return false

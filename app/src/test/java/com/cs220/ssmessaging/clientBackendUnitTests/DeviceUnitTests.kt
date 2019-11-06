@@ -23,8 +23,8 @@ class DeviceUnitTests{
 
     @After
     fun deleteTestKeys(){
-        var privateKeyFile = File("res/keys/privateKey.txt")
-        var publicKeyFile = File("res/keys/publicKey.txt")
+        var privateKeyFile = File("res/keys/myKey.privateKey")
+        var publicKeyFile = File("res/keys/myKey.publicKey")
         privateKeyFile.delete()
         publicKeyFile.delete()
     }
@@ -34,13 +34,13 @@ class DeviceUnitTests{
         val testDevice = Device()
 
         // Assert that path is correct
-        assertEquals("res/keys/privateKey.txt", testDevice.pathToPublicKey)
-        assertEquals("res/keys/publicKey.txt", testDevice.pathToPrivateKey)
+        assertEquals("res/keys/myKey.privateKey", testDevice.pathToMyPublicKey)
+        assertEquals("res/keys/myKey.publicKey", testDevice.pathToMyPrivateKey)
 
         // Assert that the files exist
-        var privateKeyFile = File("res/keys/privateKey.txt")
+        var privateKeyFile = File("res/keys/myKey.privateKey")
         assertTrue(privateKeyFile.exists())
-        var publicKeyFile = File("res/keys/publicKey.txt")
+        var publicKeyFile = File("res/keys/myKey.publicKey")
         assertTrue(publicKeyFile.exists())
 
         // Verify that the keys are valid by
@@ -72,19 +72,19 @@ class DeviceUnitTests{
         val testDevice = Device()
 
         // First assert that. We need this to know the behavior of the second called constructor
-        var privateKeyFile = File("res/keys/privateKey.txt")
+        var privateKeyFile = File("res/keys/myKey.privateKey")
         assertTrue(privateKeyFile.exists())
-        var publicKeyFile = File("res/keys/publicKey.txt")
+        var publicKeyFile = File("res/keys/myKey.publicKey")
         assertTrue(publicKeyFile.exists())
-        
+
         var oldPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
         var oldPrivateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
         val testDevice2 = Device()
 
         // Assert that the files still exist
-        privateKeyFile = File("res/keys/privateKey.txt")
+        privateKeyFile = File("res/keys/myKey.privateKey")
         assertTrue(privateKeyFile.exists())
-        publicKeyFile = File("res/keys/publicKey.txt")
+        publicKeyFile = File("res/keys/myKey.publicKey")
         assertTrue(publicKeyFile.exists())
 
         // Finally assert that keys have not changed
@@ -96,32 +96,32 @@ class DeviceUnitTests{
     }
 
     @Test
-    fun testGetPathToPrivateKey(){
+    fun testGetPathToMyPrivateKey(){
         // Since there is only one path, there is only one test case
         val testDevice = Device()
-        assertEquals("res/keys/privateKey.txt", testDevice.pathToPrivateKey)
+        assertEquals("res/keys/myKey.privateKey", testDevice.pathToMyPrivateKey)
     }
 
     @Test
-    fun testGetPathToPublicKey(){
+    fun testGetPathToMYPublicKey(){
         // Since there is only one path, there is only one test case
         val testDevice = Device()
-        assertEquals("res/keys/publicKey.txt", testDevice.pathToPublicKey)
+        assertEquals("res/keys/myKey.publicKey", testDevice.pathToMyPublicKey)
     }
 
     @Test
     fun testGenerateNewKeyPair(){
         var testDevice = Device()
-        var privateKeyFile = File("res/keys/privateKey.txt")
-        var publicKeyFile = File("res/keys/publicKey.txt")
+        var privateKeyFile = File("res/keys/myKey.privateKey")
+        var publicKeyFile = File("res/keys/myKey.publicKey")
         var oldPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
         var oldPrivateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
         testDevice.generateNewKeyPair()
 
         // Verify that the files still exist
-        privateKeyFile = File("res/keys/privateKey.txt")
+        privateKeyFile = File("res/keys/myKey.privateKey")
         assertTrue(privateKeyFile.exists())
-        publicKeyFile = File("res/keys/publicKey.txt")
+        publicKeyFile = File("res/keys/myKey.publicKey")
         assertTrue(publicKeyFile.exists())
 
         // Finally assert that keys have actually changed
