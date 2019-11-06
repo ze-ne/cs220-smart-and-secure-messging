@@ -8,142 +8,127 @@ import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 
 import com.cs220.ssmessaging.clientBackend.Device
+import org.junit.After
 
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import java.security.KeyFactory
+import java.security.spec.PKCS8EncodedKeySpec
+import java.security.spec.X509EncodedKeySpec
+
 
 @RunWith(MockitoJUnitRunner::class)
 class DeviceUnitTests{
+
+    @After
+    fun deleteTestKeys(){
+        var privateKeyFile = File("res/keys/privateKey.txt")
+        var publicKeyFile = File("res/keys/publicKey.txt")
+        privateKeyFile.delete()
+        publicKeyFile.delete()
+    }
+
     @Test
     fun testDefaultConstructor() {
         val testDevice = Device()
-        assertEquals("", testDevice.pathToPublicKey)
-        assertEquals("", testDevice.pathToPrivateKey)
+
+        // Assert that path is correct
+        assertEquals("res/keys/privateKey.txt", testDevice.pathToPublicKey)
+        assertEquals("res/keys/publicKey.txt", testDevice.pathToPrivateKey)
+
+        // Assert that the files exist
+        var privateKeyFile = File("res/keys/privateKey.txt")
+        assertTrue(privateKeyFile.exists())
+        var publicKeyFile = File("res/keys/publicKey.txt")
+        assertTrue(publicKeyFile.exists())
+
+        // Verify that the keys are valid by
+        // creating new keys from the bytes of the files
+        try {
+            var publicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
+            var privateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
+            val keyFactory = KeyFactory.getInstance("RSA") // or "EC" or whatever
+            // If these two functions pass, we are fine. If these fail, we are not fine.
+            keyFactory.generatePrivate(PKCS8EncodedKeySpec(privateKeyBytes))
+            keyFactory.generatePublic(X509EncodedKeySpec(publicKeyBytes))
+        }
+        catch(e : Exception){
+            fail("Failed to create valid keys")
+        }
+
+        // If cipher not initialized, this will throw an exception.
+        try{
+            testDevice.cipher
+        }
+        catch(e : UninitializedPropertyAccessException){
+            fail("Cipher uninitialized when it should be")
+        }
     }
 
     @Test
-    fun testSecondaryConstructorValidRelativePath(){
-        // Test valid constructor args
-        var testDevice = Device("abc", "def")
-        assertEquals("abc", testDevice.pathToPublicKey)
-        assertEquals("def", testDevice.pathToPrivateKey)
+    fun testDefaultConstructorExistingKeys() {
+        // Test to see if constructor correctly uses existing keys
+        val testDevice = Device()
 
-        testDevice = Device("abc/relative.png", "../test_relative")
-        assertEquals("abc/relative.png", testDevice.pathToPublicKey)
-        assertEquals("../test_relative", testDevice.pathToPrivateKey)
+        // First assert that. We need this to know the behavior of the second called constructor
+        var privateKeyFile = File("res/keys/privateKey.txt")
+        assertTrue(privateKeyFile.exists())
+        var publicKeyFile = File("res/keys/publicKey.txt")
+        assertTrue(publicKeyFile.exists())
+        
+        var oldPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
+        var oldPrivateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
+        val testDevice2 = Device()
 
-        testDevice = Device("C:/absolute/test.png", "C:/absolute/test")
-        assertEquals("C:/absolute/test.png", testDevice.pathToPublicKey)
-        assertEquals("C:/absolute/test", testDevice.pathToPrivateKey)
+        // Assert that the files still exist
+        privateKeyFile = File("res/keys/privateKey.txt")
+        assertTrue(privateKeyFile.exists())
+        publicKeyFile = File("res/keys/publicKey.txt")
+        assertTrue(publicKeyFile.exists())
 
-        testDevice = Device("C:/absolute/test.png", ".")
-        assertEquals("C:/absolute/test.png", testDevice.pathToPublicKey)
-        assertEquals(".", testDevice.pathToPrivateKey)
+        // Finally assert that keys have not changed
+        var newPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
+        var newPrivateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
+
+        assertEquals(oldPublicKeyBytes, newPublicKeyBytes)
+        assertEquals(oldPrivateKeyBytes, newPrivateKeyBytes)
     }
 
     @Test
-    fun testSecondaryConstructorInvalidPath(){
-        // Test invalid constructor args
-        var testDevice = Device("C:/absolute/test.png<><>", "****")
-        assertEquals("", testDevice.pathToPublicKey)
-        assertEquals("", testDevice.pathToPrivateKey)
-
-        testDevice = Device("", "")
-        assertEquals("", testDevice.pathToPublicKey)
-        assertEquals("", testDevice.pathToPrivateKey)
-
-        testDevice = Device("!@$", "*^@")
-        assertEquals("", testDevice.pathToPublicKey)
-        assertEquals("", testDevice.pathToPrivateKey)
+    fun testGetPathToPrivateKey(){
+        // Since there is only one path, there is only one test case
+        val testDevice = Device()
+        assertEquals("res/keys/privateKey.txt", testDevice.pathToPrivateKey)
     }
 
     @Test
-    fun testSecondaryConstructorOnePathValidOtherInvalid(){
-        // Test one argument valid one argument invalid
-        var testDevice = Device("C:/absolute/test.png", "****")
-        assertEquals("C:/absolute/test.png", testDevice.pathToPublicKey)
-        assertEquals("", testDevice.pathToPrivateKey)
-
-        testDevice = Device("@@<>@", "C:/absolute/test")
-        assertEquals("", testDevice.pathToPublicKey)
-        assertEquals("C:/absolute/test", testDevice.pathToPrivateKey)
+    fun testGetPathToPublicKey(){
+        // Since there is only one path, there is only one test case
+        val testDevice = Device()
+        assertEquals("res/keys/publicKey.txt", testDevice.pathToPublicKey)
     }
 
     @Test
-    fun testPathToPublicKeyValid() {
-        // Test the getter and setter for valid private key
+    fun testGenerateNewKeyPair(){
         var testDevice = Device()
-        testDevice.pathToPublicKey = "C:/absolute/test.png"
-        assertEquals("C:/absolute/test", testDevice.pathToPublicKey)
+        var privateKeyFile = File("res/keys/privateKey.txt")
+        var publicKeyFile = File("res/keys/publicKey.txt")
+        var oldPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
+        var oldPrivateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
+        testDevice.generateNewKeyPair()
 
-        testDevice.pathToPublicKey = "."
-        assertEquals(".", testDevice.pathToPublicKey)
+        // Verify that the files still exist
+        privateKeyFile = File("res/keys/privateKey.txt")
+        assertTrue(privateKeyFile.exists())
+        publicKeyFile = File("res/keys/publicKey.txt")
+        assertTrue(publicKeyFile.exists())
 
-        testDevice.pathToPublicKey = "relative.png"
-        assertEquals("relative.png", testDevice.pathToPublicKey)
+        // Finally assert that keys have actually changed
+        var newPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
+        var newPrivateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
 
-        testDevice.pathToPublicKey = "../dotdotrelative.txt"
-        assertEquals("../dotdotrelative.txt", testDevice.pathToPublicKey)
-    }
-
-    @Test
-    fun testPathToPublicKeyInValid() {
-        // Test the getter and setter for invalid private key
-        var testDevice = Device()
-        testDevice.pathToPublicKey = "false"
-
-        testDevice.pathToPublicKey = "**"
-        assertEquals("false", testDevice.pathToPublicKey)
-
-        testDevice.pathToPublicKey = ""
-        assertEquals("false", testDevice.pathToPublicKey)
-
-        testDevice.pathToPublicKey = "!<>@"
-        assertEquals("false", testDevice.pathToPublicKey)
-    }
-
-    @Test
-    fun testPathToPrivateKeyValid() {
-        // Test the getter and setter for valid private key
-        var testDevice = Device()
-        testDevice.pathToPrivateKey = "C:/absolute/test.png"
-        assertEquals("C:/absolute/test", testDevice.pathToPrivateKey)
-
-        testDevice.pathToPrivateKey = "."
-        assertEquals(".", testDevice.pathToPrivateKey)
-
-        testDevice.pathToPrivateKey = "relative.png"
-        assertEquals("relative.png", testDevice.pathToPrivateKey)
-
-        testDevice.pathToPrivateKey = "../dotdotrelative.txt"
-        assertEquals("../dotdotrelative.txt", testDevice.pathToPrivateKey)
-    }
-
-    @Test
-    fun testPathToPrivateKeyInValid() {
-        // Test the getter and setter for invalid private key
-        var testDevice = Device()
-        testDevice.pathToPrivateKey = "false"
-
-        testDevice.pathToPrivateKey = "**"
-        assertEquals("false", testDevice.pathToPrivateKey)
-
-        testDevice.pathToPrivateKey = ""
-        assertEquals("false", testDevice.pathToPrivateKey)
-
-        testDevice.pathToPrivateKey = "!<>@"
-        assertEquals("false", testDevice.pathToPrivateKey)
-    }
-
-    @Test
-    fun testGenerateKeyPairValidPath(){
-        var testDevice = Device()
-        testDevice.generateKeyPair("../../../../../../DeviceUnitTestsResources/")
-
-    }
-
-    @Test
-    fun testGenerateKeyPairInvalidPath(){
-        var testDevice = Device()
-        testDevice.generateKeyPair("DeviceUnitTestsResources/")
+        assertNotEquals(oldPublicKeyBytes, newPublicKeyBytes)
+        assertNotEquals(oldPrivateKeyBytes, newPrivateKeyBytes)
     }
 }

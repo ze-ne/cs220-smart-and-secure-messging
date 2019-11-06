@@ -17,7 +17,8 @@ class CipherExtensionUnitTests{
         // Test the constructor for correct platform.
         // There is only one constructor test case because the constructor takes in no parameters
         val testCipherExtension = CipherExtension()
-        assertEquals("RSA", testCipherExtension.javaCipher.algorithm)
+        assertEquals("RSA", testCipherExtension.javaEncryptCipher.algorithm)
+        assertEquals("RSA", testCipherExtension.javaDecryptCipher.algorithm)
     }
 
     @Test
@@ -33,5 +34,16 @@ class CipherExtensionUnitTests{
     @Test
     fun testDecryptEncryptedMessageImage(){
 
+    }
+
+    @Test
+    fun testDecryptEncryptedMessageText(){
+
+    }
+
+    //The next tests test the case where encryption/decryption can fail
+    @Test
+    fun testEncryptUnencryptedMessageFail(){
+        // If there is a failure,
     }
 }

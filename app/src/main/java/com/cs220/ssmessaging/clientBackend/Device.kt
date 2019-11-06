@@ -1,9 +1,7 @@
 package com.cs220.ssmessaging.clientBackend
 
-import java.security.PrivateKey
-import java.security.PublicKey
-import java.security.KeyPairGenerator
-import java.security.KeyPair
+import java.security.*
+import javax.crypto.CipherSpi
 
 class Device(){
     /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
@@ -15,48 +13,31 @@ class Device(){
      * when we want the variable getter and setter to be private.
      * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
-    var cipher : CipherExtension
-        get(){
-            // TODO
-            return CipherExtension()
-        }
-        private set(cphr : CipherExtension){
-            // TODO
-        }
 
-    var pathToPrivateKey : String
+    /* The device constructor will try to find the keys in the default path.
+     * If the keys are not in the path, then the constructor generates a default keypair,
+     * stores the keypair in in the path, and also passes the keys into the CipherExtension.
+     * Note that by default in Kotlin there is a getter and a setter automatically for cipher.
+     */
+    lateinit var cipher : CipherExtension
+        private set
+
+    // The paths to the keys should always be set to the res/keys folder in app
+    val pathToPrivateKey : String
         get() {
             // TODO
             return "TODO"
         }
-        set(privateKeyInput : String) {
-            // TODO
-        }
 
-    var pathToPublicKey : String
+    val pathToPublicKey : String
         get() {
             // TODO
             return "TODO"
         }
-        set(publicKeyInput : String) {
-            // TODO
-        }
 
-    constructor(privateKeyPathInput : String, publicKeyPathInput : String) : this(){
-        // TODO
-    }
-
-    fun getPrivateKey() : PrivateKey? {
-        // TODO
-        return null
-    }
-
-    fun getPublicKey() : PublicKey? {
-        // TODO
-        return null
-    }
-
-    fun generateKeyPair(pathToDir : String) : Unit {
+    // If this method is called, a new key pair is generated and passed into cipher
+    // Moreover, the new key pair is stored in the resources directory
+    fun generateNewKeyPair() : Unit {
         // TODO
     }
 }

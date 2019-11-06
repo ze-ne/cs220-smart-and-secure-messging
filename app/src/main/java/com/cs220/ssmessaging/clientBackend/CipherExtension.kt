@@ -7,19 +7,25 @@ import javax.crypto.CipherSpi
 
 class CipherExtension() {
 
-    val javaCipher : Cipher
+    val javaDecryptCipher : Cipher
         get(){
             // TODO - placeholder transformation for skeleton code
             return Cipher.getInstance("AES")
         }
 
-    fun decryptEncryptedMessage(encryptedMsg : EncryptedMessage) : UnencryptedMessage{
+    val javaEncryptCipher : Cipher
+        get(){
+            // TODO - placeholder transformation for skeleton code
+            return Cipher.getInstance("AES")
+        }
+
+    fun decryptEncryptedMessage(encryptedMsg : EncryptedMessage) : UnencryptedMessage? {
         // TODO
         return TextMessage("", "", User(), -1)
     }
 
-    fun encryptUnencryptedMessage(unencryptedMsg: UnencryptedMessage) : EncryptedMessage {
+    fun encryptUnencryptedMessage(unencryptedMsg: UnencryptedMessage) : EncryptedMessage? {
         // TODO
-        return EncryptedMessage(ByteArray(0), "", "", User(), -1)
+        return null
     }
 }
