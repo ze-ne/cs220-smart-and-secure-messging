@@ -1,5 +1,7 @@
 package com.cs220.ssmessaging.presenters
 
+import com.cs220.ssmessaging.clientBackend.Message
+
 class ConversationActivityPresenter : BasePresenter<ConversationActivityPresenter.View>() {
 
     fun sendTextMessage(text: String) {
@@ -11,6 +13,6 @@ class ConversationActivityPresenter : BasePresenter<ConversationActivityPresente
     }
 
     interface View {
-        //fun updateDisplayedMessages(newMessage: Message)
+        fun updateDisplayedMessages(newMessage: Message)
     }
 }

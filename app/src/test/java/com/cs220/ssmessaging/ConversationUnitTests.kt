@@ -1,5 +1,7 @@
 package com.cs220.ssmessaging
 
+import com.cs220.ssmessaging.clientBackend.Message
+import com.cs220.ssmessaging.clientBackend.TextMessage
 import com.cs220.ssmessaging.presenters.ConversationActivityPresenter
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
@@ -19,9 +21,8 @@ class ConversationUnitTests {
         presenter.attachView(view)
     }
 
-    // TODO fix when merge in backend branch
-
-    /*@Test
+    /*
+    @Test
     fun send_emptyTextMessage() {
         presenter.sendTextMessage("")
         verify(view, never()).updateDisplayedMessages()
@@ -54,7 +55,7 @@ class ConversationUnitTests {
     @Test
     fun send_nonAlphaTextMessage() {
         presenter.sendTextMessage("Hi --- just here...\"testing\" some th1ng5! c u l8r")
-        verify(view).updateDisplayedMessages()
-    }*/
-
+        verify(view).updateDisplayedMessages(TextMessage("Hi --- just here...\"testing\" some th1ng5! c u l8r","1", "myUsername", ))
+    }
+*/
 }
