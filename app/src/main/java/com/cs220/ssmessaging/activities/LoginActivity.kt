@@ -21,4 +21,12 @@ class LoginActivity : AppCompatActivity(), LoginActivityPresenter.View {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun registerFail() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun registerSuccessful() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 }

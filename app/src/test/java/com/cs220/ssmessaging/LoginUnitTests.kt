@@ -18,30 +18,44 @@ class LoginUnitTests {
     }
 
     @Test
-    fun login_validLogin ()
+    fun login_validLogin()
     {
-        presenter.handleLogin ("abc", "def")
+        presenter.handleLogin ("myUsername")
         verify(view).loginSuccessful()
     }
 
     @Test
-    fun login_invalidLogin ()
+    fun login_invalidLogin()
     {
-        presenter.handleLogin ("abc", "defg")
+        presenter.handleLogin ("wrongUsername")
         verify(view).loginFail()
     }
 
     @Test
-    fun login_emptyUsername ()
+    fun login_emptyUsername()
     {
-        presenter.handleLogin ("", "abc")
+        presenter.handleLogin ("")
         verify(view).loginFail()
     }
 
     @Test
-    fun login_emptyPassword ()
+    fun register_validUsername()
     {
-        presenter.handleLogin ("abc", "")
-        verify(view).loginFail()
+        presenter.handleRegister ("newUsername")
+        verify(view).registerSuccessful()
+    }
+
+    @Test
+    fun register_invalidUsername ()
+    {
+        presenter.handleRegister ("()...")
+        verify(view).registerFail()
+    }
+
+    @Test
+    fun register_emptyUsername()
+    {
+        presenter.handleRegister("")
+        verify(view).registerFail()
     }
 }

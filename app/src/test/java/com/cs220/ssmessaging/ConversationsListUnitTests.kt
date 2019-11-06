@@ -27,7 +27,8 @@ class ConversationsListUnitTests {
     @Test
     fun create_newConversation_withValidUserID() {
         presenter.startNewConversation("john")
-        verify(view).gotoConversation("john")
+        verify(view).gotoConversation("johnConvo")
+        verify(view).updateConversationsList("johnConvo")
     }
 
     @Test

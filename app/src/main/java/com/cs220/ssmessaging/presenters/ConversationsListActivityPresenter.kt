@@ -7,7 +7,8 @@ class ConversationsListActivityPresenter : BasePresenter<ConversationsListActivi
     }
 
     interface View {
-        fun gotoConversation(userID: String)
+        fun gotoConversation(conversationID: String)
         fun showIDNotFoundMessage(userID: String)
+        fun updateConversationsList(conversationID: String)
     }
 }
