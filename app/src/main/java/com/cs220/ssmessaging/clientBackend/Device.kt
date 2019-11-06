@@ -2,7 +2,8 @@ package com.cs220.ssmessaging.clientBackend
 
 import java.security.PrivateKey
 import java.security.PublicKey
-import javax.crypto.Cipher
+import java.security.KeyPairGenerator
+import java.security.KeyPair
 
 class Device(){
     /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
@@ -55,7 +56,7 @@ class Device(){
         return null
     }
 
-    fun generateKeyPair() : Unit {
+    fun generateKeyPair(pathToDir : String) : Unit {
         // TODO
     }
 }

@@ -9,6 +9,8 @@ import org.mockito.junit.MockitoJUnitRunner
 
 import com.cs220.ssmessaging.clientBackend.Device
 
+import java.io.File
+
 @RunWith(MockitoJUnitRunner::class)
 class DeviceUnitTests{
     @Test
@@ -132,4 +134,15 @@ class DeviceUnitTests{
         assertEquals("false", testDevice.pathToPrivateKey)
     }
 
+    @Test
+    fun testGenerateKeyPairValidPath(){
+        var testDevice = Device()
+        testDevice.generateKeyPair("../../../../../../DeviceUnitTestsResources/")
+
+    }
+
+    fun testGenerateKeyPairInvalidPath(){
+        var testDevice = Device()
+        testDevice.generateKeyPair("DeviceUnitTestsResources/")
+    }
 }

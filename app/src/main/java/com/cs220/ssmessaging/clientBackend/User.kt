@@ -57,6 +57,8 @@ class User() {
             // TODO
         }
 
+    /* We are moving the "Manage Block List" that this variable and its getter/setter
+       methods implement to iteration 2.
     var blockedContacts : MutableList<User>
         // get returns copy of list
         get() {
@@ -65,7 +67,7 @@ class User() {
         }
         private set(contacts : MutableList<User>){
             // TODO
-        }
+        } */
 
     var conversations : MutableList<Conversation>
         // returns copy of conversations list
@@ -106,9 +108,9 @@ class User() {
         return false
     }
 
-    fun findContactById(userId : String) : User? {
+    fun getContactById(userId : String) : User? {
         // TODO
-        return User()
+        return null
     }
 
     fun deleteContact(user : User) : Boolean {
@@ -116,6 +118,7 @@ class User() {
         return false
     }
 
+    /* We are moving the "Manage Block List" use case that these methods implement to iteration 2
     fun findBlockedContactById(userId : String) : User? {
         // TODO
         return User()
@@ -129,7 +132,7 @@ class User() {
     fun deleteBlockedContact(user: User) : Boolean {
         // TODO
         return false
-    }
+    }*/
 
     fun sendTextMsg(msg : String, convo : Conversation) : Boolean {
         // TODO
