@@ -9,7 +9,17 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name="com.cs220.ssmessaging.MainActivity">
+        <activity android:name="com.cs220.ssmessaging.frontend.activities.ConversationsListActivity">
+        </activity>
+        <activity android:name="com.cs220.ssmessaging.frontend.activities.LoginActivity">
+        </activity>
+        <activity android:name="com.cs220.ssmessaging.frontend.activities.ConversationActivity">
+        </activity>
+        <activity android:name="com.cs220.ssmessaging.frontend.activities.SettingsActivity">
+        </activity>
+        <activity android:name="com.cs220.ssmessaging.frontend.activities.ContactsActivity">
+        </activity>
+        <activity android:name="com.cs220.ssmessaging.frontend.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
