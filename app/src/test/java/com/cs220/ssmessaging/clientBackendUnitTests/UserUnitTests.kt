@@ -32,7 +32,6 @@ class UserUnitTests{
 
         // Valid add
         listSize = user1.contacts.size
-        assertEquals(user1.contacts.size, listSize)
         assertFalse(user2 in user1.contacts)
         assertTrue(user1.addContact(user2))
         assertEquals(user1.contacts.size, listSize + 1)
@@ -40,13 +39,11 @@ class UserUnitTests{
 
         // Invalid null add
         listSize = user1.contacts.size
-        assertEquals(user1.contacts.size, listSize)
         assertFalse(user1.addContact(null as User))
         assertEquals(user1.contacts.size, listSize)
 
         // Invalid duplicate add
         listSize = user1.contacts.size
-        assertEquals(user1.contacts.size, listSize)
         assertFalse(user1.addContact(user2))
         assertEquals(user1.contacts.size, listSize)
         assertTrue(user2 in user1.contacts)
@@ -59,11 +56,10 @@ class UserUnitTests{
         val user2 = User("id2","first", "last")
         val user3 = User("id3","first", "last")
         var listSize: Int
+        user1.addContact(user2)
 
         // Valid delete
-        user1.addContact(user2)
         listSize = user1.contacts.size
-        assertEquals(user1.contacts.size, listSize)
         assertTrue(user2 in user1.contacts)
         assertTrue(user1.deleteContact(user2))
         assertFalse(user2 in user1.contacts)
@@ -71,7 +67,6 @@ class UserUnitTests{
 
         // Invalid repeated delete
         listSize = user1.contacts.size
-        assertEquals(user1.contacts.size, listSize)
         assertFalse(user2 in user1.contacts)
         assertFalse(user1.deleteContact(user2))
         assertFalse(user2 in user1.contacts)
@@ -79,7 +74,6 @@ class UserUnitTests{
 
         // Invalid unknown user delete
         listSize = user1.contacts.size
-        assertEquals(user1.contacts.size, listSize)
         assertFalse(user3 in user1.contacts)
         assertFalse(user1.deleteContact(user3))
         assertFalse(user3 in user1.contacts)
@@ -87,7 +81,6 @@ class UserUnitTests{
 
         // Invalid nonsense user delete
         listSize = user1.contacts.size
-        assertEquals(user1.contacts.size, listSize)
         assertFalse(user1.deleteContact(null as User))
         assertEquals(user1.contacts.size, listSize)
 
@@ -100,19 +93,19 @@ class UserUnitTests{
         user1.addContact(user2)
         user2.addContact(user1)
 
-        // Valid search
+        // Valid get
         assertTrue(user2 in user1.contacts)
         assertTrue(user1 in user2.contacts)
         assertSame(user2, user1.getContactById("id2"))
         assertSame(user1, user2.getContactById("id1"))
 
-        // Invalid search
+        // Invalid get
         assertNull(user1.getContactById("id3"))
 
-        // Invalid empty parameter search
+        // Invalid empty parameter get
         assertNull(user1.getContactById(""))
 
-        // Invalid null parameter search
+        // Invalid null parameter get
         assertNull(user1.getContactById(null as String))
 
 
@@ -127,7 +120,6 @@ class UserUnitTests{
 
         // Valid add
         listSize = user1.conversations.size
-        assertEquals(user1.conversations.size, listSize)
         assertFalse(conversation1 in user1.conversations)
         assertTrue(user1.addConversation(conversation1))
         assertEquals(user1.conversations.size, listSize + 1)
@@ -135,14 +127,12 @@ class UserUnitTests{
 
         // Invalid duplicate add
         listSize = user1.conversations.size
-        assertEquals(user1.conversations.size, listSize)
         assertTrue(conversation1 in user1.conversations)
         assertFalse(user1.addConversation(conversation1))
         assertEquals(user1.conversations.size, listSize)
 
         // Invalid null add
         listSize = user1.conversations.size
-        assertEquals(user1.conversations.size, listSize)
         assertFalse(user1.addConversation(null as Conversation))
         assertEquals(user1.conversations.size, listSize)
 
@@ -160,15 +150,14 @@ class UserUnitTests{
         assertSame(conversation1, user1.getConversationByUserId("id2"))
         assertSame(conversation1, user2.getConversationByUserId("id1"))
 
-        // Invalid bad get
+        // Invalid get unknown parameter
         assertNull(user1.getConversationByUserId("id555"))
 
-        // Invalid empty get
+        // Invalid get empty parameter
         assertNull(user1.getConversationByUserId(""))
 
-        // Invalid null get
+        // Invalid get null parameter
         assertNull(user1.getConversationByUserId(null as String))
-
 
     }
 
@@ -215,9 +204,8 @@ class UserUnitTests{
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
         val conversation = Conversation(user1, user2)
-        val conversationBad = Conversation(user1, user2)
         val conversationId = conversation.convoId
-        val conversationIdBad = conversationBad.convoId
+        val conversationIdBad = "1234567"
 
         user1.addConversation(conversation)
         user2.addConversation(conversation)
@@ -226,10 +214,13 @@ class UserUnitTests{
         assertSame(conversation, user1.getConversationByConversationId(conversationId))
         assertSame(conversation, user2.getConversationByConversationId(conversationId))
 
-        // Invalid bad get
+        // Invalid get unknown parameter
         assertNull(user2.getConversationByConversationId(conversationIdBad))
 
-        // Invalid null get
+        // Invalid get empty parameter
+        assertNull(user2.getConversationByConversationId(""))
+
+        // Invalid get null parameter
         assertNull(user2.getConversationByConversationId(null as String))
 
     }
