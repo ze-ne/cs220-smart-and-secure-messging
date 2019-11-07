@@ -17,7 +17,8 @@ import org.mockito.ArgumentMatchers
 class ConversationUnitTests {
     private lateinit var presenter : ConversationActivityPresenter
     private lateinit var view : ConversationActivityPresenter.View
-    private lateinit var user : User
+    private lateinit var sender : User
+    private lateinit var reciever : User
     private var date = Date()
 
     @Before
@@ -25,7 +26,8 @@ class ConversationUnitTests {
         presenter = ConversationActivityPresenter()
         view = mock()
         presenter.attachView(view)
-        user = mock()
+        sender = mock()
+        reciever = mock()
     }
 
     @Test
@@ -43,25 +45,25 @@ class ConversationUnitTests {
     @Test
     fun send_validTextMessage() {
         presenter.sendTextMessage("Hi")
-        verify(view).updateDisplayedMessages(TextMessage("Hi","1", user, Math.toIntExact(date.time)))
+        verify(view).updateDisplayedMessages(TextMessage("Hi","1", sender, reciever, Math.toIntExact(date.time)))
     }
 
     @Test
     fun send_validImageMessage() {
         presenter.sendImageMessage(arrayOf())
-        verify(view).updateDisplayedMessages(ImageMessage(ArgumentMatchers.any(ByteArray::class.java), "1", user, Math.toIntExact(date.time)))
+        verify(view).updateDisplayedMessages(ImageMessage(ArgumentMatchers.any(ByteArray::class.java), "1", sender, reciever, Math.toIntExact(date.time)))
     }
 
     @Test
     fun send_longTextMessage() {
         presenter.sendTextMessage("Hi, this is Zene. I'm sending this really long message for testing purposes only and not for any other reason")
-        verify(view).updateDisplayedMessages(TextMessage("Hi, this is Zene. I'm sending this really long message for testing purposes only and not for any other reason","1", user, Math.toIntExact(date.time)))
+        verify(view).updateDisplayedMessages(TextMessage("Hi, this is Zene. I'm sending this really long message for testing purposes only and not for any other reason","1", sender, reciever, Math.toIntExact(date.time)))
     }
 
     @Test
     fun send_nonAlphaTextMessage() {
         presenter.sendTextMessage("Hi --- just here...\"testing\" some th1ng5! c u l8r")
-        verify(view).updateDisplayedMessages(TextMessage("Hi --- just here...\"testing\" some th1ng5! c u l8r","1", user, Math.toIntExact(date.time)))
+        verify(view).updateDisplayedMessages(TextMessage("Hi --- just here...\"testing\" some th1ng5! c u l8r","1", sender, reciever, Math.toIntExact(date.time)))
     }
 
     @Test
