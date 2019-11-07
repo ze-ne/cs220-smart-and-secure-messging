@@ -14,7 +14,18 @@ import com.cs220.ssmessaging.clientBackend.Conversation
 class UserUnitTests{
 
     @Test
-    fun test_addContact() {
+    fun testConstructor() {
+        val user1 = User("id1","first", "last")
+        assertEquals(user1.userId, "id1")
+        assertEquals(user1.firstName, "first")
+        assertEquals(user1.lastName, "last")
+        assertEquals(user1.contacts.size, 0)
+        assertEquals(user1.conversations.size, 0)
+
+    }
+
+    @Test
+    fun testAddContact() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
 
@@ -27,7 +38,7 @@ class UserUnitTests{
     }
 
     @Test
-    fun test_deleteContact() {
+    fun testDeleteContact() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
         user1.addContact(user2)
@@ -43,7 +54,7 @@ class UserUnitTests{
     }
 
     @Test
-    fun test_getContactById() {
+    fun testGetContactById() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
         user1.addContact(user2)
@@ -57,7 +68,7 @@ class UserUnitTests{
     }
 
     @Test
-    fun test_addConversation() {
+    fun testAddConversation() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
         val conversation1 = Conversation(user1, user2)
@@ -72,7 +83,7 @@ class UserUnitTests{
     }
 
     @Test
-    fun test_getConversationByUserId() {
+    fun testGetConversationByUserId() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
         val conversation1 = Conversation(user1, user2)
@@ -123,7 +134,7 @@ class UserUnitTests{
     }
 
     @Test
-    fun test_getConversationByConversationId() {
+    fun testGetConversationByConversationId() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
         val conversation = Conversation(user1, user2)
