@@ -1,9 +1,9 @@
-package com.cs220.ssmessaging.activities
+package com.cs220.ssmessaging.frontend.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.cs220.ssmessaging.R
-import com.cs220.ssmessaging.presenters.SearchActivityPresenter
+import com.cs220.ssmessaging.frontend.presenters.SearchActivityPresenter
 
 // TODO: Implementation moved to iteration 2
 class SearchActivity : AppCompatActivity(), SearchActivityPresenter.View {

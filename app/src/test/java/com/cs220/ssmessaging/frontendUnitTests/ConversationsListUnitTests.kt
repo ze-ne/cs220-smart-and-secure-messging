@@ -1,6 +1,6 @@
-package com.cs220.ssmessaging
+package com.cs220.ssmessaging.frontendUnitTests
 
-import com.cs220.ssmessaging.presenters.ConversationsListActivityPresenter
+import com.cs220.ssmessaging.frontend.presenters.ConversationsListActivityPresenter
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify

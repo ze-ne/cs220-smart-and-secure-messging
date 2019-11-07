@@ -1,9 +1,9 @@
-package com.cs220.ssmessaging.activities
+package com.cs220.ssmessaging.frontend.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.cs220.ssmessaging.R
-import com.cs220.ssmessaging.presenters.ConversationsListActivityPresenter
+import com.cs220.ssmessaging.frontend.presenters.ConversationsListActivityPresenter
 
 class ConversationsListActivity : AppCompatActivity(), ConversationsListActivityPresenter.View {
     override fun onCreate(savedInstanceState: Bundle?) {

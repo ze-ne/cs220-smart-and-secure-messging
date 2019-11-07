@@ -1,4 +1,4 @@
-package com.cs220.ssmessaging.presenters
+package com.cs220.ssmessaging.frontend.presenters
 
 class ConversationsListActivityPresenter : BasePresenter<ConversationsListActivityPresenter.View>() {
 

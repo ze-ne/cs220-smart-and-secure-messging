@@ -1,4 +1,4 @@
-package com.cs220.ssmessaging.presenters
+package com.cs220.ssmessaging.frontend.presenters
 
 // TODO: Implementation moved to iteration 2
 class SearchActivityPresenter {

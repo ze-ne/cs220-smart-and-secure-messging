@@ -1,4 +1,4 @@
-package com.cs220.ssmessaging.activities
+package com.cs220.ssmessaging.frontend.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

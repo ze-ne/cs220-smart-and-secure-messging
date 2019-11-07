@@ -1,11 +1,12 @@
-package com.cs220.ssmessaging
+package com.cs220.ssmessaging.frontendUnitTests
 
+import android.media.Image
 import com.cs220.ssmessaging.clientBackend.ImageMessage
 import com.cs220.ssmessaging.clientBackend.Message
 import java.util.Date
 import com.cs220.ssmessaging.clientBackend.TextMessage
 import com.cs220.ssmessaging.clientBackend.User
-import com.cs220.ssmessaging.presenters.ConversationActivityPresenter
+import com.cs220.ssmessaging.frontend.presenters.ConversationActivityPresenter
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
@@ -60,7 +61,12 @@ class ConversationUnitTests {
     @Test
     fun send_nonAlphaTextMessage() {
         presenter.sendTextMessage("Hi --- just here...\"testing\" some th1ng5! c u l8r")
-
         verify(view).updateDisplayedMessages(TextMessage("Hi --- just here...\"testing\" some th1ng5! c u l8r","1", user, Math.toIntExact(date.time)))
+    }
+
+    @Test
+    fun add_image() {
+        presenter.addImage(ArgumentMatchers.any(Image::class.java))
+        verify(view).addImageToDisplay(ArgumentMatchers.any(Image::class.java))
     }
 }

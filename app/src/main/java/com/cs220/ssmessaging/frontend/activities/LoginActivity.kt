@@ -1,9 +1,9 @@
-package com.cs220.ssmessaging.activities
+package com.cs220.ssmessaging.frontend.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.cs220.ssmessaging.R
-import com.cs220.ssmessaging.presenters.LoginActivityPresenter
+import com.cs220.ssmessaging.frontend.presenters.LoginActivityPresenter
 
 class LoginActivity : AppCompatActivity(), LoginActivityPresenter.View {
     private val presenter: LoginActivityPresenter = LoginActivityPresenter()

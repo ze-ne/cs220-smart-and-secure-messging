@@ -1,14 +1,11 @@
-package com.cs220.ssmessaging.activities
+package com.cs220.ssmessaging.frontend.activities
 
+import android.media.Image
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.Message
-import com.cs220.ssmessaging.presenters.ConversationActivityPresenter
+import com.cs220.ssmessaging.frontend.presenters.ConversationActivityPresenter
 
 class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.View {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,6 +14,10 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
     }
 
     override fun updateDisplayedMessages(message: Message) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun addImageToDisplay(image: Image) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

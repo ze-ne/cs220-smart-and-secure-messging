@@ -1,7 +1,6 @@
-package com.cs220.ssmessaging
+package com.cs220.ssmessaging.frontendUnitTests
 
-import android.service.autofill.FieldClassification
-import com.cs220.ssmessaging.presenters.ContactsActivityPresenter
+import com.cs220.ssmessaging.frontend.presenters.ContactsActivityPresenter
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify

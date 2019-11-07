@@ -1,5 +1,5 @@
-package com.cs220.ssmessaging
-import com.cs220.ssmessaging.presenters.LoginActivityPresenter
+package com.cs220.ssmessaging.frontendUnitTests
+import com.cs220.ssmessaging.frontend.presenters.LoginActivityPresenter
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.junit.Before
@@ -41,21 +41,49 @@ class LoginUnitTests {
     @Test
     fun register_validUsername()
     {
-        presenter.handleRegister ("newUsername")
+        presenter.handleRegister ("newUsername", "John", "Smith")
         verify(view).registerSuccessful()
     }
 
     @Test
     fun register_invalidUsername ()
     {
-        presenter.handleRegister ("()...")
+        presenter.handleRegister ("()...", "John", "Smith")
+        verify(view).registerFail()
+    }
+
+    @Test
+    fun register_invalidFirstname()
+    {
+        presenter.handleRegister("newUsername", "...", "Smith")
+        verify(view).registerFail()
+    }
+
+    @Test
+    fun register_invalidLastname()
+    {
+        presenter.handleRegister("newUsername", "John", "...")
         verify(view).registerFail()
     }
 
     @Test
     fun register_emptyUsername()
     {
-        presenter.handleRegister("")
+        presenter.handleRegister("", "John", "Smith")
+        verify(view).registerFail()
+    }
+
+    @Test
+    fun register_emptyFirstname()
+    {
+        presenter.handleRegister("newUsername", "", "Smith")
+        verify(view).registerFail()
+    }
+
+    @Test
+    fun register_emptyLastname()
+    {
+        presenter.handleRegister("newUsername", "John", "")
         verify(view).registerFail()
     }
 }
