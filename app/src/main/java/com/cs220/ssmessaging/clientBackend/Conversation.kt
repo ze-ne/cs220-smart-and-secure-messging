@@ -67,9 +67,4 @@ class Conversation() {
         // TODO
         return false
     }
-
-    fun sync() : Boolean{
-        // TODO
-        return false
-    }
 }
