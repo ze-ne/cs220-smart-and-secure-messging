@@ -14,73 +14,150 @@ import com.cs220.ssmessaging.clientBackend.Conversation
 class UserUnitTests{
 
     @Test
-    fun test_addContact() {
+    fun testConstructor() {
         val user1 = User("id1","first", "last")
-        val user2 = User("id2","first", "last")
+        assertEquals("id1", user1.userId)
+        assertEquals("first", user1.firstName)
+        assertEquals("last", user1.lastName)
+        assertEquals(0, user1.contacts.size)
+        assertEquals(0, user1.conversations.size)
 
-        assertEquals(user1.contacts.size, 0)
-
-        assertTrue(user1.addContact(user2))
-
-        assertEquals(user1.contacts.size, 1)
-        assertTrue(user2 in user1.contacts)
     }
 
     @Test
-    fun test_deleteContact() {
+    fun testAddContact() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
+        var listSize: Int
+
+        // Valid add
+        listSize = user1.contacts.size
+        assertFalse(user2 in user1.contacts)
+        assertTrue(user1.addContact(user2))
+        assertEquals(listSize + 1, user1.contacts.size)
+        assertTrue(user2 in user1.contacts)
+
+        // Invalid null add
+        listSize = user1.contacts.size
+        assertFalse(user1.addContact(null as User))
+        assertEquals(listSize, user1.contacts.size)
+
+        // Invalid duplicate add
+        listSize = user1.contacts.size
+        assertFalse(user1.addContact(user2))
+        assertEquals(listSize, user1.contacts.size)
+        assertTrue(user2 in user1.contacts)
+
+    }
+
+    @Test
+    fun testDeleteContact() {
+        val user1 = User("id1","first", "last")
+        val user2 = User("id2","first", "last")
+        val user3 = User("id3","first", "last")
+        var listSize: Int
         user1.addContact(user2)
 
+        // Valid delete
+        listSize = user1.contacts.size
         assertTrue(user2 in user1.contacts)
-        assertEquals(user1.contacts.size, 1)
-
         assertTrue(user1.deleteContact(user2))
-
         assertFalse(user2 in user1.contacts)
-        assertEquals(user1.contacts.size, 0)
+        assertEquals(listSize - 1, user1.contacts.size)
+
+        // Invalid repeated delete
+        listSize = user1.contacts.size
+        assertFalse(user2 in user1.contacts)
+        assertFalse(user1.deleteContact(user2))
+        assertFalse(user2 in user1.contacts)
+        assertEquals(listSize, user1.contacts.size)
+
+        // Invalid unknown user delete
+        listSize = user1.contacts.size
+        assertFalse(user3 in user1.contacts)
+        assertFalse(user1.deleteContact(user3))
+        assertFalse(user3 in user1.contacts)
+        assertEquals(listSize, user1.contacts.size)
+
+        // Invalid nonsense user delete
+        listSize = user1.contacts.size
+        assertFalse(user1.deleteContact(null as User))
+        assertEquals(listSize, user1.contacts.size)
 
     }
 
     @Test
-    fun test_getContactById() {
+    fun testGetContactById() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
         user1.addContact(user2)
         user2.addContact(user1)
 
+        // Valid get
         assertTrue(user2 in user1.contacts)
         assertTrue(user1 in user2.contacts)
         assertSame(user2, user1.getContactById("id2"))
         assertSame(user1, user2.getContactById("id1"))
 
+        // Invalid get
+        assertNull(user1.getContactById("id3"))
+
+        // Invalid empty parameter get
+        assertNull(user1.getContactById(""))
+
+        // Invalid null parameter get
+        assertNull(user1.getContactById(null as String))
+
+
     }
 
     @Test
-    fun test_addConversation() {
+    fun testAddConversation() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
         val conversation1 = Conversation(user1, user2)
+        var listSize: Int
 
+        // Valid add
+        listSize = user1.conversations.size
         assertFalse(conversation1 in user1.conversations)
-        assertEquals(user1.conversations.size, 0)
-
         assertTrue(user1.addConversation(conversation1))
-
-        assertEquals(user1.conversations.size, 1)
+        assertEquals(listSize + 1, user1.conversations.size)
         assertTrue(conversation1 in user1.conversations)
+
+        // Invalid duplicate add
+        listSize = user1.conversations.size
+        assertTrue(conversation1 in user1.conversations)
+        assertFalse(user1.addConversation(conversation1))
+        assertEquals(listSize, user1.conversations.size)
+
+        // Invalid null add
+        listSize = user1.conversations.size
+        assertFalse(user1.addConversation(null as Conversation))
+        assertEquals(listSize, user1.conversations.size)
+
     }
 
     @Test
-    fun test_getConversationByUserId() {
+    fun testGetConversationByUserId() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
         val conversation1 = Conversation(user1, user2)
         user1.addConversation(conversation1)
         user2.addConversation(conversation1)
 
+        // Valid get
         assertSame(conversation1, user1.getConversationByUserId("id2"))
         assertSame(conversation1, user2.getConversationByUserId("id1"))
+
+        // Invalid get unknown parameter
+        assertNull(user1.getConversationByUserId("id555"))
+
+        // Invalid get empty parameter
+        assertNull(user1.getConversationByUserId(""))
+
+        // Invalid get null parameter
+        assertNull(user1.getConversationByUserId(null as String))
 
     }
 
@@ -123,16 +200,28 @@ class UserUnitTests{
     }
 
     @Test
-    fun test_getConversationByConversationId() {
+    fun testGetConversationByConversationId() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
         val conversation = Conversation(user1, user2)
         val conversationId = conversation.convoId
+        val conversationIdBad = "1234567"
+
         user1.addConversation(conversation)
         user2.addConversation(conversation)
 
+        // Valid get
         assertSame(conversation, user1.getConversationByConversationId(conversationId))
         assertSame(conversation, user2.getConversationByConversationId(conversationId))
+
+        // Invalid get unknown parameter
+        assertNull(user2.getConversationByConversationId(conversationIdBad))
+
+        // Invalid get empty parameter
+        assertNull(user2.getConversationByConversationId(""))
+
+        // Invalid get null parameter
+        assertNull(user2.getConversationByConversationId(null as String))
 
     }
 }
