@@ -13,4 +13,28 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_block_list)
     }
+
+    override fun logoutSuccessful() {
+        TODO("not implemented")
+    }
+
+    override fun logoutFail() {
+        TODO("not implemented")
+    }
+
+    override fun changeFirstNameSuccessful() {
+        TODO("not implemented")
+    }
+
+    override fun changeFirstNameFail() {
+        TODO("not implemented")
+    }
+
+    override fun changeLastNameSuccessful() {
+        TODO("not implemented")
+    }
+
+    override fun changeLastNameFail() {
+        TODO("not implemented")
+    }
 }

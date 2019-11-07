@@ -8,33 +8,59 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 
-class ConversationsListUnitTests {
-    private lateinit var presenter : ConversationsListActivityPresenter
-    private lateinit var view : ConversationsListActivityPresenter.View
+class SettingsUnitTests {
+    private lateinit var presenter : SettingsActivityPresenter
+    private lateinit var view : SettingsActivityPresenter.View
+    private lateinit var user : User
 
     @Before
     fun setup() {
-        presenter = ConversationsListActivityPresenter()
+        presenter = SettingsActivityPresenter()
         view = mock()
         presenter.attachView(view)
+        user = mock()
     }
 
     @Test
-    fun open_conversationThatAlreadyExists() {
-        verify(view).gotoConversation("alex")
+    fun changeFirstName_valid() {
+        presenter.changeFirstName("Alex")
+        assertEqual ("Alex", user.firstName)
+        verify(view).changeFirstNameSuccessful()
     }
 
     @Test
-    fun create_newConversation_withValidUserID() {
-        presenter.startNewConversation("john")
-        verify(view).gotoConversation("johnConvo")
-        verify(view).updateConversationsList("johnConvo")
+    fun changeFirstName_invalid() {
+        presenter.changeFirstName("Alex")
+        presenter.changeFirstName("")
+        assertEqual ("Alex", user.firstName)
+        verify(view).changeFirstNameFail()
     }
 
     @Test
-    fun create_newConversation_withInvalidUserID() {
-        presenter.startNewConversation("bob")
-        verify(view, never()).gotoConversation(ArgumentMatchers.anyString())
-        verify(view).showIDNotFoundMessage("bob")
+    fun changeLastName_valid() {
+        presenter.changeLastName("Carter")
+        assertEqual ("Carter", user.lastName)
+        verify(view).changeLastNameSuccessful()
+    }
+
+    @Test
+    fun changeLastName_invalid() {
+        presenter.changeLastName("Carter")
+        presenter.changeLastName("")
+        assertEqual ("Carter", user.lastName)
+        verify(view).changeLastNameFail()
+    }
+
+    fun logout_fail()
+    {
+        presenter.logout()
+        verify(view).loginFail()
+    }
+
+    @Test
+    fun logout_success()
+    {
+        presenter.logout()
+        verify(view).logoutSuccessful()
     }
 }

@@ -1,24 +1,25 @@
 package com.cs220.ssmessaging.presenters
 
-class ConversationActivityPresenter : BasePresenter<ConversationActivityPresenter.View>() {
+class SettingsActivityPresenter : BasePresenter<SettingsActivityPresenter.View>() {
 
-    fun sendTextMessage(text: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun changeFirstName (text: String) {
+        TODO("not implemented")
     }
 
-    fun sendImageMessage(image: Array<Byte>){
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun changeLastName (text: String){
+        TODO("not implemented")
     }
 
-    fun deleteSentTextMessage(text: String){
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    fun deleteSentImageMessage(image: Array<Byte>){
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun logout (){
+        TODO("not implemented")
     }
 
     interface View {
-        fun updateDisplayedMessages()
+        fun changeFirstNameSuccessful()
+        fun changeFirstNameFail ()
+        fun changeLastNameSuccessful()
+        fun changeLastNameFail ()
+        fun logoutSuccessful ()
+        fun logoutFail()
     }
 }
