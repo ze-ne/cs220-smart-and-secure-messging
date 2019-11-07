@@ -12,6 +12,7 @@ import org.junit.After
 
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
@@ -114,21 +115,31 @@ class DeviceUnitTests{
         var testDevice = Device()
         var privateKeyFile = File("res/keys/myKey.privateKey")
         var publicKeyFile = File("res/keys/myKey.publicKey")
-        var oldPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
-        var oldPrivateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
-        testDevice.generateNewKeyPair()
+        var oldPublicKeyBytes : ByteArray
+        var oldPrivateKeyBytes : ByteArray
 
-        // Verify that the files still exist
-        privateKeyFile = File("res/keys/myKey.privateKey")
-        assertTrue(privateKeyFile.exists())
-        publicKeyFile = File("res/keys/myKey.publicKey")
-        assertTrue(publicKeyFile.exists())
+        try {
+            oldPublicKeyBytes = Files.readAllBytes(publicKeyFile.toPath())
+            oldPrivateKeyBytes = Files.readAllBytes(privateKeyFile.toPath())
 
-        // Finally assert that keys have actually changed
-        var newPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
-        var newPrivateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
 
-        assertNotEquals(oldPublicKeyBytes, newPublicKeyBytes)
-        assertNotEquals(oldPrivateKeyBytes, newPrivateKeyBytes)
+            testDevice.generateNewKeyPair()
+
+            // Verify that the files still exist
+            privateKeyFile = File("res/keys/myKey.privateKey")
+            assertTrue(privateKeyFile.exists())
+            publicKeyFile = File("res/keys/myKey.publicKey")
+            assertTrue(publicKeyFile.exists())
+
+            // Finally assert that keys have actually changed
+            var newPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
+            var newPrivateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
+
+            assertNotEquals(oldPublicKeyBytes, newPublicKeyBytes)
+            assertNotEquals(oldPrivateKeyBytes, newPrivateKeyBytes)
+        }
+        catch(e : NoSuchFileException){
+            fail("Keys not found in path")
+        }
     }
 }
