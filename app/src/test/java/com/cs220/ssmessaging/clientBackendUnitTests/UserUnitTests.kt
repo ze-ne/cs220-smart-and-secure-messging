@@ -16,11 +16,11 @@ class UserUnitTests{
     @Test
     fun testConstructor() {
         val user1 = User("id1","first", "last")
-        assertEquals(user1.userId, "id1")
-        assertEquals(user1.firstName, "first")
-        assertEquals(user1.lastName, "last")
-        assertEquals(user1.contacts.size, 0)
-        assertEquals(user1.conversations.size, 0)
+        assertEquals("id1", user1.userId)
+        assertEquals("first", user1.firstName)
+        assertEquals("last", user1.lastName)
+        assertEquals(0, user1.contacts.size)
+        assertEquals(0, user1.conversations.size)
 
     }
 
@@ -34,18 +34,18 @@ class UserUnitTests{
         listSize = user1.contacts.size
         assertFalse(user2 in user1.contacts)
         assertTrue(user1.addContact(user2))
-        assertEquals(user1.contacts.size, listSize + 1)
+        assertEquals(listSize + 1, user1.contacts.size)
         assertTrue(user2 in user1.contacts)
 
         // Invalid null add
         listSize = user1.contacts.size
         assertFalse(user1.addContact(null as User))
-        assertEquals(user1.contacts.size, listSize)
+        assertEquals(listSize, user1.contacts.size)
 
         // Invalid duplicate add
         listSize = user1.contacts.size
         assertFalse(user1.addContact(user2))
-        assertEquals(user1.contacts.size, listSize)
+        assertEquals(listSize, user1.contacts.size)
         assertTrue(user2 in user1.contacts)
 
     }
@@ -63,26 +63,26 @@ class UserUnitTests{
         assertTrue(user2 in user1.contacts)
         assertTrue(user1.deleteContact(user2))
         assertFalse(user2 in user1.contacts)
-        assertEquals(user1.contacts.size, listSize - 1)
+        assertEquals(listSize - 1, user1.contacts.size)
 
         // Invalid repeated delete
         listSize = user1.contacts.size
         assertFalse(user2 in user1.contacts)
         assertFalse(user1.deleteContact(user2))
         assertFalse(user2 in user1.contacts)
-        assertEquals(user1.contacts.size, listSize)
+        assertEquals(listSize, user1.contacts.size)
 
         // Invalid unknown user delete
         listSize = user1.contacts.size
         assertFalse(user3 in user1.contacts)
         assertFalse(user1.deleteContact(user3))
         assertFalse(user3 in user1.contacts)
-        assertEquals(user1.contacts.size, listSize)
+        assertEquals(listSize, user1.contacts.size)
 
         // Invalid nonsense user delete
         listSize = user1.contacts.size
         assertFalse(user1.deleteContact(null as User))
-        assertEquals(user1.contacts.size, listSize)
+        assertEquals(listSize, user1.contacts.size)
 
     }
 
@@ -122,19 +122,19 @@ class UserUnitTests{
         listSize = user1.conversations.size
         assertFalse(conversation1 in user1.conversations)
         assertTrue(user1.addConversation(conversation1))
-        assertEquals(user1.conversations.size, listSize + 1)
+        assertEquals(listSize + 1, user1.conversations.size)
         assertTrue(conversation1 in user1.conversations)
 
         // Invalid duplicate add
         listSize = user1.conversations.size
         assertTrue(conversation1 in user1.conversations)
         assertFalse(user1.addConversation(conversation1))
-        assertEquals(user1.conversations.size, listSize)
+        assertEquals(listSize, user1.conversations.size)
 
         // Invalid null add
         listSize = user1.conversations.size
         assertFalse(user1.addConversation(null as Conversation))
-        assertEquals(user1.conversations.size, listSize)
+        assertEquals(listSize, user1.conversations.size)
 
     }
 
