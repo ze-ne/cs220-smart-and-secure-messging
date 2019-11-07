@@ -23,7 +23,7 @@ class User() {
      * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
 
-    val db = FirebaseFirestore.getInstance()
+    //val db = FirebaseFirestore.getInstance()
 
     constructor(userId : String, firstName: String, lastName: String) : this(){
         // TODO
@@ -97,7 +97,7 @@ class User() {
         }
 
     fun addConversation(convo : Conversation) : Boolean {
-        val conversation = hashMapOf(
+        /*val conversation = hashMapOf(
             "created" to Timestamp(Date()),
             "users" to arrayListOf<String>(convo.user1.userId, convo.user2.userId)
         )
@@ -110,7 +110,9 @@ class User() {
         .addOnFailureListener { e ->
             Log.w(TAG, "Error adding conversation document", e)
         }
-        return true
+        return true*/
+        // TODO
+        return false
     }
 
     fun getConversationByUserId(recipientId : String) : Conversation? {
@@ -161,7 +163,7 @@ class User() {
     }
 
     // Sends image message to server
-    fun sendImageMsg(bitmap: Bitmap, convo : Conversation) : Boolean {
+    fun sendImageMsg(byteArray: ByteArray, convo : Conversation) : Boolean {
         // TODO
         return false
     }

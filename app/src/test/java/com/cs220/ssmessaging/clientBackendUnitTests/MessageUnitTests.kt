@@ -1,5 +1,6 @@
 package com.cs220.ssmessaging.clientBackendUnitTests
 
+import com.cs220.ssmessaging.clientBackend.*
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
@@ -7,51 +8,98 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 
-import com.cs220.ssmessaging.clientBackend.Message
-
 @RunWith(MockitoJUnitRunner::class)
-class MessageUnitTests{
-    @Test
-    fun dummy_test() {
-        // Delete this test when you have added actual tests!
-        // This is just to allow for the program to compile.
-    }
-    // Add your unit tests here!
-}
-
 class EncryptedMessageUnitTests{
-    @Test
-    fun dummy_test() {
-        // Delete this test when you have added actual tests!
-        // This is just to allow for the program to compile.
-    }
-    // Add your unit tests here!
-}
+    private var user1 = User("Joker", "Bad", "Man")
+    private var user2 = User("Ronald", "McDonald", "Clown")
+    private var encryptedmessage = EncryptedMessage(ByteArray(240), "123213", "normal", user1, user2, 12)
 
-class UnencryptedMessageUnitTests{
-    // There should not be any tests here since there are no methods associated with this interface
     @Test
-    fun dummy_test() {
-        // Delete this test when you have added actual tests!
-        // This is just to allow for the program to compile.
+    fun testGetterByteArray(){
+        assertEquals(ByteArray(240), encryptedmessage.message)
     }
-    // Add your unit tests here!
+
+    fun testGetterConversationID(){
+        assertEquals("123213", encryptedmessage.conversationId)
+    }
+
+    fun testGetterMessageType(){
+        assertEquals("normal", encryptedmessage.messageType)
+    }
+
+    fun testGetterSender(){
+        assertEquals(user1, encryptedmessage.sender)
+    }
+
+    fun testGetterRecipient(){
+        assertEquals(user2, encryptedmessage.recipient)
+    }
+
+    fun testGetterTimeStamp(){
+        assertEquals(12, encryptedmessage.timestamp)
+    }
 }
 
 class TextMessageUnitTests{
+    private var user1 = User("Joker", "Bad", "Man")
+    private var user2 = User("Ronald", "McDonald", "Clown")
+    private var textmessage = TextMessage("getyourhotdogs", "normal", user1, user2, 12)
+
     @Test
-    fun dummy_test() {
-        // Delete this test when you have added actual tests!
-        // This is just to allow for the program to compile.
+    fun testGetterMessage(){
+        assertEquals("getyourhotdogs", textmessage.message)
     }
-    // Add your unit tests here!
+
+    @Test
+    fun testGetterConversationId(){
+        assertEquals("normal", textmessage.conversationId)
+    }
+
+    @Test
+    fun testGetterSender(){
+        assertEquals(user1, textmessage.sender)
+    }
+
+    @Test
+    fun testGetterRecipient(){
+        assertEquals(user2, textmessage.recipient)
+    }
+
+    @Test
+    fun testGetterTimeStamp(){
+        assertEquals(12, textmessage.timestamp)
+    }
 }
 
 class ImageMessageUnitTests{
+    private var user1 = User("Joker", "Bad", "Man")
+    private var user2 = User("Ronald", "McDonald", "Clown")
+    private var user3 = User("Big", "Bird", "Sesame")
+    private var imagemessage = ImageMessage(ByteArray(240), "123213", user1, user2, 12)
+
     @Test
-    fun dummy_test() {
-        // Delete this test when you have added actual tests!
-        // This is just to allow for the program to compile.
+    fun testGetterByteArray(){
+        assertEquals(ByteArray(240), imagemessage.message)
     }
-    // Add your unit tests here!
+
+    @Test
+    fun testGetterConversationId(){
+        assertEquals("123213", imagemessage.conversationId)
+    }
+
+    @Test
+    fun testGetterSender(){
+        assertEquals(user1, imagemessage.sender)
+    }
+
+    @Test
+    fun testGetterRecipient(){
+        assertEquals(user2, imagemessage.recipient)
+    }
+
+    @Test
+    fun testGetterTimeStamp(){
+        assertEquals(12, imagemessage.timestamp)
+    }
+
 }
