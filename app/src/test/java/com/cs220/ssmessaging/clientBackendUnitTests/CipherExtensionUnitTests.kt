@@ -7,6 +7,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
+import java.lang.ClassCastException
 
 import org.junit.Before
 import org.w3c.dom.Text
@@ -106,20 +107,25 @@ class CipherExtensionUnitTests{
         var decryptedMessage = testCipherExtension.decryptEncryptedMessage(encryptedMessage)
         var decryptedMessage2 = testCipherExtension.decryptEncryptedMessage(encryptedMessage2)
 
-        var message : String = (decryptedMessage2 as TextMessage).message
-        var message2 : String = (decryptedMessage as TextMessage).message
+        try{
+            var message : String = (decryptedMessage2 as TextMessage).message
+            var message2 : String = (decryptedMessage as TextMessage).message
 
-        assertEquals("ABC", message)
-        assertEquals("testId", encryptedMessage.conversationId)
-        assertEquals("person1", encryptedMessage.sender.userId)
-        assertEquals("person2", encryptedMessage.sender.userId)
-        assertEquals(0, encryptedMessage.timestamp)
+            assertEquals("ABC", message)
+            assertEquals("testId", encryptedMessage.conversationId)
+            assertEquals("person1", encryptedMessage.sender.userId)
+            assertEquals("person2", encryptedMessage.sender.userId)
+            assertEquals(0, encryptedMessage.timestamp)
 
-        assertEquals("sad46546 ----", message2)
-        assertEquals("testId2", encryptedMessage2.conversationId)
-        assertEquals("person1", encryptedMessage2.sender.userId)
-        assertEquals("person2", encryptedMessage2.sender.userId)
-        assertEquals(123, encryptedMessage.timestamp)
+            assertEquals("sad46546 ----", message2)
+            assertEquals("testId2", encryptedMessage2.conversationId)
+            assertEquals("person1", encryptedMessage2.sender.userId)
+            assertEquals("person2", encryptedMessage2.sender.userId)
+            assertEquals(123, encryptedMessage.timestamp)
+        }
+        catch(e : ClassCastException){
+            fail("decrypt returned the wrong type of message")
+        }
     }
 
     @Test
@@ -139,20 +145,26 @@ class CipherExtensionUnitTests{
         var decryptedMessage = testCipherExtension.decryptEncryptedMessage(encryptedMessage)
         var decryptedMessage2 = testCipherExtension.decryptEncryptedMessage(encryptedMessage2)
 
-        var message : ByteArray = (decryptedMessage2 as ImageMessage).message
-        var message2 : ByteArray = (decryptedMessage as ImageMessage).message
+        try{
+            var message : ByteArray = (decryptedMessage2 as ImageMessage).message
+            var message2 : ByteArray = (decryptedMessage as ImageMessage).message
 
-        assertEquals(imgMessage.message, message)
-        assertEquals("testId", encryptedMessage.conversationId)
-        assertEquals("person1", encryptedMessage.sender.userId)
-        assertEquals("person2", encryptedMessage.sender.userId)
-        assertEquals(0, encryptedMessage.timestamp)
+            assertEquals(imgMessage.message, message)
+            assertEquals("testId", encryptedMessage.conversationId)
+            assertEquals("person1", encryptedMessage.sender.userId)
+            assertEquals("person2", encryptedMessage.sender.userId)
+            assertEquals(0, encryptedMessage.timestamp)
 
-        assertEquals(imgMessage2.message, message2)
-        assertEquals("testId2", encryptedMessage2.conversationId)
-        assertEquals("person1", encryptedMessage2.sender.userId)
-        assertEquals("person2", encryptedMessage2.sender.userId)
-        assertEquals(123, encryptedMessage.timestamp)
+            assertEquals(imgMessage2.message, message2)
+            assertEquals("testId2", encryptedMessage2.conversationId)
+            assertEquals("person1", encryptedMessage2.sender.userId)
+            assertEquals("person2", encryptedMessage2.sender.userId)
+            assertEquals(123, encryptedMessage.timestamp)
+        }
+        catch(e : ClassCastException){
+            fail("decrypt returned the wrong type of message")
+        }
+
     }
 
     // The next tests test the case where encryption/decryption can fail
