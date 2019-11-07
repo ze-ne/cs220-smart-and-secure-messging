@@ -1,10 +1,16 @@
 package com.cs220.ssmessaging.clientBackend
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.widget.ImageView
 import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.Device
 import com.cs220.ssmessaging.clientBackend.Message
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.*
+
+const val TAG = "User"
 
 class User() {
     /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
@@ -16,6 +22,8 @@ class User() {
      * when we want the variable getter and setter to be private.
      * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
+
+    val db = FirebaseFirestore.getInstance()
 
     constructor(userId : String, firstName: String, lastName: String) : this(){
         // TODO
@@ -89,8 +97,20 @@ class User() {
         }
 
     fun addConversation(convo : Conversation) : Boolean {
-        // TODO
-        return false
+        val conversation = hashMapOf(
+            "created" to Timestamp(Date()),
+            "users" to arrayListOf<String>(convo.user1.userId, convo.user2.userId)
+        )
+
+        db.collection("/collections")
+        .add(conversation)
+        .addOnSuccessListener { documentReference ->
+            Log.d(TAG, "Conversation DocumentSnapshot written with ID: ${documentReference.id}")
+        }
+        .addOnFailureListener { e ->
+            Log.w(TAG, "Error adding conversation document", e)
+        }
+        return true
     }
 
     fun getConversationByUserId(recipientId : String) : Conversation? {
