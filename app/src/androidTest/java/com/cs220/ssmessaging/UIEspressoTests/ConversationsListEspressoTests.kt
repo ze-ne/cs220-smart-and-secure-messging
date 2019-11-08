@@ -6,9 +6,9 @@ import org.junit.Rule
 
 class ConversationsListEspressoTests {
 
-    @Rule
+    /*@Rule
     var mActivityRule: ActivityTestRule<ConversationsListFragment> = ActivityTestRule(
-        ConversationsListFragment::class.java)
+        ConversationsListFragment::class.java)*/
 
     // NOTE: The following is an implementation of how we think our UI tests will run for this screen
     // They are currently commented out given that the tests must refer to specific ui elements that haven't been built yet
