@@ -1,5 +1,6 @@
 package com.cs220.ssmessaging.clientBackend
 import com.cs220.ssmessaging.clientBackend.Message
+import org.w3c.dom.Text
 import java.security.KeyPairGenerator
 import java.security.PrivateKey
 
@@ -43,17 +44,17 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             return Cipher.getInstance("AES")
         }
 
-    fun addKeyToPublicKeyRing(publicKey: PublicKey) : Boolean {
+    fun addKeyToPublicKeyRing(userId : String, publicKey: PublicKey) : Boolean {
         return false
     }
 
-    fun decryptEncryptedMessage(encryptedMsg : EncryptedMessage) : UnencryptedMessage? {
+    fun decryptEncryptedMessage(encryptedMsg : EncryptedMessage) : UnencryptedMessage {
         // TODO
-        return null
+        return TextMessage("", "", User(), User(), 1)
     }
 
-    fun encryptUnencryptedMessage(unencryptedMsg: UnencryptedMessage) : EncryptedMessage? {
+    fun encryptUnencryptedMessage(unencryptedMsg: UnencryptedMessage) : EncryptedMessage {
         // TODO
-        return null
+        return EncryptedMessage(ByteArray(0), "", "", User(), User(), 1)
     }
 }

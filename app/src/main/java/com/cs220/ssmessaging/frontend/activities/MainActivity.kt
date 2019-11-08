@@ -6,19 +6,28 @@ import android.os.Bundle
 import com.cs220.ssmessaging.R
 import kotlinx.android.synthetic.main.activity_main.*
 
+const val TAG = "MainActivity"
+
 // NOTE: Not part of main implementation, currently in place for testing purposes only
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //        FirebaseFirestore.getInstance().collection("users")
+        //            .addSnapshotListener { value, e ->
+        //                if (e != null) {
+        //                    Log.w(TAG, "Listen failed.", e)
+        //                    return@addSnapshotListener
+        //                }
+        //
+        //                for (doc in value!!) {
+        //                    Log.d(TAG, doc.id)
+        //                }
+        //            }
+
         button.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        }
-
-        button3.setOnClickListener {
-            val intent = Intent(this, SearchActivity::class.java)
             startActivity(intent)
         }
 
@@ -34,11 +43,6 @@ class MainActivity : AppCompatActivity() {
 
         button6.setOnClickListener {
             val intent = Intent(this, ContactsActivity::class.java)
-            startActivity(intent)
-        }
-
-        button7.setOnClickListener {
-            val intent = Intent(this, BlockListActivity::class.java)
             startActivity(intent)
         }
 

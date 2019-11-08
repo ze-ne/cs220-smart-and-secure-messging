@@ -14,11 +14,12 @@ import android.graphics.Bitmap
 interface Message {
     val conversationId : String
     val sender : User
+    val recipient : User
     val timestamp : Int // This should be epoch number
 }
 
 class EncryptedMessage(message : ByteArray, conversationId : String,
-                       messageType : String, sender : User, timestamp : Int) : Message {
+                       messageType : String, sender : User, recipient : User, timestamp : Int) : Message {
 
     override val conversationId : String
         get(){
@@ -32,12 +33,19 @@ class EncryptedMessage(message : ByteArray, conversationId : String,
             return User()
         }
 
+    override val recipient : User
+        get(){
+            // TODO
+            return User()
+        }
+
     override val timestamp : Int
         get(){
             // TODO
             return -1
         }
 
+    // Message needs to be not empty
     val message : ByteArray
         get(){
             // TODO
@@ -56,7 +64,7 @@ interface UnencryptedMessage : Message {
 }
 
 class TextMessage(message : String, conversationId : String,
-                  sender : User, timestamp : Int) : UnencryptedMessage {
+                  sender : User, recipient : User, timestamp : Int) : UnencryptedMessage {
 
     override val conversationId : String
         get(){
@@ -70,12 +78,19 @@ class TextMessage(message : String, conversationId : String,
             return User()
         }
 
+    override val recipient : User
+        get(){
+            // TODO
+            return User()
+        }
+
     override val timestamp : Int
         get(){
             // TODO
             return -1
         }
 
+    // Message needs to be not empty
     val message : String
         get(){
             // TODO
@@ -84,7 +99,7 @@ class TextMessage(message : String, conversationId : String,
 }
 
 class ImageMessage(message : ByteArray, conversationId : String,
-                   sender : User, timestamp : Int) : UnencryptedMessage {
+                   sender : User, recipient: User, timestamp : Int) : UnencryptedMessage {
     override val conversationId : String
         get(){
             // TODO
@@ -97,12 +112,19 @@ class ImageMessage(message : ByteArray, conversationId : String,
             return User()
         }
 
+    override val recipient : User
+        get(){
+            // TODO
+            return User()
+        }
+
     override val timestamp : Int
         get(){
             // TODO
             return -1
         }
 
+    // Message needs to be not empty
     val message : ByteArray
         get(){
             // TODO
