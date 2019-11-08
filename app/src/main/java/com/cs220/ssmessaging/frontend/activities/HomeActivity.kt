@@ -1,7 +1,10 @@
 package com.cs220.ssmessaging.frontend.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import androidx.viewpager.widget.ViewPager
 import com.cs220.ssmessaging.R
@@ -28,5 +31,34 @@ class HomeActivity : AppCompatActivity() {
 
         homeTabLayout = findViewById(R.id.home_tabs)
         homeTabLayout.setupWithViewPager(homeViewPager)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        //sendUserToLoginActivity()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.home_options_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+        if (item.itemId == R.id.home_menu_settings) {
+            sendUserToSettingsActivity()
+        }
+        return true
+    }
+
+    private fun sendUserToSettingsActivity() {
+        val settingsIntent = Intent(this, SettingsActivity::class.java)
+        startActivity(settingsIntent)
+    }
+
+    private fun sendUserToLoginActivity() {
+        val loginIntent = Intent(this, LoginActivity::class.java)
+        startActivity(loginIntent)
     }
 }
