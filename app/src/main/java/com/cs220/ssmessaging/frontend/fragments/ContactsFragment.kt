@@ -1,14 +1,20 @@
-package com.cs220.ssmessaging.frontend.activities
+package com.cs220.ssmessaging.frontend.fragments
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.frontend.presenters.ContactsActivityPresenter
 
-class ContactsActivity : AppCompatActivity(), ContactsActivityPresenter.View {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_contacts)
+class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_contacts, container, false)
     }
 
     override fun showConfirmationMessage() {
