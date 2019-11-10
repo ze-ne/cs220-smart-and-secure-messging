@@ -66,6 +66,8 @@ class Device(){
 
             publicKeyStream.write(publicKeyBytes)
             privateKeyStream.write(privateKeyBytes)
+            publicKeyStream.close()
+            privateKeyStream.close()
         }
     }
 
@@ -86,14 +88,15 @@ class Device(){
         var publicKeyRing : MutableMap<String, PublicKey> = mutableMapOf()
 
         for(keyFile : File in keyFiles){
-            if(keyFile.name != privateKeyFileName){
+            val fileNameComponents : List<String> = keyFile.name.split(".")
+            if(fileNameComponents.size == 2 && fileNameComponents[1] == "publicKey"){
                 // Note: if the name of the public key file is
                 // publicKeyName.publicKey, then the userId of the key owner is publicKeyName
                 // The only exception is my own public key
-                var publicKeyUserId : String = keyFile.name.split(".")[0]
+                var publicKeyUserId : String = fileNameComponents[0]
                 var publicKey : PublicKey =
                     keyFactory.generatePublic(X509EncodedKeySpec(Files.readAllBytes(keyFile.toPath())))
-                publicKeyRing.put(publicKeyUserId, publicKey)
+                //publicKeyRing.put(publicKeyUserId, publicKey)
             }
         }
 
