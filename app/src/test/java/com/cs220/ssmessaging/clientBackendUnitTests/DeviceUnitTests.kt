@@ -35,8 +35,9 @@ class DeviceUnitTests{
         val testDevice = Device()
 
         // Assert that path is correct
-        assertEquals("res/keys/myKey.privateKey", testDevice.pathToMyPublicKey)
-        assertEquals("res/keys/myKey.publicKey", testDevice.pathToMyPrivateKey)
+        // UNIT TEST FIX: the expected values were flipped
+        assertEquals("res/keys/myKey.publicKey", testDevice.pathToMyPublicKey)
+        assertEquals("res/keys/myKey.privateKey", testDevice.pathToMyPrivateKey)
 
         // Assert that the files exist
         var privateKeyFile = File("res/keys/myKey.privateKey")
