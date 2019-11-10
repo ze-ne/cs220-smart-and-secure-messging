@@ -16,6 +16,8 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import android.content.Intent
+import com.cs220.ssmessaging.frontend.activities.ConversationActivity
 
 
 class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter.View {
@@ -53,8 +55,15 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
         val adapter = object : FirebaseRecyclerAdapter<Conversation, ViewHolder>(options) {
             override fun onBindViewHolder(holder: ViewHolder, position: Int, model: Conversation) {
                 // TODO: who is user1 and who is user2
-                val fullname = model.user2.firstName + model.user2.lastName
+                val fullname = model.user2.firstName + " " + model.user2.lastName
                 holder.fullname.text = fullname
+
+                holder.itemView.setOnClickListener {
+                    val conversationIntent = Intent(context, ConversationActivity::class.java)
+                    conversationIntent.putExtra("receiver_name", fullname)
+                    startActivity(conversationIntent)
+                }
+
             }
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
