@@ -33,7 +33,7 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
     val decryptorCipher : Cipher
         get(){
             // TODO - placeholder transformation for skeleton code
-            return Cipher.getInstance("AES")
+            return Cipher.getInstance("RSA")
         }
 
     // This should be initialized with the proper public key determined
@@ -41,7 +41,7 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
     val encryptorCipher : Cipher
         get(){
             // TODO - placeholder transformation for skeleton code
-            return Cipher.getInstance("AES")
+            return Cipher.getInstance("RSA")
         }
 
     fun addKeyToPublicKeyRing(userId : String, publicKey: PublicKey) : Boolean {

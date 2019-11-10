@@ -93,8 +93,12 @@ class DeviceUnitTests{
         var newPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
         var newPrivateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
 
-        assertEquals(oldPublicKeyBytes, newPublicKeyBytes)
-        assertEquals(oldPrivateKeyBytes, newPrivateKeyBytes)
+        /* Unit Test FIX: We used the wrong assert when asserting if arrays are equal.
+         * We have to use assertArrayEquals rather than assertEquals.
+         * assertEquals only asserts whether the arrays are the same exact object, not their contents.
+         */
+        assertArrayEquals(oldPublicKeyBytes, newPublicKeyBytes)
+        assertArrayEquals(oldPrivateKeyBytes, newPrivateKeyBytes)
     }
 
     @Test
