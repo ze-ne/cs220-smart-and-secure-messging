@@ -18,6 +18,10 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var homeTabLayout: TabLayout
     private lateinit var homeTabAdapter: HomeTabAdapter
 
+    // private var currentUser: FirebaseUser? = null
+    // private lateinit var firebaseAuth: FirebaseAuth
+    // TODO: private lateinit var database: DatabaseReference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -35,7 +39,12 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        //sendUserToLoginActivity()
+        // sendUserToLoginActivity()
+        /*if (currentUser == null) {
+            sendUserToLoginActivity()
+        } else {
+            verifyUserExistence()
+        }*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -50,6 +59,11 @@ class HomeActivity : AppCompatActivity() {
             sendUserToSettingsActivity()
         }
         return true
+    }
+
+    private fun verifyUserExistence() {
+        //val currentUserId = firebaseAuth.currentUser!!.uid
+        // TODO: Connect to database
     }
 
     private fun sendUserToSettingsActivity() {
