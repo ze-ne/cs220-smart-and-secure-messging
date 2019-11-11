@@ -40,9 +40,12 @@ class CipherExtensionUnitTests{
         assertEquals("RSA", testCipherExtension.decryptorCipher.algorithm)
         assertEquals("RSA", testCipherExtension.encryptorCipher.algorithm)
         assertEquals(testCipherExtension.publicKeyRing.size, 2)
-        assertEquals(testCipherExtension.publicKeyRing["person1"]?.encoded, testPublicKey.encoded)
-        assertEquals(testCipherExtension.publicKeyRing["person2"]?.encoded, testPublicKey2.encoded)
-        assertEquals(testCipherExtension.privateKey.encoded, testPublicKey2.encoded)
+
+        // FIX: As described in Device unit tests, we need to use assertArrayEquals rather than assertEquals
+        // FIX: Wrong expected value entered into the third assertion
+        assertArrayEquals(testCipherExtension.publicKeyRing["person1"]?.encoded, testPublicKey.encoded)
+        assertArrayEquals(testCipherExtension.publicKeyRing["person2"]?.encoded, testPublicKey2.encoded)
+        assertArrayEquals(testCipherExtension.privateKey.encoded, testPrivateKey.encoded)
     }
 
     @Test
@@ -83,11 +86,12 @@ class CipherExtensionUnitTests{
         testCipherExtension.addKeyToPublicKeyRing("person2", testPublicKey)
         assertEquals(testPublicKey, testCipherExtension.publicKeyRing["person2"])
 
+        // FIX: Wrong expected value. It should be testPublicKey2 instead of testPublicKey
         testCipherExtension.addKeyToPublicKeyRing("person3", testPublicKey2)
-        assertEquals(testPublicKey, testCipherExtension.publicKeyRing["person3"])
+        assertEquals(testPublicKey2, testCipherExtension.publicKeyRing["person3"])
 
         testCipherExtension.addKeyToPublicKeyRing("person1", testPublicKey2)
-        assertEquals(testPublicKey, testCipherExtension.publicKeyRing["person1"])
+        assertEquals(testPublicKey2, testCipherExtension.publicKeyRing["person1"])
     }
 
     @Test
