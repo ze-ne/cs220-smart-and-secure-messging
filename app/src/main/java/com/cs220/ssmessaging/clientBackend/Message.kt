@@ -16,10 +16,33 @@ interface Message {
     val sender : User
     val recipient : User
     val timestamp : Int // This should be epoch number
+    companion object{
+        // Need to unit test
+        fun isValidTimestamp(timestamp: Int) : Boolean{
+            return timestamp >= 0
+        }
+    }
 }
 
 class EncryptedMessage(message : ByteArray, conversationId : String,
                        messageType : String, sender : User, recipient : User, timestamp : Int) : Message {
+
+    companion object{
+        // Need to unit test
+        fun isValidMessage(encryptedMessage: EncryptedMessage) : Boolean =
+            isValidMessageBody(encryptedMessage.message) &&
+            isValidMessageType(encryptedMessage.messageType) &&
+            User.isValidUser(encryptedMessage.sender) &&
+            User.isValidUser(encryptedMessage.recipient) &&
+            Message.isValidTimestamp(encryptedMessage.timestamp) &&
+            Conversation.isValidConversationId(encryptedMessage.conversationId)
+
+        // Need to unit test
+        fun isValidMessageBody(byteArray: ByteArray) : Boolean = byteArray.isNotEmpty()
+
+        // Need to unit test
+        fun isValidMessageType(type : String) : Boolean = (type == "text") || (type == "image")
+    }
 
     override val conversationId : String
         get(){
@@ -66,6 +89,19 @@ interface UnencryptedMessage : Message {
 class TextMessage(message : String, conversationId : String,
                   sender : User, recipient : User, timestamp : Int) : UnencryptedMessage {
 
+    companion object {
+        // Need to unit test
+        fun isValidMessage(textMessage : TextMessage) : Boolean =
+            isValidMessageBody(textMessage.message) &&
+            User.isValidUser(textMessage.sender) &&
+            User.isValidUser(textMessage.recipient) &&
+            Message.isValidTimestamp(textMessage.timestamp) &&
+            Conversation.isValidConversationId(textMessage.conversationId)
+
+        // Need to unit test
+        fun isValidMessageBody(msg : String) : Boolean = msg.isNotEmpty()
+    }
+
     override val conversationId : String
         get(){
             // TODO
@@ -100,6 +136,24 @@ class TextMessage(message : String, conversationId : String,
 
 class ImageMessage(message : ByteArray, conversationId : String,
                    sender : User, recipient: User, timestamp : Int) : UnencryptedMessage {
+
+    companion object{
+        // Need to unit test
+        fun isValidMessage(imageMessage: ImageMessage) : Boolean =
+            isValidMessageBody(imageMessage.message) &&
+            isValidPathToImage(imageMessage.pathToImage) &&
+            User.isValidUser(imageMessage.sender) &&
+            User.isValidUser(imageMessage.recipient) &&
+            Message.isValidTimestamp(imageMessage.timestamp) &&
+            Conversation.isValidConversationId(imageMessage.conversationId)
+
+        // Need to unit test
+        fun isValidMessageBody(byteArray: ByteArray) : Boolean = byteArray.isNotEmpty()
+
+        // Need to unit test
+        fun isValidPathToImage(path : String) : Boolean = path.matches(Regex("^[a-zA-Z0-9./:_-]*$"))
+    }
+
     override val conversationId : String
         get(){
             // TODO

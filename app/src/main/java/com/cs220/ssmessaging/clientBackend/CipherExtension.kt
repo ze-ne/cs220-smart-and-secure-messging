@@ -1,4 +1,6 @@
 package com.cs220.ssmessaging.clientBackend
+import android.content.res.Resources
+import android.media.Image
 import com.cs220.ssmessaging.clientBackend.Message
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.w3c.dom.Text
@@ -8,6 +10,11 @@ import javax.crypto.Cipher
 import javax.crypto.CipherSpi
 
 class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, PublicKey>) {
+
+    companion object{
+        // Constant for charset
+        val CHARSET = Charsets.UTF_8
+    }
 
     init{
         // Need to add bouncy castle provider
@@ -55,20 +62,50 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
     }
 
     fun decryptEncryptedMessage(encryptedMsg : EncryptedMessage) : UnencryptedMessage {
-        if(encryptedMsg.messageType != "text" || encryptedMsg.messageType != "image"){
-            throw Exception("Decrypting Message failed due to invalid type specified in encryptedMsg")
+        if(!EncryptedMessage.isValidMessage(encryptedMsg)){
+            throw InvalidParameterException("Decrypting Message failed due to invalid EncryptedMessage")
         }
 
-        if(encryptedMsg.message.size == 0){
-            throw Exception("Decrypting Message failed due to empty message body")
-        }
+        // Need to init decryptor cipher with new private key every time (this is how it works for Cipher)
+        decryptorCipher.init(Cipher.DECRYPT_MODE, privateKey)
+        val decryptedBytes : ByteArray = decryptorCipher.doFinal(encryptedMsg.message)
 
-        // TODO
-        return TextMessage("", "", User(), User(), 1)
+        return when(encryptedMsg.messageType == "image") {
+            true ->
+                ImageMessage(decryptedBytes, encryptedMsg.conversationId, encryptedMsg.sender, encryptedMsg.recipient, encryptedMsg.timestamp)
+            false ->
+                TextMessage(decryptedBytes.toString(CHARSET), encryptedMsg.conversationId, encryptedMsg.sender, encryptedMsg.recipient, encryptedMsg.timestamp)
+        }
     }
 
-    fun encryptUnencryptedMessage(unencryptedMsg: UnencryptedMessage) : EncryptedMessage {
-        // TODO
-        return EncryptedMessage(ByteArray(0), "", "", User(), User(), 1)
+    fun encryptUnencryptedMessage(unencryptedMsg : UnencryptedMessage) : EncryptedMessage {
+        // Short circuiting allows us to do such logical operations
+        if((unencryptedMsg is ImageMessage && !ImageMessage.isValidMessage(unencryptedMsg)) ||
+            (unencryptedMsg is TextMessage && !TextMessage.isValidMessage(unencryptedMsg))){
+            throw InvalidParameterException("Encrypting Message failed due to invalid UnencryptedMessage")
+        }
+
+        val recipientPublicKey : PublicKey? = publicKeyRing[unencryptedMsg.recipient.userId]
+
+        if(recipientPublicKey == null){
+            throw NullPointerException("Sender public key not found. This means that the keys are unsynced with the server")
+        }
+
+        // Need to init encryptor cipher with new private key every time (this is how it works for Cipher)
+        encryptorCipher.init(Cipher.ENCRYPT_MODE, recipientPublicKey)
+        var encryptedByteArray : ByteArray
+        var messageType : String
+
+        if(unencryptedMsg is ImageMessage){
+            encryptedByteArray = encryptorCipher.doFinal(unencryptedMsg.message)
+            messageType = "image"
+        }
+        else{
+            val textByteArray : ByteArray = (unencryptedMsg as TextMessage).message.toByteArray(CHARSET)
+            encryptedByteArray = encryptorCipher.doFinal(textByteArray)
+            messageType = "text"
+        }
+
+        return EncryptedMessage(encryptedByteArray, unencryptedMsg.conversationId, messageType, unencryptedMsg.sender, unencryptedMsg.recipient, unencryptedMsg.timestamp)
     }
 }

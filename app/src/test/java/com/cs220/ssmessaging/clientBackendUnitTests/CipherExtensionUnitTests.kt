@@ -1,6 +1,7 @@
 package com.cs220.ssmessaging.clientBackendUnitTests
 
 import com.cs220.ssmessaging.clientBackend.*
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
@@ -20,7 +21,14 @@ import javax.crypto.Cipher
 @RunWith(MockitoJUnitRunner::class)
 class CipherExtensionUnitTests{
 
-    private val keyPairGen : KeyPairGenerator = KeyPairGenerator.getInstance("RSA")
+    // FIX: add BouncyCastle for key provider
+    init{
+        // Need to add bouncy castle provider
+        Security.addProvider(BouncyCastleProvider())
+    }
+
+    // FIX: Change provider to BouncyCastle instead of SunJCE (Android uses BouncyCastle)
+    private val keyPairGen : KeyPairGenerator = KeyPairGenerator.getInstance("RSA", "BC")
     private val keyPair1 = keyPairGen.generateKeyPair()
     private val keyPair2 = keyPairGen.generateKeyPair()
     private var testPrivateKey : PrivateKey = keyPair1.private

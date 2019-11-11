@@ -17,6 +17,7 @@ import java.nio.file.Path
 import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
+import java.util.*
 
 
 @RunWith(MockitoJUnitRunner::class)
@@ -140,8 +141,11 @@ class DeviceUnitTests{
             var newPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
             var newPrivateKeyBytes : ByteArray = Files.readAllBytes(privateKeyFile.toPath())
 
-            assertNotEquals(oldPublicKeyBytes, newPublicKeyBytes)
-            assertNotEquals(oldPrivateKeyBytes, newPrivateKeyBytes)
+            /* Unit Test FIX: We used the wrong assert when asserting if arrays are equal.
+             * assertEquals only asserts whether the arrays are the same exact object, not their contents.
+             */
+            assertFalse(oldPublicKeyBytes.contentEquals(newPublicKeyBytes))
+            assertFalse(oldPrivateKeyBytes.contentEquals(newPrivateKeyBytes))
         }
         catch(e : NoSuchFileException){
             fail("Keys not found in path")

@@ -96,7 +96,7 @@ class Device(){
                 var publicKeyUserId : String = fileNameComponents[0]
                 var publicKey : PublicKey =
                     keyFactory.generatePublic(X509EncodedKeySpec(Files.readAllBytes(keyFile.toPath())))
-                //publicKeyRing.put(publicKeyUserId, publicKey)
+                publicKeyRing.put(publicKeyUserId, publicKey)
             }
         }
 
@@ -136,8 +136,5 @@ class Device(){
 
         cipher.publicKeyRing.put("myKey", publicKey)
         cipher.privateKey = privateKey
-        // Need to init decryptor cipher with new private key. Do not have to for public since we do not
-        // encrypt with myPublicKey
-        cipher.decryptorCipher.init(Cipher.DECRYPT_MODE, privateKey)
     }
 }

@@ -224,4 +224,36 @@ class UserUnitTests{
         assertNull(user2.getConversationByConversationId(null as String))
 
     }
+
+    // FIX: The following tests test the added static helper functions for property checking
+    @Test
+    fun testIsValidUser(){
+        assertTrue(User.isValidUser(User("id1","first", "last")))
+
+        // Can only test the "null" user instance (i.e. entries are "" or empty)
+        // since the constructors use the isValidUser() static function
+        assertFalse(User.isValidUser(User("","", "")))
+    }
+
+    @Test
+    fun testIsValidUserId(){
+        assertTrue(User.isValidUserId("abc123"))
+        assertTrue(User.isValidUserId("1.2"))
+        assertTrue(User.isValidUserId("1_X_1-1"))
+        assertTrue(User.isValidUserId("@"))
+        assertFalse(User.isValidUserId("!"))
+        assertFalse(User.isValidUserId("<>"))
+        assertFalse(User.isValidUserId(""))
+    }
+
+    @Test
+    fun testIsValidName(){
+        assertTrue(User.isValidName("Henri"))
+        assertTrue(User.isValidName("J"))
+        assertTrue(User.isValidName("123Jane"))
+        assertFalse(User.isValidName("John 1"))
+        assertFalse(User.isValidName("!!!@___"))
+        assertFalse(User.isValidName("<"))
+        assertFalse(User.isValidName(""))
+    }
 }

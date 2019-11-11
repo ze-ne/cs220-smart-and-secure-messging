@@ -165,4 +165,33 @@ class ConversationUnitTests{
         assertFalse(conversation.addMessage(TextMessage("", "", User(), User(), 0)))
         assertEquals(mutableListOf(textMessage, imgMessage), conversation.messages)
     }
+
+    // FIX: The following tests test the added static helper functions for property checking
+    @Test
+    fun testIsValidLastTimeSynched(){
+        assertTrue(Conversation.isValidLastTimeSynched(0))
+        assertTrue(Conversation.isValidLastTimeSynched(45423))
+        assertTrue(Conversation.isValidLastTimeSynched(1))
+        assertFalse(Conversation.isValidLastTimeSynched(-1))
+        assertFalse(Conversation.isValidLastTimeSynched(-1000))
+    }
+
+    @Test
+    fun testIsValidConversationId(){
+        assertTrue(Conversation.isValidConversationId("abc123"))
+        assertTrue(Conversation.isValidConversationId("a-b,."))
+        assertFalse(Conversation.isValidConversationId(""))
+        assertFalse(Conversation.isValidConversationId("!!!><"))
+    }
+
+    @Test
+    fun testIsValidConversation(){
+        assertTrue(Conversation.isValidConversation(Conversation(user1, user2, mutableListOf(imgMessage, textMessage))))
+        assertTrue(Conversation.isValidConversation(Conversation(user1, user2, mutableListOf(imgMessage))))
+        assertTrue(Conversation.isValidConversation(Conversation(user1, user2, mutableListOf())))
+        assertFalse(Conversation.isValidConversation(Conversation(User(), user2, mutableListOf(imgMessage))))
+        assertFalse(Conversation.isValidConversation(Conversation(user1, User(), mutableListOf(imgMessage))))
+
+        // Can't test invalid last time synched because setting it to a negative is blocked by the setter
+    }
 }
