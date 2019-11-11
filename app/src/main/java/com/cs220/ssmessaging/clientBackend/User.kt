@@ -38,6 +38,40 @@ class User() {
         }
     }
 
+    // Additional constructor allows for setting conversations and contacts
+    constructor(userId : String, firstName: String, lastName: String, contacts : MutableList<User>, conversations : MutableList<Conversation>) : this(){
+        var invalidContacts : Boolean = false
+        var invalidConversation : Boolean = false
+
+        for(cont in contacts){
+            if(!isValidUser(cont)) {
+                invalidContacts = true
+                break
+            }
+        }
+
+        for(convo in conversations){
+            if(!Conversation.isValidConversation(convo)) {
+                invalidConversation = true
+                break
+            }
+        }
+
+        if(!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId) || invalidContacts || invalidConversation){
+            this.userId = ""
+            this.firstName = ""
+            this.lastName = ""
+        }
+        else{
+            this.userId = userId
+            this.firstName = firstName
+            this.lastName = lastName
+            this.contacts = contacts
+            this.conversations = conversations
+        }
+
+    }
+
     companion object{
         fun isValidUser(user : User) : Boolean =
             isValidUserId(user.userId) && isValidName(user.firstName) && isValidName(user.lastName)
@@ -71,7 +105,7 @@ class User() {
         }
         set(lastName : String){
             if(isValidName(lastName))
-                field = firstName
+                field = lastName
         }
 
     // We set the next two variables' setters to private because we don't want to expose the
