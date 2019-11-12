@@ -26,44 +26,97 @@ class User() {
     //val db = FirebaseFirestore.getInstance()
 
     constructor(userId : String, firstName: String, lastName: String) : this(){
-        // TODO
+        if(!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId)){
+            this.userId = ""
+            this.firstName = ""
+            this.lastName = ""
+        }
+        else{
+            this.userId = userId
+            this.firstName = firstName
+            this.lastName = lastName
+        }
     }
 
-    val userId : String
-        get(){
-            // TODO
-            return "TODO"
+    // Additional constructor allows for setting conversations and contacts
+    constructor(userId : String, firstName: String, lastName: String, contacts : MutableList<User>, conversations : MutableList<Conversation>) : this(){
+        var invalidContacts : Boolean = false
+        var invalidConversation : Boolean = false
+
+        for(cont in contacts){
+            if(!isValidUser(cont)) {
+                invalidContacts = true
+                break
+            }
         }
 
-    var firstName : String
-        get(){
-            // TODO
-            return "TODO"
+        for(convo in conversations){
+            if(!Conversation.isValidConversation(convo)) {
+                invalidConversation = true
+                break
+            }
         }
+
+        if(!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId) || invalidContacts || invalidConversation){
+            this.userId = ""
+            this.firstName = ""
+            this.lastName = ""
+        }
+        else{
+            this.userId = userId
+            this.firstName = firstName
+            this.lastName = lastName
+            this.contacts = contacts
+            this.conversations = conversations
+        }
+
+    }
+
+    companion object{
+        fun isValidUser(user : User) : Boolean =
+            isValidUserId(user.userId) && isValidName(user.firstName) && isValidName(user.lastName)
+
+        fun isValidUserId(usrId : String) : Boolean = usrId.matches(Regex("^[a-zA-Z0-9_+@.-]*$")) && usrId.isNotEmpty()
+
+        fun isValidName(name : String) : Boolean = name.matches(Regex("^[a-zA-Z0-9]*$")) && name.isNotEmpty()
+    }
+
+    var userId : String = ""
+        get(){
+            return field
+        }
+        private set(userId : String){
+            if(isValidUserId(userId))
+                field = userId
+        }
+
+    var firstName : String = ""
+        get(){
+            return field
+        }
+<<<<<<< HEAD
         set(firstName : String){0
             // TODO
+=======
+        set(firstName : String){
+            if(isValidName(firstName))
+                field = firstName
+>>>>>>> master-backend
         }
 
-    var lastName : String
+    var lastName : String = ""
         get(){
-            // TODO
-            return "TODO"
+            return field
         }
         set(lastName : String){
-            // TODO
+            if(isValidName(lastName))
+                field = lastName
         }
 
     // We set the next two variables' setters to private because we don't want to expose the
     // default setter functions to the world
-    var contacts : MutableList<User>
-        // get returns copy of list
-        get(){
-            // TODO
-            return mutableListOf()
-        }
-        private set(contacts : MutableList<User>){
-            // TODO
-        }
+    var contacts : MutableList<User> = mutableListOf()
+        private set
 
     /* We are moving the "Manage Block List" that this variable and its getter/setter
        methods implement to iteration 2.
@@ -87,13 +140,12 @@ class User() {
             // TODO
         }
 
-    var device : Device
+    var device : Device = Device()
         get(){
-            // TODO
-            return Device()
+            return field
         }
         set(dvice : Device){
-            // TODO
+            field = dvice
         }
 
     fun addConversation(convo : Conversation) : Boolean {

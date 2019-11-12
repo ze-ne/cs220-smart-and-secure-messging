@@ -1,4 +1,5 @@
 package com.cs220.ssmessaging.clientBackend
+import android.media.Image
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.clientBackend.Message
 
@@ -14,57 +15,128 @@ class Conversation() {
      */
 
     constructor(firstUser : User, secondUser : User, msgs : MutableList<Message>) : this(){
-        // TODO
+
+        // Check if all messages are valid is msgs
+        var validMessages : Boolean = true
+        for(m in msgs){
+            // If setMessage ever becomes false, we break and don't set the messages
+            if(!validMessages)
+                break
+
+            when(m){
+                is EncryptedMessage -> validMessages = EncryptedMessage.isValidMessage(m)
+                is TextMessage -> validMessages = TextMessage.isValidMessage(m)
+                is ImageMessage -> validMessages = ImageMessage.isValidMessage(m)
+            }
+        }
+
+        // The messages in the message list are valid and also the users
+        if(validMessages && User.isValidUser(firstUser) && User.isValidUser(secondUser)){
+            user1 = firstUser
+            user2 = secondUser
+            _messages = msgs
+            convoId = user1.userId + "-" +  user2.userId
+        }
     }
 
     constructor(firstUser : User, secondUser : User) : this(){
-        // TODO
+        // Users are valid, so set the vals
+        if(User.isValidUser(firstUser) && User.isValidUser(secondUser)){
+            user1 = firstUser
+            user2 = secondUser
+            convoId = user1.userId + "-" +  user2.userId
+        }
     }
 
+    companion object{
+        fun isValidConversation(conversation: Conversation) =
+            User.isValidUser(conversation.user1) &&
+            User.isValidUser(conversation.user2) &&
+            isValidConversationId(conversation.convoId) &&
+            isValidLastTimeSynched(conversation.lastTimeSynced)
+
+        fun isValidConversationId(conversationId : String) : Boolean =
+            conversationId.matches(Regex("^[a-zA-Z0-9_.,/-]*$")) && conversationId.isNotEmpty()
+
+        fun isValidLastTimeSynched(timeSynced : Int) : Boolean = (timeSynced >= 0)
+    }
+
+    // The following three properties use backing properties since we want to be able to change user directly if need be
+    private var _user : User = User()
     var user1 : User
         get(){
-            // TODO
-            return User()
+            return _user
         }
         set(user : User) {
+            if(User.isValidUser(user)){
+                _user = user
+            }
         }
 
 
+    private var _user2 : User = User()
     var user2 : User
-        get() {
-            // TODO
-            return User()
+        get(){
+            return _user2
         }
-        set(user : User){
-            // TODO
+        set(user : User) {
+            if(User.isValidUser(user)){
+                _user2 = user
+            }
         }
 
+    private var _messages : MutableList<Message> = mutableListOf()
     var messages : MutableList<Message>
         get() {
-            // TODO
-            return mutableListOf()
+            return _messages
         }
         set(messageList){
-            // TODO
+            // Only set messages  only if every message is valid
+            var setMessages : Boolean = true
+            for(m in messageList){
+                // If setMessage ever becomes false, we break and don't set the messages
+                if(!setMessages)
+                    break
+
+                when(m){
+                    is EncryptedMessage -> setMessages = EncryptedMessage.isValidMessage(m)
+                    is TextMessage -> setMessages = TextMessage.isValidMessage(m)
+                    is ImageMessage -> setMessages = ImageMessage.isValidMessage(m)
+                }
+            }
+            if(setMessages)
+                _messages = messageList
         }
 
-    val convoId : String
+    var convoId : String = ""
         get() {
-            // TODO
-            return ""
+            return field
         }
+        private set
 
-    var lastTimeSynced : Int
+    var lastTimeSynced : Int = 0
         get() {
-            // TODO
-            return -1
+            return field
         }
         set(timeSynced : Int){
-            // TODO
+            if(isValidLastTimeSynched(timeSynced))
+                field = timeSynced
         }
 
     fun addMessage(msg : Message) : Boolean{
-        // TODO
-        return false
+        var addMessage : Boolean = false
+        when(msg){
+            is EncryptedMessage -> addMessage = EncryptedMessage.isValidMessage(msg)
+            is TextMessage -> addMessage = TextMessage.isValidMessage(msg)
+            is ImageMessage -> addMessage = ImageMessage.isValidMessage(msg)
+        }
+
+        if(addMessage) {
+            _messages.add(msg)
+            // Last time synched must also be updated
+            lastTimeSynced = msg.timestamp
+        }
+
+        return addMessage
     }
 }
