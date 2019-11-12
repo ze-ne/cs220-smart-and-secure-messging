@@ -40,7 +40,7 @@ class User() {
             // TODO
             return "TODO"
         }
-        set(firstName : String){
+        set(firstName : String){0
             // TODO
         }
 
