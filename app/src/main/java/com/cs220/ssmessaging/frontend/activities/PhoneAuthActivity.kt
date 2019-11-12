@@ -7,6 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.cs220.ssmessaging.R
+import com.cs220.ssmessaging.clientBackend.User
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
@@ -21,15 +22,26 @@ class PhoneAuthActivity : AppCompatActivity() {
     private lateinit var authCode: EditText
     private lateinit var auth: FirebaseAuth
 
+    private var newUser: User? = null
+    private var currentUser: User? = null
+
+    private var firstname: String? = null
+    private var lastname: String? = null
+    private var username: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_phone_auth)
 
-        phonenumber = intent.getStringExtra("phonenumber")
-        sendPhoneVerification(phonenumber)
+        auth = FirebaseAuth.getInstance()
 
-        signinButton = findViewById(R.id.signin_button)
+        phonenumber = intent.getStringExtra("phonenumber")
+        firstname = intent.getStringExtra("firstname")
+        lastname = intent.getStringExtra("lastname")
+        username = intent.getStringExtra("username")
+
         authCode = findViewById(R.id.signin_code)
+        signinButton = findViewById(R.id.signin_button)
         signinButton.setOnClickListener {
             val code = authCode.text.toString().trim()
 
@@ -40,6 +52,18 @@ class PhoneAuthActivity : AppCompatActivity() {
             }
             verifyCode(code)
         }
+
+        sendPhoneVerification(phonenumber)
+    }
+
+    private fun createNewAccount() {
+        if (firstname != null && lastname != null && username != null) {
+            newUser = User(username.toString(), firstname.toString(), lastname.toString())
+        }
+    }
+
+    private fun getCurrentUser() {
+        // TODO: set newUser
     }
 
     private fun verifyCode(code: String) {
@@ -52,6 +76,10 @@ class PhoneAuthActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val homeIntent = Intent(this, HomeActivity::class.java)
+                    if (newUser != null) {
+                        // TODO: pass user around
+                        // homeIntent.putExtra("currentUser", newUser)
+                    }
                     startActivity(homeIntent)
 
                 } else {
@@ -61,7 +89,6 @@ class PhoneAuthActivity : AppCompatActivity() {
     }
 
     private fun sendPhoneVerification(phonenumber: String) {
-        print("sending")
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
             phonenumber,
             60,
