@@ -1,5 +1,6 @@
 package com.cs220.ssmessaging.frontend.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,71 +10,35 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cs220.ssmessaging.R
-import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.frontend.presenters.ConversationsListActivityPresenter
-import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import android.content.Intent
+import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.frontend.activities.ConversationActivity
 
 
 class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter.View {
     private lateinit var conversationsRecyclerView: RecyclerView
-    private lateinit var databaseReference: DatabaseReference
-    private lateinit var myAuth: FirebaseAuth
-    private lateinit var currentUserId: String
-
-    // TODO: user/conversation fields need to match firebase fields for updates I believe
-
+    private lateinit var conversationsListAdapter: ConversationsListAdapter
+    private lateinit var currentUser: User
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val conversationsView = inflater.inflate(R.layout.fragment_conversations_list, container, false)
+
+        // TODO: Get current user from login screen
+        currentUser = User("johndoe", "John", "Doe")
+
+        val conversationsView =
+            inflater.inflate(R.layout.fragment_conversations_list, container, false)
         conversationsRecyclerView = conversationsView.findViewById(R.id.conversations_recycler_list)
         conversationsRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        myAuth = FirebaseAuth.getInstance()
-        currentUserId = myAuth.currentUser!!.uid
-        databaseReference = FirebaseDatabase.getInstance().reference.child("Conversations").child(currentUserId)
+        val activity = activity as Context
+        conversationsListAdapter = ConversationsListAdapter(activity)
+        conversationsRecyclerView.adapter = conversationsListAdapter
 
         return conversationsView
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        val options = FirebaseRecyclerOptions.Builder<Conversation>()
-            .setQuery(databaseReference, Conversation::class.java)
-            .build()
-
-        val adapter = object : FirebaseRecyclerAdapter<Conversation, ViewHolder>(options) {
-            override fun onBindViewHolder(holder: ViewHolder, position: Int, model: Conversation) {
-                // TODO: who is user1 and who is user2
-                val fullname = model.user2.firstName + " " + model.user2.lastName
-                holder.fullname.text = fullname
-
-                holder.itemView.setOnClickListener {
-                    val conversationIntent = Intent(context, ConversationActivity::class.java)
-                    conversationIntent.putExtra("receiver_name", fullname)
-                    startActivity(conversationIntent)
-                }
-
-            }
-
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_conversation, parent, false)
-                return ViewHolder(view)
-            }
-        }
-
-        conversationsRecyclerView.adapter = adapter
-        adapter.startListening()
     }
 
     override fun gotoConversation(conversationID: String) {
@@ -88,8 +53,38 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        var fullname: TextView = v.findViewById(R.id.conversation_participant) as TextView
+    internal inner class ConversationsListAdapter(context: Context) :
+        RecyclerView.Adapter<ViewHolder>() {
 
+        private val layoutInflater = LayoutInflater.from(context)
+
+        override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): ViewHolder {
+            val view = layoutInflater.inflate(R.layout.item_conversation, viewGroup, false)
+            return ViewHolder(view)
+        }
+
+        override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+            val conversation = currentUser.conversations[position]
+            val fullname = conversation.user2.firstName + " " + conversation.user2.lastName
+
+            viewHolder.setData(fullname)
+
+            viewHolder.itemView.setOnClickListener {
+                // TODO: call gotoConversation here instead
+                val conversationIntent = Intent(context, ConversationActivity::class.java)
+                conversationIntent.putExtra("receiver_name", fullname)
+                startActivity(conversationIntent)
+            }
+        }
+
+        override fun getItemCount() = currentUser.conversations.size
+    }
+
+    internal inner class ViewHolder constructor(itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
+
+        fun setData(fullname: String) {
+            itemView.findViewById<TextView>(R.id.conversation_participant).text = fullname
+        }
     }
 }
