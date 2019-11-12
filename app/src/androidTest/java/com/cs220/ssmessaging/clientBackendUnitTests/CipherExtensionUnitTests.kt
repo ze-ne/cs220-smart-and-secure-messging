@@ -5,9 +5,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.junit.MockitoJUnitRunner
 import java.lang.ClassCastException
 
 import org.junit.Before
@@ -18,7 +15,6 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
 
-@RunWith(MockitoJUnitRunner::class)
 class CipherExtensionUnitTests{
 
     // FIX: add BouncyCastle for key provider
@@ -28,7 +24,7 @@ class CipherExtensionUnitTests{
     }
 
     // FIX: Change provider to BouncyCastle instead of SunJCE (Android uses BouncyCastle)
-    private val keyPairGen : KeyPairGenerator = KeyPairGenerator.getInstance("RSA", "BC")
+    private val keyPairGen : KeyPairGenerator = KeyPairGenerator.getInstance("RSA")
     private val keyPair1 = keyPairGen.generateKeyPair()
     private val keyPair2 = keyPairGen.generateKeyPair()
     private var testPrivateKey : PrivateKey = keyPair1.private

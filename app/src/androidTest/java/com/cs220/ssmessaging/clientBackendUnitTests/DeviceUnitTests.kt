@@ -3,9 +3,6 @@ package com.cs220.ssmessaging.clientBackendUnitTests
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.junit.MockitoJUnitRunner
 
 import com.cs220.ssmessaging.clientBackend.Device
 import org.junit.After
@@ -20,7 +17,6 @@ import java.security.spec.X509EncodedKeySpec
 import java.util.*
 
 
-@RunWith(MockitoJUnitRunner::class)
 class DeviceUnitTests{
 
     @After

@@ -4,11 +4,8 @@ import com.cs220.ssmessaging.clientBackend.*
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
+
 class ConversationUnitTests{
     private var user1 = User("user1", "Tom", "gordon")
     private var user2 = User("user2", "Jim", "t246531")

@@ -52,7 +52,7 @@ class Device(){
             publicKeyFile.createNewFile()
             privateKeyFile.createNewFile()
 
-            val keyPairGen: KeyPairGenerator = KeyPairGenerator.getInstance("RSA", "BC")
+            val keyPairGen: KeyPairGenerator = KeyPairGenerator.getInstance("RSA")
             keyPairGen.initialize(2048)
             val keyPair: KeyPair = keyPairGen.generateKeyPair()
 
@@ -74,7 +74,7 @@ class Device(){
     // Second init initializes the cipher object
     init {
         // We now get the public and private keys and store them in the cipher extension
-        val keyFactory : KeyFactory = KeyFactory.getInstance("RSA", "BC")
+        val keyFactory : KeyFactory = KeyFactory.getInstance("RSA")
 
 
         val keyFiles : Array<File>? = File(keyDir).listFiles()
@@ -119,7 +119,7 @@ class Device(){
     // Moreover, the new key pair is stored in the resources directory
     // Probably needs refactoring later on.
     fun generateNewKeyPair() : Unit {
-        val keyPairGen : KeyPairGenerator = KeyPairGenerator.getInstance("RSA", "BC")
+        val keyPairGen : KeyPairGenerator = KeyPairGenerator.getInstance("RSA")
         keyPairGen.initialize(2048)
         val keyPair : KeyPair = keyPairGen.generateKeyPair()
 

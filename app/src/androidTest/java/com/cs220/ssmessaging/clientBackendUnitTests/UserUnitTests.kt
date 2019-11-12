@@ -5,12 +5,10 @@ import com.cs220.ssmessaging.clientBackend.*
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.clientBackend.Conversation
 
-@RunWith(MockitoJUnitRunner::class)
 class UserUnitTests{
 
     @Test
