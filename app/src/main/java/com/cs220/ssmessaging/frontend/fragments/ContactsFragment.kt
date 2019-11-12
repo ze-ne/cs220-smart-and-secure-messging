@@ -35,7 +35,7 @@ class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    internal inner class ContactsAdapter(context: Context) :
+    /*internal inner class ContactsAdapter(context: Context) :
         RecyclerView.Adapter<ViewHolder>() {
 
         private val layoutInflater = LayoutInflater.from(context)
@@ -67,6 +67,6 @@ class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
 
         fun setData(fullname: String) {
             itemView.findViewById<TextView>(R.id.conversation_participant).text = fullname
-        }
+        }*/
 
 }

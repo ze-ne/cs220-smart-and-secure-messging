@@ -94,14 +94,10 @@ class User() {
         get(){
             return field
         }
-<<<<<<< HEAD
-        set(firstName : String){0
-            // TODO
-=======
+
         set(firstName : String){
             if(isValidName(firstName))
                 field = firstName
->>>>>>> master-backend
         }
 
     var lastName : String = ""
