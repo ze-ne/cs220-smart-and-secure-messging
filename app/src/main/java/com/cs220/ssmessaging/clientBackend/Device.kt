@@ -134,6 +134,9 @@ class Device(){
         publicKeyStream.write(publicKeyBytes)
         privateKeyStream.write(privateKeyBytes)
 
+        publicKeyStream.close()
+        privateKeyStream.close()
+
         cipher.publicKeyRing.put("myKey", publicKey)
         cipher.privateKey = privateKey
     }
