@@ -128,7 +128,7 @@ class FirebaseService {
         val toAdd = hashMapOf(
             "canonicalId" to conversation.convoId,
             "created" to Timestamp.now(),
-            "users" to arrayOf<String>(conversation.user1.userId, conversation.user2.userId)
+            "users" to listOf<String>(conversation.user1.userId, conversation.user2.userId)
         )
 
         var success = true
