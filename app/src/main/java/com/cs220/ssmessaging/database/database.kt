@@ -1,5 +1,6 @@
 package com.cs220.ssmessaging.database
 
+import android.util.Log
 import com.cs220.ssmessaging.clientBackend.EncryptedMessage
 import androidx.annotation.NonNull
 import com.cs220.ssmessaging.clientBackend.Conversation
@@ -46,9 +47,9 @@ class FirebaseService {
     // createUser
     fun createUser(newUser: User, password_hash : String, phone : String, publicKey: String): Boolean {
 
-        if (alreadyExists("users", newUser.userId)) {
+        /*if (alreadyExists("users", newUser.userId)) {
             return false
-        }
+        }*/
 
         val toAdd = hashMapOf(
             "name" to newUser.userId,
@@ -147,18 +148,19 @@ class FirebaseService {
         val charset = Charsets.UTF_8
         val toSend = MessageData("", msg.message.toString(charset), 0, msg.sender.userId, msg.timestamp)
 
-        db.collection("conversations").document(msg.conversationId).collection("messages").document(msg.message.toString(charset))
+        val cId = msg.conversationId
+        Log.i("test", cId)
+        db.collection("conversations").document(cId).collection("messages")
+            .document("c")
             .set(toSend)
+            .addOnSuccessListener {
+                //throw Exception("Succeeding")
+            }
+            .addOnFailureListener {
+                //throw Exception("failing adding")
+            }
         return true
     }
-
     // help frontned for snapshotListeners
 
 }
-/*
-val testService = FirebaseService()
-
-val usr = User("g1", "gray", "mackall")
-
-val succ = testService.createUser(usr, "pw", "805", "ky")
-*/
