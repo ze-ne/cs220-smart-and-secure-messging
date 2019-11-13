@@ -131,6 +131,13 @@ class Conversation() {
             is ImageMessage -> addMessage = ImageMessage.isValidMessage(msg)
         }
 
+        for(m in messages){
+            if(m.mEquals(msg)){
+                addMessage = false
+                break
+            }
+        }
+
         if(addMessage) {
             _messages.add(msg)
             // Last time synched must also be updated

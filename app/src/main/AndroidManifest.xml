@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.cs220.ssmessaging">
-
+        package="com.cs220.ssmessaging">
     <!-- The list of permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,8 +10,9 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme">
-        <activity android:name="com.cs220.ssmessaging.frontend.activities.ConversationsListActivity">
+            android:theme="@style/AppTheme"
+            android:name="com.cs220.ssmessaging.MyApplication.MyApplication">
+        <activity android:name="com.cs220.ssmessaging.frontend.activities.PhoneAuthActivity">
         </activity>
         <activity android:name="com.cs220.ssmessaging.frontend.activities.LoginActivity">
         </activity>
@@ -20,13 +20,14 @@
         </activity>
         <activity android:name="com.cs220.ssmessaging.frontend.activities.SettingsActivity">
         </activity>
-        <activity android:name="com.cs220.ssmessaging.frontend.activities.ContactsActivity">
+        <activity android:name="com.cs220.ssmessaging.frontend.activities.HomeActivity">
         </activity>
+        <activity android:name=".frontend.activities.RegisterActivity"></activity>
         <activity android:name="com.cs220.ssmessaging.frontend.activities.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>

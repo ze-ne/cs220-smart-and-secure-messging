@@ -5,6 +5,7 @@ class ConversationsListActivityPresenter : BasePresenter<ConversationsListActivi
     fun startNewConversation(userID: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+    // access settings, contacts,
 
     interface View {
         fun gotoConversation(conversationID: String)

@@ -5,11 +5,7 @@ import com.cs220.ssmessaging.clientBackend.*
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class MessageUnitTests{
     // FIX: This class was added to test the static helpers for property checking
     @Test

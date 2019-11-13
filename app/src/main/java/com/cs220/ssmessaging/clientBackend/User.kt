@@ -23,7 +23,7 @@ class User() {
      * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
 
-    //val db = FirebaseFirestore.getInstance()
+    val db = FirebaseFirestore.getInstance()
 
     constructor(userId : String, firstName: String, lastName: String) : this(){
         if(!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId)){
@@ -36,6 +36,40 @@ class User() {
             this.firstName = firstName
             this.lastName = lastName
         }
+    }
+
+    // Additional constructor allows for setting conversations and contacts
+    constructor(userId : String, firstName: String, lastName: String, contacts : MutableList<User>, conversations : MutableList<Conversation>) : this(){
+        var invalidContacts : Boolean = false
+        var invalidConversation : Boolean = false
+
+        for(cont in contacts){
+            if(!isValidUser(cont)) {
+                invalidContacts = true
+                break
+            }
+        }
+
+        for(convo in conversations){
+            if(!Conversation.isValidConversation(convo)) {
+                invalidConversation = true
+                break
+            }
+        }
+
+        if(!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId) || invalidContacts || invalidConversation){
+            this.userId = ""
+            this.firstName = ""
+            this.lastName = ""
+        }
+        else{
+            this.userId = userId
+            this.firstName = firstName
+            this.lastName = lastName
+            this.contacts = contacts
+            this.conversations = conversations
+        }
+
     }
 
     companion object{
@@ -60,6 +94,7 @@ class User() {
         get(){
             return field
         }
+
         set(firstName : String){
             if(isValidName(firstName))
                 field = firstName
@@ -123,6 +158,18 @@ class User() {
         this.conversations.add(convo)
         // TODO: write convo validity checks
         return true
+    }
+
+    // FIX: Write unit tests for this
+    fun startConversation(convo : Conversation) : Boolean {
+        // TODO
+        return false
+    }
+
+    // FIX: Write unit tests for this
+    fun recieveConversation(convo : Conversation) : Boolean {
+        // TODO
+        return false
     }
 
     fun getConversationByUserId(recipientId : String) : Conversation? {
@@ -213,6 +260,11 @@ class User() {
     // Add your own public key to server
     fun addPublicKeyToServer(key : String, user : User) : Boolean {
         // TODO
+        return false
+    }
+
+    // FIX: Write unit tests for this
+    fun addSelfToDatabase() : Boolean {
         return false
     }
 }

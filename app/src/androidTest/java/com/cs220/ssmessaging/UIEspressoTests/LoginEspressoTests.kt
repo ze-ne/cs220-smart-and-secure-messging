@@ -24,7 +24,7 @@ class LoginEspressoTests {
             .check(matches(isDisplayed()))
             .perform(click())
 
-        intended(hasComponent(ConversationsListActivity::class.java.name))
+        intended(hasComponent(ConversationsListFragment::class.java.name))
     }
 
     @Test
@@ -36,7 +36,7 @@ class LoginEspressoTests {
             .check(matches(isDisplayed()))
             .perform(click())
 
-        intended(hasComponent(ConversationsListActivity::class.java.name))
+        intended(hasComponent(ConversationsListFragment::class.java.name))
     }
     */
 }
