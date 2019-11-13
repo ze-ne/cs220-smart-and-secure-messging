@@ -167,7 +167,7 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
         fun isValidMessageBody(byteArray: ByteArray) : Boolean = byteArray.isNotEmpty()
 
         // Need to unit test
-        fun isValidPathToImage(path : String) : Boolean = path.matches(Regex("^[a-zA-Z0-9./:_-]*$"))
+        fun isValidPathToImage(path : String) : Boolean = path.matches(Regex("^[a-zA-Z0-9./:_-]*$")) && path.isNotEmpty()
     }
 
     override val conversationId : String
@@ -176,6 +176,11 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
     override val timestamp : Int
     val message : ByteArray
     var pathToImage : String = ""
+        set(path : String){
+            if(isValidPathToImage(path)){
+                field = path
+            }
+        }
 
     // Need to write unit test
     override fun mEquals(m : Message) : Boolean{
