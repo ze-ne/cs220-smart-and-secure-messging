@@ -28,7 +28,8 @@ class MessagesAdapter(val context: Context) : RecyclerView.Adapter<MessageViewHo
     override fun getItemViewType(position: Int): Int {
         val message = messages[position]
 
-        return if(MyApplication.currentUser == message.sender) {
+        // TROY MODIFICATION
+        return if(MyApplication.currentUser?.userId == message.senderId) {
             MY_MESSAGE
         }
         else {

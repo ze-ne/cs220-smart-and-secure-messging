@@ -31,8 +31,8 @@ class CipherExtensionUnitTests{
     private var testPrivateKey2 : PrivateKey = keyPair2.private
     private var testPublicKey : PublicKey = keyPair1.public
     private var testPublicKey2 : PublicKey = keyPair2.public
-    private var sendUser : User = User("person1", "test", "User")
-    private var receiveUser : User = User("person2", "test", "User2")
+    private var sendUserId : String = "person1"
+    private var receiveUserId : String = "person2"
 
     @Test
     fun testConstructorAndKeyAndCipherGetters() {
@@ -105,8 +105,8 @@ class CipherExtensionUnitTests{
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
 
         // Create new unencrypted text messages
-        var textMessage : TextMessage = TextMessage("ABC", "testId", sendUser, receiveUser, 0)
-        var textMessage2 : TextMessage = TextMessage("sad46546 ----", "testId2", sendUser, receiveUser, 123)
+        var textMessage : TextMessage = TextMessage("ABC", "testId", sendUserId, receiveUserId, 0)
+        var textMessage2 : TextMessage = TextMessage("sad46546 ----", "testId2", sendUserId, receiveUserId, 123)
 
         var encryptedMessage = testCipherExtension.encryptUnencryptedMessage(textMessage)
         var encryptedMessage2 = testCipherExtension.encryptUnencryptedMessage(textMessage2)
@@ -116,20 +116,24 @@ class CipherExtensionUnitTests{
         var decryptedMessage2 = testCipherExtension.decryptEncryptedMessage(encryptedMessage2)
 
         try{
-            var message : String = (decryptedMessage2 as TextMessage).message
-            var message2 : String = (decryptedMessage as TextMessage).message
+            // FIX: message was assigned to the wrong decrypted message. Same for message2
+            var message : String = (decryptedMessage as TextMessage).message
+            var message2 : String = (decryptedMessage2 as TextMessage).message
 
             assertEquals("ABC", message)
             assertEquals("testId", encryptedMessage.conversationId)
-            assertEquals("person1", encryptedMessage.sender.userId)
-            assertEquals("person2", encryptedMessage.sender.userId)
+            assertEquals("person1", encryptedMessage.senderId)
+            // FIX: Now asserting the recipient rather than the sender
+            assertEquals("person2", encryptedMessage.recipientId)
             assertEquals(0, encryptedMessage.timestamp)
 
             assertEquals("sad46546 ----", message2)
             assertEquals("testId2", encryptedMessage2.conversationId)
-            assertEquals("person1", encryptedMessage2.sender.userId)
-            assertEquals("person2", encryptedMessage2.sender.userId)
-            assertEquals(123, encryptedMessage.timestamp)
+            assertEquals("person1", encryptedMessage2.senderId)
+            // FIX: Now asserting the recipient rather than the sender
+            assertEquals("person2", encryptedMessage2.recipientId)
+            // FIX: Now asserting encryptedMessage2 rather than encryptedMessage
+            assertEquals(123, encryptedMessage2.timestamp)
         }
         catch(e : ClassCastException){
             fail("decrypt returned the wrong type of message")
@@ -143,8 +147,9 @@ class CipherExtensionUnitTests{
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
 
         // Create new unencrypted text messages
-        var imgMessage : ImageMessage = ImageMessage(ByteArray(10), "testId", sendUser, receiveUser, 0)
-        var imgMessage2 : ImageMessage = ImageMessage(ByteArray(10), "testId2", sendUser, receiveUser, 123)
+        // FIX: The original byte array was a bunch of zeros which meant nothing. We made the array have actual values now.
+        var imgMessage : ImageMessage = ImageMessage(byteArrayOf(1,2,3), "testId", sendUserId, receiveUserId, 0)
+        var imgMessage2 : ImageMessage = ImageMessage(byteArrayOf(65,54,51,0), "testId2", sendUserId, receiveUserId, 123)
 
         var encryptedMessage = testCipherExtension.encryptUnencryptedMessage(imgMessage)
         var encryptedMessage2 = testCipherExtension.encryptUnencryptedMessage(imgMessage2)
@@ -154,20 +159,26 @@ class CipherExtensionUnitTests{
         var decryptedMessage2 = testCipherExtension.decryptEncryptedMessage(encryptedMessage2)
 
         try{
-            var message : ByteArray = (decryptedMessage2 as ImageMessage).message
-            var message2 : ByteArray = (decryptedMessage as ImageMessage).message
+            // FIX: message was assigned to the wrong decrypted message. Same for message2
+            var message : ByteArray = (decryptedMessage as ImageMessage).message
+            var message2 : ByteArray = (decryptedMessage2 as ImageMessage).message
 
-            assertEquals(imgMessage.message, message)
+            // FIX: Assert array equals rather than assert equals
+            assertArrayEquals(imgMessage.message, message)
             assertEquals("testId", encryptedMessage.conversationId)
-            assertEquals("person1", encryptedMessage.sender.userId)
-            assertEquals("person2", encryptedMessage.sender.userId)
+            assertEquals("person1", encryptedMessage.senderId)
+            // FIX: Now asserting the recipient rather than the sender
+            assertEquals("person2", encryptedMessage.recipientId)
             assertEquals(0, encryptedMessage.timestamp)
 
-            assertEquals(imgMessage2.message, message2)
+            // FIX: Assert array equals rather than assert equals
+            assertArrayEquals(imgMessage2.message, message2)
             assertEquals("testId2", encryptedMessage2.conversationId)
-            assertEquals("person1", encryptedMessage2.sender.userId)
-            assertEquals("person2", encryptedMessage2.sender.userId)
-            assertEquals(123, encryptedMessage.timestamp)
+            assertEquals("person1", encryptedMessage2.senderId)
+            // FIX: Now asserting the recipient rather than the sender
+            assertEquals("person2", encryptedMessage2.recipientId)
+            // FIX: Now asserting encryptedMessage2 rather than encryptedMessage
+            assertEquals(123, encryptedMessage2.timestamp)
         }
         catch(e : ClassCastException){
             fail("decrypt returned the wrong type of message")
@@ -183,10 +194,10 @@ class CipherExtensionUnitTests{
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf())
 
-        var imgMessage : ImageMessage = ImageMessage(ByteArray(10), "testId", sendUser, receiveUser, 0)
+        var imgMessage : ImageMessage = ImageMessage(ByteArray(10), "testId", sendUserId, receiveUserId, 0)
         testCipherExtension.encryptUnencryptedMessage(imgMessage)
 
-        var textMessage : TextMessage = TextMessage("ABC", "testId", sendUser, receiveUser, 0)
+        var textMessage : TextMessage = TextMessage("ABC", "testId", sendUserId, receiveUserId, 0)
         testCipherExtension.encryptUnencryptedMessage(textMessage)
     }
 
@@ -196,7 +207,7 @@ class CipherExtensionUnitTests{
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
 
-        var imgMessage : ImageMessage = ImageMessage(ByteArray(0), "testId", sendUser, receiveUser, 0)
+        var imgMessage : ImageMessage = ImageMessage(ByteArray(0), "testId", sendUserId, receiveUserId, 0)
         testCipherExtension.encryptUnencryptedMessage(imgMessage)
     }
 
@@ -206,7 +217,7 @@ class CipherExtensionUnitTests{
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
 
-        var imgMessage : ImageMessage = ImageMessage(ByteArray(61), "", sendUser, receiveUser, 0)
+        var imgMessage : ImageMessage = ImageMessage(ByteArray(61), "", sendUserId, receiveUserId, 0)
         testCipherExtension.encryptUnencryptedMessage(imgMessage)
     }
 
@@ -216,7 +227,7 @@ class CipherExtensionUnitTests{
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
 
-        var imgMessage : ImageMessage = ImageMessage(ByteArray(61), "sad", User(), receiveUser, 0)
+        var imgMessage : ImageMessage = ImageMessage(ByteArray(61), "sad", "", receiveUserId, 0)
         testCipherExtension.encryptUnencryptedMessage(imgMessage)
     }
 
@@ -226,7 +237,7 @@ class CipherExtensionUnitTests{
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
 
-        var imgMessage : ImageMessage = ImageMessage(ByteArray(61), "sad", sendUser, receiveUser, -1)
+        var imgMessage : ImageMessage = ImageMessage(ByteArray(61), "sad", sendUserId, receiveUserId, -1)
         testCipherExtension.encryptUnencryptedMessage(imgMessage)
     }
 
@@ -235,7 +246,7 @@ class CipherExtensionUnitTests{
         // No Bytes or string in message
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
-        var textMessage : TextMessage = TextMessage("", "testId", sendUser, receiveUser, 0)
+        var textMessage : TextMessage = TextMessage("", "testId", sendUserId, receiveUserId, 0)
         testCipherExtension.encryptUnencryptedMessage(textMessage)
     }
 
@@ -244,7 +255,7 @@ class CipherExtensionUnitTests{
         // Bad user in message
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
-        var textMessage : TextMessage = TextMessage("dsadsa", "testId", User(), receiveUser, 0)
+        var textMessage : TextMessage = TextMessage("dsadsa", "testId", "", receiveUserId, 0)
         testCipherExtension.encryptUnencryptedMessage(textMessage)
     }
 
@@ -253,7 +264,7 @@ class CipherExtensionUnitTests{
         // Bad user in message
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
-        var textMessage : TextMessage = TextMessage("dsadsa", "", User(), receiveUser, 0)
+        var textMessage : TextMessage = TextMessage("dsadsa", "", "", receiveUserId, 0)
         testCipherExtension.encryptUnencryptedMessage(textMessage)
     }
 
@@ -262,7 +273,7 @@ class CipherExtensionUnitTests{
         // bad time
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
-        var textMessage : TextMessage = TextMessage("sda", "testId", sendUser, receiveUser, -1)
+        var textMessage : TextMessage = TextMessage("sda", "testId", sendUserId, receiveUserId, -1)
         testCipherExtension.encryptUnencryptedMessage(textMessage)
     }
 
@@ -271,7 +282,7 @@ class CipherExtensionUnitTests{
         // Unlike encryption, decryption should only fail when there is a bad message or bad type
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
-        var encryptedMessage : EncryptedMessage = EncryptedMessage(ByteArray(0), "testId", "image", sendUser, receiveUser, -1)
+        var encryptedMessage : EncryptedMessage = EncryptedMessage(ByteArray(0), "testId", "image", sendUserId, receiveUserId, -1)
         testCipherExtension.decryptEncryptedMessage(encryptedMessage)
     }
 
@@ -280,7 +291,7 @@ class CipherExtensionUnitTests{
         // Unlike encryption, decryption should only fail when there is a bad message or bad type
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
-        var encryptedMessage : EncryptedMessage = EncryptedMessage(ByteArray(566), "testId", "", sendUser, receiveUser, -1)
+        var encryptedMessage : EncryptedMessage = EncryptedMessage(ByteArray(566), "testId", "", sendUserId, receiveUserId, -1)
         testCipherExtension.decryptEncryptedMessage(encryptedMessage)
     }
 }

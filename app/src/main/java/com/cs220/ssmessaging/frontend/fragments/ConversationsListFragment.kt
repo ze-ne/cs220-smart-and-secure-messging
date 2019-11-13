@@ -57,7 +57,7 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
                     .addOnSuccessListener { documentReference ->
                         val users = documentReference.toObjects(User::class.java)
                         if (users.size == 1) {
-                            val newConvo = Conversation(currentUser, users[0], mutableListOf())
+                            val newConvo = Conversation(currentUser.userId, users[0].userId, mutableListOf())
                             currentUser.addConversation(newConvo)
                         } else {
                             Toast.makeText(
@@ -100,7 +100,8 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
 
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
             val conversation = currentUser.conversations[position]
-            val fullname = conversation.user2.firstName + " " + conversation.user2.lastName
+            // TROY MODIFICATION
+            val fullname = conversation.user2Id
 
             viewHolder.bind(fullname)
 
