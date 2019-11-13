@@ -16,18 +16,18 @@ interface Message {
     val conversationId : String
     val senderId : String
     val recipientId : String
-    val timestamp : Int // This should be epoch number
+    val timestamp : Long // This should be epoch number
     fun mEquals(m: Message) : Boolean // decides whether the current message equals another message
     companion object{
         // Need to unit test
-        fun isValidTimestamp(timestamp: Int) : Boolean{
+        fun isValidTimestamp(timestamp: Long) : Boolean{
             return timestamp >= 0
         }
     }
 }
 
 class EncryptedMessage(_message : ByteArray, _conversationId : String,
-                       _messageType : String, _senderId : String, _recipientId : String, _timestamp : Int) : Message {
+                       _messageType : String, _senderId : String, _recipientId : String, _timestamp : Long) : Message {
 
     companion object{
         // Need to unit test
@@ -49,7 +49,7 @@ class EncryptedMessage(_message : ByteArray, _conversationId : String,
     override val conversationId : String
     override val senderId : String
     override val recipientId : String
-    override val timestamp : Int
+    override val timestamp : Long
 
     // Need to write unit test
     override fun mEquals(m : Message) : Boolean{
@@ -95,7 +95,7 @@ interface UnencryptedMessage : Message {
 }
 
 class TextMessage(_message : String, _conversationId : String,
-                  _senderId : String, _recipientId : String, _timestamp : Int) : UnencryptedMessage {
+                  _senderId : String, _recipientId : String, _timestamp : Long) : UnencryptedMessage {
 
     companion object {
         // Need to unit test
@@ -113,7 +113,7 @@ class TextMessage(_message : String, _conversationId : String,
     override val conversationId : String
     override val senderId : String
     override val recipientId : String
-    override val timestamp : Int
+    override val timestamp : Long
     val message : String
 
     // Need to write unit test
@@ -152,7 +152,7 @@ class TextMessage(_message : String, _conversationId : String,
 }
 
 class ImageMessage(_message : ByteArray, _conversationId : String,
-                   _senderId : String, _recipientId: String, _timestamp : Int) : UnencryptedMessage {
+                   _senderId : String, _recipientId: String, _timestamp : Long) : UnencryptedMessage {
 
     companion object{
         // Need to unit test
@@ -173,7 +173,7 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
     override val conversationId : String
     override val senderId : String
     override val recipientId : String
-    override val timestamp : Int
+    override val timestamp : Long
     val message : ByteArray
     var pathToImage : String = ""
         set(path : String){

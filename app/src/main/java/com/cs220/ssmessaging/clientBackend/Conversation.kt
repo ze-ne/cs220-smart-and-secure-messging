@@ -58,7 +58,7 @@ class Conversation() {
         fun isValidConversationId(conversationId : String) : Boolean =
             conversationId.matches(Regex("^[a-zA-Z0-9_.,/-]*$")) && conversationId.isNotEmpty()
 
-        fun isValidLastTimeSynched(timeSynced : Int) : Boolean = (timeSynced >= 0)
+        fun isValidLastTimeSynched(timeSynced : Long) : Boolean = (timeSynced >= 0)
     }
 
     // The following three properties use backing properties since we want to be able to change user directly if need be
@@ -114,11 +114,11 @@ class Conversation() {
         }
         private set
 
-    var lastTimeSynced : Int = 0
+    var lastTimeSynced : Long = 0
         get() {
             return field
         }
-        set(timeSynced : Int){
+        set(timeSynced : Long){
             if(isValidLastTimeSynched(timeSynced))
                 field = timeSynced
         }

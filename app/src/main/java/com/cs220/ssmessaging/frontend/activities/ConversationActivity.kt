@@ -61,7 +61,7 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
                     conversationId,
                     currentUser.userId,
                     messageParticipant.userId,
-                    Calendar.getInstance().timeInMillis.toInt()
+                    Calendar.getInstance().timeInMillis
                 )
                 conversation.addMessage(newMessage)
             }

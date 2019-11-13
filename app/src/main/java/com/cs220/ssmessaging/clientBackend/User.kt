@@ -8,6 +8,9 @@ import com.cs220.ssmessaging.clientBackend.Device
 import com.cs220.ssmessaging.clientBackend.Message
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import java.security.KeyFactory
+import java.security.spec.X509EncodedKeySpec
+import java.time.Instant
 import java.util.*
 
 const val TAG = "User"
@@ -23,7 +26,7 @@ class User() {
      * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
 
-    //val firebaseAPI : FirebaseService = FirebaseService()
+    val db = FirebaseFirestore.getInstance()
 
     constructor(userId : String, firstName: String, lastName: String) : this(){
         if(!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId)){
@@ -140,7 +143,7 @@ class User() {
     fun addConversation(convo : Conversation) : Boolean {
         /*val conversation = hashMapOf(
             "created" to Timestamp(Date()),
-            "users" to arrayListOf<String>(convo.user1.userId, convo.user2.userId)
+            "users" to arrayListOf<String>(convo.user1Id, convo.user2.userId)
         )
 
         db.collection("/collections")
@@ -162,8 +165,22 @@ class User() {
 
     // FIX: Write unit tests for this
     fun startConversation(convo : Conversation) : Boolean {
-        // TODO
-        return false
+        val toAdd = hashMapOf(
+            "canonicalId" to convo.convoId,
+            "created" to Timestamp.now(),
+            "users" to listOf<String>(convo.user1Id, convo.user2Id)
+        )
+
+        db.collection("conversations").document(convo.convoId)
+            .set(toAdd)
+            .addOnSuccessListener {
+                Log.d("startConversation", "success")
+                addConversation(convo)
+            }
+            .addOnFailureListener {
+                Log.d("startConversation", "failure")
+            }
+        return true
     }
 
     // FIX: Write unit tests for this
@@ -234,37 +251,100 @@ class User() {
     }*/
 
     // Sends text message to server
-    fun sendTextMsg(msg : String, convo : Conversation) : Boolean {
-        // TODO
-        return false
+    fun sendTextMsg(msg : String, convo : Conversation){
+        val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
+        val timestamp = Instant.now().toEpochMilli()
+        val txtMsg = TextMessage(msg, convo.convoId,this.userId, recipient,timestamp)
+        sendEncryptedMsg(txtMsg, convo)
     }
 
     // Sends image message to server
-    fun sendImageMsg(byteArray: ByteArray, convo : Conversation) : Boolean {
-        // TODO
-        return false
+    fun sendImageMsg(byteArray: ByteArray, convo : Conversation){
+        val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
+        val timestamp = Instant.now().toEpochMilli()
+        val txtMsg = ImageMessage(byteArray, convo.convoId,this.userId, recipient,timestamp)
+        sendEncryptedMsg(txtMsg, convo)
+    }
+
+    private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
+        val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
+        val toSend = hashMapOf(
+            "bucket_url" to "",
+            "data" to msg.message,
+            "message_type" to msg.messageType,
+            "sender_id" to msg.senderId,
+            "recipient_id" to msg.recipientId,
+            "timestamp" to msg.timestamp
+        )
+
+        db.collection("conversations")
+            .document(convo.convoId)
+            .collection("messages")
+            .document()
+            .set(toSend)
+            .addOnSuccessListener {
+                convo.addMessage(msg)
+                Log.d("sendTextMsg", "success")
+            }
+            .addOnFailureListener {
+                Log.d("sendTextMsg", "failure")
+            }
     }
 
     // Gets and stores public key of user from server
     fun getUserPublicKey(userId : String) : Boolean{
-        // TODO
+        val keyFactory : KeyFactory = KeyFactory.getInstance("RSA")
+        db.collection("users").document(userId)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                val keyField = documentSnapshot.getString("publicKey")!!
+                val publicKey = keyFactory.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(keyField)))
+                device.cipher.publicKeyRing["myKey"] = publicKey
+            }
         return false
     }
 
     // Handle incoming message from server
     fun receiveMsg(encryptedMsg: EncryptedMessage) : Message {
-        // TODO
         return ImageMessage(ByteArray(0),"", "", "", -1)
     }
 
     // Add your own public key to server
     fun addPublicKeyToServer(key : String, user : User) : Boolean {
-        // TODO
+        db.collection("users").document(user.userId)
+            .update("publicKey", key)
+            .addOnSuccessListener {
+                Log.d("addPublicKeyToServer", "success")
+            }
+            .addOnFailureListener {
+                Log.d("addPublicKeyToServer", "failure")
+            }
         return false
     }
 
     // FIX: Write unit tests for this
     fun addSelfToDatabase() : Boolean {
-        return false
+        var base64EncodedPublicKey =
+            Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)
+
+        val toAdd = hashMapOf(
+            "name" to this.userId,
+            "canonicalId" to this.userId,
+            "first_name" to this.firstName,
+            "last_name" to this.lastName,
+            "password_hash" to "",
+            "phone" to "123",
+            "publicKey" to base64EncodedPublicKey
+        )
+
+        db.collection("users").document(this.userId)
+            .set(toAdd)
+            .addOnSuccessListener {
+                Log.d("addSelfToDatabase", "User added")
+            }
+            .addOnFailureListener {
+                Log.d("addSelfToDatabase", "User add failed")
+            }
+        return true
     }
 }
