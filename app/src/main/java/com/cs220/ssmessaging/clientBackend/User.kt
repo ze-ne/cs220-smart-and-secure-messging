@@ -36,7 +36,6 @@ class User() {
             this.firstName = firstName
             this.lastName = lastName
         }
-        Log.i("KEK", db.toString())
     }
 
     // Additional constructor allows for setting conversations and contacts
