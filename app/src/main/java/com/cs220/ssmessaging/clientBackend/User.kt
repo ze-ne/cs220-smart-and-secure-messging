@@ -23,7 +23,7 @@ class User() {
      * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
 
-    //val db = FirebaseFirestore.getInstance()
+    val db = FirebaseFirestore.getInstance()
 
     constructor(userId : String, firstName: String, lastName: String) : this(){
         if(!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId)){
@@ -230,6 +230,11 @@ class User() {
     // Add your own public key to server
     fun addPublicKeyToServer(key : String, user : User) : Boolean {
         // TODO
+        return false
+    }
+
+    // FIX: Write unit tests for this
+    fun addSelfToDatabase() : Boolean {
         return false
     }
 }
