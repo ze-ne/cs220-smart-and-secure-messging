@@ -162,6 +162,18 @@ class User() {
         return false
     }
 
+    // FIX: Write unit tests for this
+    fun startConversation(convo : Conversation) : Boolean {
+        // TODO
+        return false
+    }
+
+    // FIX: Write unit tests for this
+    fun recieveConversation(convo : Conversation) : Boolean {
+        // TODO
+        return false
+    }
+
     fun getConversationByUserId(recipientId : String) : Conversation? {
         // TODO
         return null
