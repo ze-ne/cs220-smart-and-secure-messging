@@ -6,6 +6,7 @@ import android.widget.ImageView
 import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.Device
 import com.cs220.ssmessaging.clientBackend.Message
+import com.cs220.ssmessaging.database.FirebaseService
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
@@ -23,7 +24,7 @@ class User() {
      * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
 
-    val db = FirebaseFirestore.getInstance()
+    val firebaseAPI : FirebaseService = FirebaseService()
 
     constructor(userId : String, firstName: String, lastName: String) : this(){
         if(!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId)){
@@ -265,6 +266,7 @@ class User() {
 
     // FIX: Write unit tests for this
     fun addSelfToDatabase() : Boolean {
-        return false
+        var base64EncodedPublicKey = Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)
+        return firebaseAPI.createUser(this, "123456789", "1234567890", base64EncodedPublicKey)
     }
 }
