@@ -61,6 +61,7 @@ class PhoneAuthActivity : AppCompatActivity() {
         if (firstname != null && lastname != null && username != null) {
             val newUser = User(username.toString(), firstname.toString(), lastname.toString())
             MyApplication.currentUser = newUser
+            newUser.addSelfToDatabase()
         }
     }
 

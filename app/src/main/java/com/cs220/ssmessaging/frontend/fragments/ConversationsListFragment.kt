@@ -12,14 +12,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.frontend.presenters.ConversationsListActivityPresenter
 import android.content.Intent
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import com.cs220.ssmessaging.MyApplication.MyApplication
+import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.frontend.activities.ConversationActivity
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter.View {
     private lateinit var conversationsRecyclerView: RecyclerView
     private lateinit var conversationsListAdapter: ConversationsListAdapter
+    private lateinit var newConversationInput: EditText
+    private lateinit var newConversationButton: Button
     private lateinit var currentUser: User
 
     override fun onCreateView(
@@ -27,7 +35,6 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
         savedInstanceState: Bundle?
     ): View? {
 
-        // TODO: Get current user from login screen
         currentUser = MyApplication.currentUser!!
 
         val conversationsView =
@@ -38,6 +45,30 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
         val activity = activity as Context
         conversationsListAdapter = ConversationsListAdapter(activity)
         conversationsRecyclerView.adapter = conversationsListAdapter
+
+        newConversationInput = conversationsView.findViewById((R.id.add_conversation_field))
+        newConversationButton = conversationsView.findViewById(R.id.new_conversation_button)
+
+        newConversationButton.setOnClickListener {
+            val participantUsername = newConversationInput.text.toString()
+            if (!participantUsername.isEmpty()) {
+                FirebaseFirestore.getInstance().collection("users")
+                    .whereEqualTo("canonicalId", participantUsername)
+                    .get()
+                    .addOnSuccessListener { documentReference ->
+                        val users = documentReference.toObjects(User::class.java)
+                        if (users.size == 1) {
+                            val newConvo = Conversation(currentUser, users[0], mutableListOf())
+                            currentUser.addConversation(newConvo)
+                        } else {
+                            Toast.makeText(activity, "User could not be found. Check the username and try again.", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Toast.makeText(activity, exception.message, Toast.LENGTH_SHORT).show()
+                    }
+            }
+        }
 
         return conversationsView
     }

@@ -37,16 +37,6 @@ class HomeActivity : AppCompatActivity() {
         homeTabLayout.setupWithViewPager(homeViewPager)
     }
 
-    override fun onStart() {
-        super.onStart()
-        // sendUserToLoginActivity()
-        /*if (currentUser == null) {
-            sendUserToLoginActivity()
-        } else {
-            verifyUserExistence()
-        }*/
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.home_options_menu, menu)
