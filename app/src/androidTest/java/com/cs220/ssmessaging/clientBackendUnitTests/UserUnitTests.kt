@@ -5,12 +5,10 @@ import com.cs220.ssmessaging.clientBackend.*
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.clientBackend.Conversation
 
-@RunWith(MockitoJUnitRunner::class)
 class UserUnitTests{
 
     @Test
@@ -22,6 +20,28 @@ class UserUnitTests{
         assertEquals(0, user1.contacts.size)
         assertEquals(0, user1.conversations.size)
 
+    }
+
+    @Test
+    fun testSecondaryConstructor(){
+        // invalid case
+        var user1 = User("id1","first", "last", mutableListOf(User()), mutableListOf())
+        assertEquals("", user1.userId)
+        assertEquals("", user1.firstName)
+        assertEquals("", user1.lastName)
+        assertEquals(0, user1.contacts.size)
+        assertEquals(0, user1.conversations.size)
+
+        // Valid case
+        var dummyUser1 : User = User("a","b", "c")
+        var dummyUser2 : User = User("d","e", "f")
+        var convo : Conversation = Conversation(dummyUser1, dummyUser2, mutableListOf())
+        user1 = User("id1","first", "last", mutableListOf(User("hello", "dumb", "boy")), mutableListOf(convo))
+        assertEquals("id1", user1.userId)
+        assertEquals("first", user1.firstName)
+        assertEquals("last", user1.lastName)
+        assertEquals(1, user1.contacts.size)
+        assertEquals(1, user1.conversations.size)
     }
 
     @Test
@@ -223,5 +243,37 @@ class UserUnitTests{
         // Invalid get null parameter
         assertNull(user2.getConversationByConversationId(null as String))
 
+    }
+
+    // FIX: The following tests test the added static helper functions for property checking
+    @Test
+    fun testIsValidUser(){
+        assertTrue(User.isValidUser(User("id1","first", "last")))
+
+        // Can only test the "null" user instance (i.e. entries are "" or empty)
+        // since the constructors use the isValidUser() static function
+        assertFalse(User.isValidUser(User("","", "")))
+    }
+
+    @Test
+    fun testIsValidUserId(){
+        assertTrue(User.isValidUserId("abc123"))
+        assertTrue(User.isValidUserId("1.2"))
+        assertTrue(User.isValidUserId("1_X_1-1"))
+        assertTrue(User.isValidUserId("@"))
+        assertFalse(User.isValidUserId("!"))
+        assertFalse(User.isValidUserId("<>"))
+        assertFalse(User.isValidUserId(""))
+    }
+
+    @Test
+    fun testIsValidName(){
+        assertTrue(User.isValidName("Henri"))
+        assertTrue(User.isValidName("J"))
+        assertTrue(User.isValidName("123Jane"))
+        assertFalse(User.isValidName("John 1"))
+        assertFalse(User.isValidName("!!!@___"))
+        assertFalse(User.isValidName("<"))
+        assertFalse(User.isValidName(""))
     }
 }

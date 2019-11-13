@@ -61,5 +61,5 @@ class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
         fun setData(contactName: String) {
             itemView.findViewById<TextView>(R.id.contact).text = contactName
         }
-
+    }
 }
