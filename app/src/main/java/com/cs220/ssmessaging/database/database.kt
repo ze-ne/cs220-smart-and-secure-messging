@@ -1,5 +1,6 @@
 package com.cs220.ssmessaging.database
 
+import com.cs220.ssmessaging.clientBackend.EncryptedMessage
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.auth.User as FBUser
 import com.cs220.ssmessaging.clientBackend.User
@@ -9,14 +10,6 @@ class FirebaseService {
 
     val db = FirebaseFirestore.getInstance()
 
-/*
-    fun getUserByCanonicalId(canonicalId: String): User? {
-        db.collection("users")
-            .whereEqualTo("canonicalId", canonicalId)
-            .get()
-            .addOnSuccessListener {  }
-    }
-*/
 
     // getUserByDatabaseId
 
@@ -36,6 +29,15 @@ class FirebaseService {
 
         return exists
     }
+
+    /*
+    fun getUserByCanonicalId(canonicalId: String): User? {
+        db.collection("users")
+            .whereEqualTo("canonicalId", canonicalId)
+            .get()
+            .addOnSuccessListener {  }
+    }
+*/
 
     // createUser
     fun createUser(newUser: User, password_hash : String, phone : String, publicKey: String): Boolean {
@@ -103,6 +105,14 @@ class FirebaseService {
     // addConversation
 
     // sendMessage() - need to incorporate Google Store buckets for images
+    fun sendMessage(msg : EncryptedMessage) : Boolean {
+        val charset = Charsets.UTF_8
+        val toSend = MessageData("", msg.message.toString(charset), 0, msg.sender.userId, msg.timestamp)
+
+        db.collection("conversations").document(msg.conversationId).collection("messages").document(msg.message.toString(charset))
+            .set(toSend)
+        return true
+    }
 
     // help frontned for snapshotListeners
 
