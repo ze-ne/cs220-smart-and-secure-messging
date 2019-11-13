@@ -59,6 +59,7 @@ class PhoneAuthActivity : AppCompatActivity() {
     private fun createNewAccount() {
         if (firstname != null && lastname != null && username != null) {
             newUser = User(username.toString(), firstname.toString(), lastname.toString())
+
         }
     }
 

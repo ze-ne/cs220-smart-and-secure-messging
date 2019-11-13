@@ -7,7 +7,7 @@
         tools:context=".frontend.fragments.ContactsFragment">
 
     <android.support.v7.widget.RecyclerView
-        android:ids"@+id/contactsRecyclerList"
+        android:id="@+id/contactsRecyclerList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
     />
