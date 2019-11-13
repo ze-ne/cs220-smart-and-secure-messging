@@ -2,6 +2,7 @@ package com.cs220.ssmessaging.MyApplication
 
 import android.app.Application
 import android.content.Context
+import com.cs220.ssmessaging.clientBackend.User
 
 
 class MyApplication : Application() {
@@ -14,5 +15,7 @@ class MyApplication : Application() {
     companion object {
         var appContext: Context? = null
             private set
+
+        var currentUser : User = User()
     }
 }
