@@ -55,7 +55,9 @@ class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
 
         override fun onBindViewHolder(viewHolder: ContactsFragment.ViewHolder, position: Int) {
             val contacts = currentUser.contacts[position]
-            val contactName = contacts.firstName + " " + contacts.lastName
+
+            // TROY MODIFICATION
+            val contactName = contacts
 
             viewHolder.setData(contactName)
         }

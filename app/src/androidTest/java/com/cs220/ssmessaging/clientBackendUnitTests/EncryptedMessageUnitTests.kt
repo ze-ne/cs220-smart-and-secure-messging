@@ -6,10 +6,10 @@ import org.junit.Assert
 import org.junit.Test
 
 class EncryptedMessageUnitTests{
-    private var user1 = User("Joker", "Bad", "Man")
-    private var user2 = User("Ronald", "McDonald", "Clown")
+    private var user1Id = "Joker"
+    private var user2Id = "Ronald"
     // Changed the byte array to something substantial (Not all zeros). Also message type was wrong.
-    private var encryptedmessage = EncryptedMessage(byteArrayOf(1,3,4), "123213", "image", user1, user2, 12)
+    private var encryptedmessage = EncryptedMessage(byteArrayOf(1,3,4), "123213", "image", user1Id, user2Id, 12)
 
     // Note that this constructor test also tests the getters (No setters since all properties are val)
     @Test
@@ -20,60 +20,60 @@ class EncryptedMessageUnitTests{
         Assert.assertEquals("123213", encryptedmessage.conversationId)
         // FIX: Changed expected to image from normal
         Assert.assertEquals("image", encryptedmessage.messageType)
-        Assert.assertEquals(user1, encryptedmessage.sender)
-        Assert.assertEquals(user2, encryptedmessage.recipient)
+        Assert.assertEquals(user1Id, encryptedmessage.senderId)
+        Assert.assertEquals(user2Id, encryptedmessage.recipientId)
         Assert.assertEquals(12, encryptedmessage.timestamp)
     }
 
     @Test
     fun testConstructorFailCases(){
         // Test bad messages (No bytes)
-        var badMessage = EncryptedMessage(ByteArray(0), "123213", "image", user1, user2, 12)
+        var badMessage = EncryptedMessage(ByteArray(0), "123213", "image", user1Id, user2Id, 12)
         //Fix: Change from assertEquals to assertArrayEquals
         Assert.assertArrayEquals(ByteArray(0), badMessage.message)
         Assert.assertEquals("", badMessage.conversationId)
-        //Fix: Change the assertion comparisons to User().userId
-        Assert.assertEquals(User().userId, badMessage.sender.userId)
+        //Fix: Change the assertion comparisons to User()
+        Assert.assertEquals("", badMessage.senderId)
         Assert.assertEquals("", badMessage.messageType)
         Assert.assertEquals(0, badMessage.timestamp)
 
         // Test bad convo id (No id)
-        badMessage = EncryptedMessage(ByteArray(25), "", "image", user1, user2, 12)
+        badMessage = EncryptedMessage(ByteArray(25), "", "image", user1Id, user2Id, 12)
         //Fix: Change from assertEquals to assertArrayEquals
         Assert.assertArrayEquals(ByteArray(0), badMessage.message)
         Assert.assertEquals("", badMessage.conversationId)
-        //Fix: Change the assertion comparisons to User().userId
-        Assert.assertEquals(User().userId, badMessage.sender.userId)
+        //Fix: Change the assertion comparisons to User()
+        Assert.assertEquals("", badMessage.senderId)
         Assert.assertEquals("", badMessage.messageType)
         Assert.assertEquals(0, badMessage.timestamp)
 
         // Test bad messageType
-        badMessage = EncryptedMessage(ByteArray(25), "", "54", user1, user2, 12)
+        badMessage = EncryptedMessage(ByteArray(25), "", "54", user1Id, user2Id, 12)
         //Fix: Change from assertEquals to assertArrayEquals
         Assert.assertArrayEquals(ByteArray(0), badMessage.message)
         Assert.assertEquals("", badMessage.conversationId)
-        //Fix: Change the assertion comparisons to User().userId
-        Assert.assertEquals(User().userId, badMessage.sender.userId)
+        //Fix: Change the assertion comparisons to User()
+        Assert.assertEquals("", badMessage.senderId)
         Assert.assertEquals("", badMessage.messageType)
         Assert.assertEquals(0, badMessage.timestamp)
 
         // Test bad user (No user)
-        badMessage = EncryptedMessage(ByteArray(25), "525", "image", User(), user2, 12)
+        badMessage = EncryptedMessage(ByteArray(25), "525", "image", "", user2Id, 12)
         //Fix: Change from assertEquals to assertArrayEquals
         Assert.assertArrayEquals(ByteArray(0), badMessage.message)
         Assert.assertEquals("", badMessage.conversationId)
-        //Fix: Change the assertion comparisons to User().userId
-        Assert.assertEquals(User().userId, badMessage.sender.userId)
+        //Fix: Change the assertion comparisons to User()
+        Assert.assertEquals("", badMessage.senderId)
         Assert.assertEquals("", badMessage.messageType)
         Assert.assertEquals(0, badMessage.timestamp)
 
         // Test bad timestamp
-        badMessage = EncryptedMessage(ByteArray(25), "525", "image", user1, user2, -1)
+        badMessage = EncryptedMessage(ByteArray(25), "525", "image", user1Id, user2Id, -1)
         //Fix: Change from assertEquals to assertArrayEquals
         Assert.assertArrayEquals(ByteArray(0), badMessage.message)
         Assert.assertEquals("", badMessage.conversationId)
-        //Fix: Change the assertion comparisons to User().userId
-        Assert.assertEquals(User().userId, badMessage.sender.userId)
+        //Fix: Change the assertion comparisons to User()
+        Assert.assertEquals("", badMessage.senderId)
         Assert.assertEquals("", badMessage.messageType)
         Assert.assertEquals(0, badMessage.timestamp)
     }
@@ -92,8 +92,8 @@ class EncryptedMessageUnitTests{
                     ByteArray(0),
                     "",
                     "",
-                    User(),
-                    User(),
+                    "",
+                    "",
                     -1
                 )
             )

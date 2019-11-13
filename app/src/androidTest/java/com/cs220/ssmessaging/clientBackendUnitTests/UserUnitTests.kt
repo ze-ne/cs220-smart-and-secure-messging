@@ -25,7 +25,7 @@ class UserUnitTests{
     @Test
     fun testSecondaryConstructor(){
         // invalid case
-        var user1 = User("id1","first", "last", mutableListOf(User()), mutableListOf())
+        var user1 = User("id1","first", "last", mutableListOf(""), mutableListOf())
         assertEquals("", user1.userId)
         assertEquals("", user1.firstName)
         assertEquals("", user1.lastName)
@@ -35,8 +35,8 @@ class UserUnitTests{
         // Valid case
         var dummyUser1 : User = User("a","b", "c")
         var dummyUser2 : User = User("d","e", "f")
-        var convo : Conversation = Conversation(dummyUser1, dummyUser2, mutableListOf())
-        user1 = User("id1","first", "last", mutableListOf(User("hello", "dumb", "boy")), mutableListOf(convo))
+        var convo : Conversation = Conversation("a", "b", mutableListOf())
+        user1 = User("id1","first", "last", mutableListOf("hello"), mutableListOf(convo))
         assertEquals("id1", user1.userId)
         assertEquals("first", user1.firstName)
         assertEquals("last", user1.lastName)
@@ -52,16 +52,16 @@ class UserUnitTests{
 
         // Valid add
         listSize = user1.contacts.size
-        assertFalse(user2 in user1.contacts)
-        assertTrue(user1.addContact(user2))
+        assertFalse(user2.userId in user1.contacts)
+        assertTrue(user1.addContact(user2.userId))
         assertEquals(listSize + 1, user1.contacts.size)
-        assertTrue(user2 in user1.contacts)
+        assertTrue(user2.userId in user1.contacts)
 
         // Invalid duplicate add
         listSize = user1.contacts.size
-        assertFalse(user1.addContact(user2))
+        assertFalse(user1.addContact(user2.userId))
         assertEquals(listSize, user1.contacts.size)
-        assertTrue(user2 in user1.contacts)
+        assertTrue(user2.userId in user1.contacts)
 
 
 
@@ -73,28 +73,28 @@ class UserUnitTests{
         val user2 = User("id2","first", "last")
         val user3 = User("id3","first", "last")
         var listSize: Int
-        user1.addContact(user2)
+        user1.addContact(user2.userId)
 
         // Valid delete
         listSize = user1.contacts.size
-        assertTrue(user2 in user1.contacts)
-        assertTrue(user1.deleteContact(user2))
-        assertFalse(user2 in user1.contacts)
+        assertTrue(user2.userId in user1.contacts)
+        assertTrue(user1.deleteContact(user2.userId))
+        assertFalse(user2.userId in user1.contacts)
         assertEquals(listSize - 1, user1.contacts.size)
 
 
         // Invalid repeated delete
         listSize = user1.contacts.size
-        assertFalse(user2 in user1.contacts)
-        assertFalse(user1.deleteContact(user2))
-        assertFalse(user2 in user1.contacts)
+        assertFalse(user2.userId in user1.contacts)
+        assertFalse(user1.deleteContact(user2.userId))
+        assertFalse(user2.userId in user1.contacts)
         assertEquals(listSize, user1.contacts.size)
 
         // Invalid unknown user delete
         listSize = user1.contacts.size
-        assertFalse(user3 in user1.contacts)
-        assertFalse(user1.deleteContact(user3))
-        assertFalse(user3 in user1.contacts)
+        assertFalse(user3.userId in user1.contacts)
+        assertFalse(user1.deleteContact(user3.userId))
+        assertFalse(user3.userId in user1.contacts)
         assertEquals(listSize, user1.contacts.size)
     }
 
@@ -102,14 +102,14 @@ class UserUnitTests{
     fun testGetContactById() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
-        user1.addContact(user2)
-        user2.addContact(user1)
+        user1.addContact(user2.userId)
+        user2.addContact(user1.userId)
 
         // Valid get
-        assertTrue(user2 in user1.contacts)
-        assertTrue(user1 in user2.contacts)
-        assertSame(user2, user1.getContactById("id2"))
-        assertSame(user1, user2.getContactById("id1"))
+        assertTrue(user2.userId in user1.contacts)
+        assertTrue(user1.userId in user2.contacts)
+        assertSame(user2.userId, user1.getContactById("id2"))
+        assertSame(user1.userId, user2.getContactById("id1"))
 
         // Invalid get
         assertNull(user1.getContactById("id3"))
@@ -123,7 +123,7 @@ class UserUnitTests{
     fun testAddConversation() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
-        val conversation1 = Conversation(user1, user2)
+        val conversation1 = Conversation(user1.userId, user2.userId)
         var listSize: Int
 
         // Valid add
@@ -145,7 +145,7 @@ class UserUnitTests{
     fun testGetConversationByUserId() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
-        val conversation1 = Conversation(user1, user2)
+        val conversation1 = Conversation(user1.userId, user2.userId)
         user1.addConversation(conversation1)
         user2.addConversation(conversation1)
 
@@ -174,7 +174,7 @@ class UserUnitTests{
     fun send_text_message() {
         val user1 = User("userId1", "User", "One")
         val user2 = User("userId2", "User", "Two")
-        val conversation = Conversation(user1, user2)
+        val conversation = Conversation(user1.userId, user2.userId)
 
         val oldLength: Int = conversation.messages.size
         assertEquals(conversation.messages.size, 0)
@@ -188,7 +188,7 @@ class UserUnitTests{
     fun send_image_message() {
         val user1 = User("userId1", "User", "One")
         val user2 = User("userId2", "User", "Two")
-        val conversation = Conversation(user1, user2)
+        val conversation = Conversation(user1.userId, user2.userId)
 
         val oldLength: Int = conversation.messages.size
         assertEquals(conversation.messages.size, 0)
@@ -203,7 +203,7 @@ class UserUnitTests{
     fun testGetConversationByConversationId() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
-        val conversation = Conversation(user1, user2)
+        val conversation = Conversation(user1.userId, user2.userId)
         val conversationId = conversation.convoId
         val conversationIdBad = "1234567"
 

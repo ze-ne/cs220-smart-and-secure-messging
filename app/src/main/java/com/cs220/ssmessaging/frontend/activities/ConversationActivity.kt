@@ -54,13 +54,13 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
 
         sendMessageButton.setOnClickListener {
             val message = userMessageInput.text
-
+            // TROY MODIFICAITON
             if (message.isNotEmpty()) {
                 val newMessage = TextMessage(
                     message.toString(),
                     conversationId,
-                    currentUser,
-                    messageParticipant,
+                    currentUser.userId,
+                    messageParticipant.userId,
                     Calendar.getInstance().timeInMillis.toInt()
                 )
                 conversation.addMessage(newMessage)

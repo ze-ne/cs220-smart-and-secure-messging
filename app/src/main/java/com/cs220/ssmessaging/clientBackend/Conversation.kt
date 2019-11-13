@@ -14,7 +14,7 @@ class Conversation() {
      * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
 
-    constructor(firstUser : User, secondUser : User, msgs : MutableList<Message>) : this(){
+    constructor(firstUser : String, secondUser : String, msgs : MutableList<Message>) : this(){
 
         // Check if all messages are valid is msgs
         var validMessages : Boolean = true
@@ -31,27 +31,27 @@ class Conversation() {
         }
 
         // The messages in the message list are valid and also the users
-        if(validMessages && User.isValidUser(firstUser) && User.isValidUser(secondUser)){
-            user1 = firstUser
-            user2 = secondUser
+        if(validMessages && User.isValidUserId(firstUser) && User.isValidUserId(secondUser)){
+            user1Id = firstUser
+            user2Id = secondUser
             _messages = msgs
-            convoId = user1.userId + "-" +  user2.userId
+            convoId = user1Id + "-" +  user2Id
         }
     }
 
-    constructor(firstUser : User, secondUser : User) : this(){
+    constructor(firstUser : String, secondUser : String) : this(){
         // Users are valid, so set the vals
-        if(User.isValidUser(firstUser) && User.isValidUser(secondUser)){
-            user1 = firstUser
-            user2 = secondUser
-            convoId = user1.userId + "-" +  user2.userId
+        if(User.isValidUserId(firstUser) && User.isValidUserId(secondUser)){
+            user1Id = firstUser
+            user2Id = secondUser
+            convoId = user1Id + "-" +  user2Id
         }
     }
 
     companion object{
         fun isValidConversation(conversation: Conversation) =
-            User.isValidUser(conversation.user1) &&
-            User.isValidUser(conversation.user2) &&
+            User.isValidUserId(conversation.user1Id) &&
+            User.isValidUserId(conversation.user2Id) &&
             isValidConversationId(conversation.convoId) &&
             isValidLastTimeSynched(conversation.lastTimeSynced)
 
@@ -62,26 +62,26 @@ class Conversation() {
     }
 
     // The following three properties use backing properties since we want to be able to change user directly if need be
-    private var _user : User = User()
-    var user1 : User
+    private var _userId : String = ""
+    var user1Id : String
         get(){
-            return _user
+            return _userId
         }
-        set(user : User) {
-            if(User.isValidUser(user)){
-                _user = user
+        set(user : String) {
+            if(User.isValidUserId(user)){
+                _userId = user
             }
         }
 
 
-    private var _user2 : User = User()
-    var user2 : User
+    private var _user2Id : String = ""
+    var user2Id : String
         get(){
-            return _user2
+            return _user2Id
         }
-        set(user : User) {
-            if(User.isValidUser(user)){
-                _user2 = user
+        set(user : String) {
+            if(User.isValidUserId(user)){
+                _user2Id = user
             }
         }
 

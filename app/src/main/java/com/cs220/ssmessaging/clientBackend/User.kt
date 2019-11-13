@@ -6,7 +6,6 @@ import android.widget.ImageView
 import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.Device
 import com.cs220.ssmessaging.clientBackend.Message
-import com.cs220.ssmessaging.database.FirebaseService
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
@@ -24,7 +23,7 @@ class User() {
      * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
 
-    val firebaseAPI : FirebaseService = FirebaseService()
+    //val firebaseAPI : FirebaseService = FirebaseService()
 
     constructor(userId : String, firstName: String, lastName: String) : this(){
         if(!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId)){
@@ -40,12 +39,12 @@ class User() {
     }
 
     // Additional constructor allows for setting conversations and contacts
-    constructor(userId : String, firstName: String, lastName: String, contacts : MutableList<User>, conversations : MutableList<Conversation>) : this(){
+    constructor(userId : String, firstName: String, lastName: String, contacts : MutableList<String>, conversations : MutableList<Conversation>) : this(){
         var invalidContacts : Boolean = false
         var invalidConversation : Boolean = false
 
         for(cont in contacts){
-            if(!isValidUser(cont)) {
+            if(!isValidUserId(cont)) {
                 invalidContacts = true
                 break
             }
@@ -112,7 +111,7 @@ class User() {
 
     // We set the next two variables' setters to private because we don't want to expose the
     // default setter functions to the world
-    var contacts : MutableList<User> = mutableListOf()
+    var contacts : MutableList<String> = mutableListOf()
         private set
 
     /* We are moving the "Manage Block List" that this variable and its getter/setter
@@ -176,7 +175,7 @@ class User() {
     fun getConversationByUserId(recipientId : String) : Conversation? {
         // TODO: validity checks
         var retConvoList: List<Conversation> = this.conversations
-            .filter { x -> (x.user1.userId == recipientId || x.user2.userId == recipientId)}
+            .filter { x -> (x.user1Id == recipientId || x.user2Id == recipientId)}
         if (retConvoList.isEmpty()) {
             return null
         }
@@ -193,7 +192,7 @@ class User() {
         return retConvoList.single()
     }
 
-    fun addContact(user : User) : Boolean {
+    fun addContact(user : String) : Boolean {
         if(user in this.contacts) {
             return false
         }
@@ -201,15 +200,15 @@ class User() {
         return true
     }
 
-    fun getContactById(userId : String) : User? {
-        var retUserList: List<User> = this.contacts.filter {x -> x.userId == userId}
+    fun getContactById(userId : String) : String? {
+        var retUserList: List<String> = this.contacts.filter {x -> x == userId}
         if (retUserList.isEmpty()) {
             return null
         }
         return retUserList.single()
     }
 
-    fun deleteContact(user : User) : Boolean {
+    fun deleteContact(user : String) : Boolean {
         var index = this.contacts.indexOf(user)
         if (index < 0) {
             return false
@@ -255,7 +254,7 @@ class User() {
     // Handle incoming message from server
     fun receiveMsg(encryptedMsg: EncryptedMessage) : Message {
         // TODO
-        return ImageMessage(ByteArray(0),"", User(), User(), -1)
+        return ImageMessage(ByteArray(0),"", "", "", -1)
     }
 
     // Add your own public key to server
@@ -266,7 +265,6 @@ class User() {
 
     // FIX: Write unit tests for this
     fun addSelfToDatabase() : Boolean {
-        var base64EncodedPublicKey = Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)
-        return firebaseAPI.createUser(this, "123456789", "1234567890", base64EncodedPublicKey)
+        return false
     }
 }

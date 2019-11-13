@@ -14,8 +14,8 @@ import java.lang.IllegalArgumentException
 
 interface Message {
     val conversationId : String
-    val sender : User
-    val recipient : User
+    val senderId : String
+    val recipientId : String
     val timestamp : Int // This should be epoch number
     fun mEquals(m: Message) : Boolean // decides whether the current message equals another message
     companion object{
@@ -27,15 +27,15 @@ interface Message {
 }
 
 class EncryptedMessage(_message : ByteArray, _conversationId : String,
-                       _messageType : String, _sender : User, _recipient : User, _timestamp : Int) : Message {
+                       _messageType : String, _senderId : String, _recipientId : String, _timestamp : Int) : Message {
 
     companion object{
         // Need to unit test
         fun isValidMessage(encryptedMessage: EncryptedMessage) : Boolean =
             isValidMessageBody(encryptedMessage.message) &&
             isValidMessageType(encryptedMessage.messageType) &&
-            User.isValidUser(encryptedMessage.sender) &&
-            User.isValidUser(encryptedMessage.recipient) &&
+            User.isValidUserId(encryptedMessage.senderId) &&
+            User.isValidUserId(encryptedMessage.recipientId) &&
             Message.isValidTimestamp(encryptedMessage.timestamp) &&
             Conversation.isValidConversationId(encryptedMessage.conversationId)
 
@@ -47,8 +47,8 @@ class EncryptedMessage(_message : ByteArray, _conversationId : String,
     }
 
     override val conversationId : String
-    override val sender : User
-    override val recipient : User
+    override val senderId : String
+    override val recipientId : String
     override val timestamp : Int
 
     // Need to write unit test
@@ -57,8 +57,8 @@ class EncryptedMessage(_message : ByteArray, _conversationId : String,
             false
         else {
             ((m as EncryptedMessage).conversationId == conversationId) &&
-            (m.sender.userId == sender.userId) &&
-            (m.recipient.userId == recipient.userId) &&
+            (m.senderId == senderId) &&
+            (m.recipientId == recipientId) &&
             (m.timestamp == timestamp) &&
             (m.message.contentEquals(message)) &&
             (m.messageType == messageType)
@@ -68,22 +68,22 @@ class EncryptedMessage(_message : ByteArray, _conversationId : String,
     val messageType : String
     init {
         if( isValidMessageBody(_message) &&
-            User.isValidUser(_sender) &&
-            User.isValidUser(_recipient) &&
+            User.isValidUserId(_senderId) &&
+            User.isValidUserId(_recipientId) &&
             Message.isValidTimestamp(_timestamp) &&
             Conversation.isValidConversationId(_conversationId) &&
             isValidMessageType(_messageType)){
 
             conversationId = _conversationId
-            sender = _sender
-            recipient = _recipient
+            senderId = _senderId
+            recipientId = _recipientId
             timestamp = _timestamp
             message = _message
             messageType = _messageType
         }else{
             conversationId = ""
-            sender = User("","","")
-            recipient = User("","","")
+            senderId = ""
+            recipientId = ""
             timestamp = 0
             message = ByteArray(0)
             messageType = ""
@@ -95,14 +95,14 @@ interface UnencryptedMessage : Message {
 }
 
 class TextMessage(_message : String, _conversationId : String,
-                  _sender : User, _recipient : User, _timestamp : Int) : UnencryptedMessage {
+                  _senderId : String, _recipientId : String, _timestamp : Int) : UnencryptedMessage {
 
     companion object {
         // Need to unit test
         fun isValidMessage(textMessage : TextMessage) : Boolean =
             isValidMessageBody(textMessage.message) &&
-            User.isValidUser(textMessage.sender) &&
-            User.isValidUser(textMessage.recipient) &&
+            User.isValidUserId(textMessage.senderId) &&
+            User.isValidUserId(textMessage.recipientId) &&
             Message.isValidTimestamp(textMessage.timestamp) &&
             Conversation.isValidConversationId(textMessage.conversationId)
 
@@ -111,8 +111,8 @@ class TextMessage(_message : String, _conversationId : String,
     }
 
     override val conversationId : String
-    override val sender : User
-    override val recipient : User
+    override val senderId : String
+    override val recipientId : String
     override val timestamp : Int
     val message : String
 
@@ -122,8 +122,8 @@ class TextMessage(_message : String, _conversationId : String,
             false
         else {
             ((m as TextMessage).conversationId == conversationId) &&
-            (m.sender.userId == sender.userId) &&
-            (m.recipient.userId == recipient.userId) &&
+            (m.senderId == senderId) &&
+            (m.recipientId == recipientId) &&
             (m.timestamp == timestamp) &&
             (m.message == message)
         }
@@ -131,19 +131,19 @@ class TextMessage(_message : String, _conversationId : String,
 
     init {
         if( isValidMessageBody(_message) &&
-            User.isValidUser(_sender) &&
-            User.isValidUser(_recipient) &&
+            User.isValidUserId(_senderId) &&
+            User.isValidUserId(_recipientId) &&
             Message.isValidTimestamp(_timestamp) &&
             Conversation.isValidConversationId(_conversationId)){
             conversationId = _conversationId
-            sender = _sender
-            recipient = _recipient
+            senderId = _senderId
+            recipientId = _recipientId
             timestamp = _timestamp
             message = _message
         }else{
             conversationId = ""
-            sender = User("","","")
-            recipient = User("","","")
+            senderId = ""
+            recipientId = ""
             timestamp = 0
             message = ""
         }
@@ -152,14 +152,14 @@ class TextMessage(_message : String, _conversationId : String,
 }
 
 class ImageMessage(_message : ByteArray, _conversationId : String,
-                   _sender : User, _recipient: User, _timestamp : Int) : UnencryptedMessage {
+                   _senderId : String, _recipientId: String, _timestamp : Int) : UnencryptedMessage {
 
     companion object{
         // Need to unit test
         fun isValidMessage(imageMessage: ImageMessage) : Boolean =
             isValidMessageBody(imageMessage.message) &&
-            User.isValidUser(imageMessage.sender) &&
-            User.isValidUser(imageMessage.recipient) &&
+            User.isValidUserId(imageMessage.senderId) &&
+            User.isValidUserId(imageMessage.recipientId) &&
             Message.isValidTimestamp(imageMessage.timestamp) &&
             Conversation.isValidConversationId(imageMessage.conversationId)
 
@@ -171,8 +171,8 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
     }
 
     override val conversationId : String
-    override val sender : User
-    override val recipient : User
+    override val senderId : String
+    override val recipientId : String
     override val timestamp : Int
     val message : ByteArray
     var pathToImage : String = ""
@@ -188,8 +188,8 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
             false
         else {
             ((m as ImageMessage).conversationId == conversationId) &&
-            (m.sender.userId == sender.userId) &&
-            (m.recipient.userId == recipient.userId) &&
+            (m.senderId == senderId) &&
+            (m.recipientId == recipientId) &&
             (m.timestamp == timestamp) &&
             (m.message.contentEquals(message))
         }
@@ -197,19 +197,19 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
 
     init {
         if( isValidMessageBody(_message) &&
-            User.isValidUser(_sender) &&
-            User.isValidUser(_recipient) &&
+            User.isValidUserId(_senderId) &&
+            User.isValidUserId(_recipientId) &&
             Message.isValidTimestamp(_timestamp) &&
             Conversation.isValidConversationId(_conversationId)){
             conversationId = _conversationId
-            sender = _sender
-            recipient = _recipient
+            senderId = _senderId
+            recipientId = _recipientId
             timestamp = _timestamp
             message = _message
         }else{
             conversationId = ""
-            sender = User("","","")
-            recipient = User("","","")
+            senderId = ""
+            recipientId = ""
             timestamp = 0
             message = ByteArray(0)
         }

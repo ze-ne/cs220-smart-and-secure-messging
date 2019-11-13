@@ -6,9 +6,9 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class ImageMessageUnitTests{
-    private var user1 = User("Joker", "Bad", "Man")
-    private var user2 = User("Ronald", "McDonald", "Clown")
-    private var imagemessage = ImageMessage(ByteArray(240), "123213", user1, user2, 12)
+    private var user1Id = "Joker"
+    private var user2Id = "Ronald"
+    private var imagemessage = ImageMessage(ByteArray(240), "123213", user1Id, user2Id, 12)
 
     // Note that this constructor test also tests the getters (No setters since all properties are val)
     @Test
@@ -17,46 +17,46 @@ class ImageMessageUnitTests{
         //Fix: Change from assertEquals to assertArrayEquals
         assertArrayEquals(ByteArray(240), imagemessage.message)
         assertEquals("123213", imagemessage.conversationId)
-        assertEquals(user1, imagemessage.sender)
+        assertEquals(user1Id, imagemessage.senderId)
         assertEquals(12, imagemessage.timestamp)
     }
 
     @Test
     fun testConstructorFailCases(){
         // Test bad messages (No bytes)
-        var badMessage = ImageMessage(ByteArray(0), "123213", user1, user2, 12)
+        var badMessage = ImageMessage(ByteArray(0), "123213", user1Id, user2Id, 12)
         //Fix: Change from assertEquals to assertArrayEquals
         assertArrayEquals(ByteArray(0), badMessage.message)
         assertEquals("", badMessage.conversationId)
-        // changed to assert User().userId
-        assertEquals(User().userId, badMessage.sender.userId)
+        // changed to assert User()
+        assertEquals("", badMessage.senderId)
         assertEquals(0, badMessage.timestamp)
 
         // Test bad convo id (No id)
-        badMessage = ImageMessage(ByteArray(25), "", user1, user2, 12)
+        badMessage = ImageMessage(ByteArray(25), "", user1Id, user2Id, 12)
         //Fix: Change from assertEquals to assertArrayEquals
         assertArrayEquals(ByteArray(0), badMessage.message)
         assertEquals("", badMessage.conversationId)
-        // changed to assert User().userId
-        assertEquals(User().userId, badMessage.sender.userId)
+        // changed to assert User()
+        assertEquals("", badMessage.senderId)
         assertEquals(0, badMessage.timestamp)
 
         // Test bad user (No user)
-        badMessage = ImageMessage(ByteArray(25), "525", User(), user2, 12)
+        badMessage = ImageMessage(ByteArray(25), "525", "", user2Id, 12)
         //Fix: Change from assertEquals to assertArrayEquals
         assertArrayEquals(ByteArray(0), badMessage.message)
         assertEquals("", badMessage.conversationId)
-        // changed to assert User().userId
-        assertEquals(User().userId, badMessage.sender.userId)
+        // changed to assert User()
+        assertEquals("", badMessage.senderId)
         assertEquals(0, badMessage.timestamp)
 
         // Test bad timestamp
-        badMessage = ImageMessage(ByteArray(25), "525", user1, user2, -1)
+        badMessage = ImageMessage(ByteArray(25), "525", user1Id, user2Id, -1)
         //Fix: Change from assertEquals to assertArrayEquals
         assertArrayEquals(ByteArray(0), badMessage.message)
         assertEquals("", badMessage.conversationId)
-        // changed to assert User().userId
-        assertEquals(User().userId, badMessage.sender.userId)
+        // changed to assert User()
+        assertEquals("", badMessage.senderId)
         assertEquals(0, badMessage.timestamp)
     }
 
@@ -98,7 +98,7 @@ class ImageMessageUnitTests{
 
         // Invalid message - can only test the "null" message instance (i.e. entries are "" or empty)
         // since the constructors use the isValidMessage() static function
-        assertFalse(ImageMessage.isValidMessage(ImageMessage(ByteArray(0), "", User(), User(), -1)))
+        assertFalse(ImageMessage.isValidMessage(ImageMessage(ByteArray(0), "", "", "", -1)))
     }
 
     @Test

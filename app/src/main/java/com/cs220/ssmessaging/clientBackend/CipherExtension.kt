@@ -72,9 +72,9 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
 
         return when(encryptedMsg.messageType == "image") {
             true ->
-                ImageMessage(decryptedBytes, encryptedMsg.conversationId, encryptedMsg.sender, encryptedMsg.recipient, encryptedMsg.timestamp)
+                ImageMessage(decryptedBytes, encryptedMsg.conversationId, encryptedMsg.senderId, encryptedMsg.recipientId, encryptedMsg.timestamp)
             false ->
-                TextMessage(decryptedBytes.toString(CHARSET), encryptedMsg.conversationId, encryptedMsg.sender, encryptedMsg.recipient, encryptedMsg.timestamp)
+                TextMessage(decryptedBytes.toString(CHARSET), encryptedMsg.conversationId, encryptedMsg.senderId, encryptedMsg.recipientId, encryptedMsg.timestamp)
         }
     }
 
@@ -85,14 +85,14 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             throw InvalidParameterException("Encrypting Message failed due to invalid UnencryptedMessage")
         }
 
-        val recipientPublicKey : PublicKey? = publicKeyRing[unencryptedMsg.recipient.userId]
+        val recipientIdPublicKey : PublicKey? = publicKeyRing[unencryptedMsg.recipientId]
 
-        if(recipientPublicKey == null){
-            throw NullPointerException("Sender public key not found. This means that the keys are unsynced with the server")
+        if(recipientIdPublicKey == null){
+            throw NullPointerException("senderId public key not found. This means that the keys are unsynced with the server")
         }
 
         // Need to init encryptor cipher with new private key every time (this is how it works for Cipher)
-        encryptorCipher.init(Cipher.ENCRYPT_MODE, recipientPublicKey)
+        encryptorCipher.init(Cipher.ENCRYPT_MODE, recipientIdPublicKey)
         var encryptedByteArray : ByteArray
         var messageType : String
 
@@ -106,6 +106,6 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             messageType = "text"
         }
 
-        return EncryptedMessage(encryptedByteArray, unencryptedMsg.conversationId, messageType, unencryptedMsg.sender, unencryptedMsg.recipient, unencryptedMsg.timestamp)
+        return EncryptedMessage(encryptedByteArray, unencryptedMsg.conversationId, messageType, unencryptedMsg.senderId, unencryptedMsg.recipientId, unencryptedMsg.timestamp)
     }
 }
