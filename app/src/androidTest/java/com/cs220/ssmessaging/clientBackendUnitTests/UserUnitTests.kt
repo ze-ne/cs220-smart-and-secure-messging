@@ -5,12 +5,10 @@ import com.cs220.ssmessaging.clientBackend.*
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.clientBackend.Conversation
 
-@RunWith(MockitoJUnitRunner::class)
 class UserUnitTests{
 
     @Test
@@ -22,6 +20,28 @@ class UserUnitTests{
         assertEquals(0, user1.contacts.size)
         assertEquals(0, user1.conversations.size)
 
+    }
+
+    @Test
+    fun testSecondaryConstructor(){
+        // invalid case
+        var user1 = User("id1","first", "last", mutableListOf(User()), mutableListOf())
+        assertEquals("", user1.userId)
+        assertEquals("", user1.firstName)
+        assertEquals("", user1.lastName)
+        assertEquals(0, user1.contacts.size)
+        assertEquals(0, user1.conversations.size)
+
+        // Valid case
+        var dummyUser1 : User = User("a","b", "c")
+        var dummyUser2 : User = User("d","e", "f")
+        var convo : Conversation = Conversation(dummyUser1, dummyUser2, mutableListOf())
+        user1 = User("id1","first", "last", mutableListOf(User("hello", "dumb", "boy")), mutableListOf(convo))
+        assertEquals("id1", user1.userId)
+        assertEquals("first", user1.firstName)
+        assertEquals("last", user1.lastName)
+        assertEquals(1, user1.contacts.size)
+        assertEquals(1, user1.conversations.size)
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.cs220.ssmessaging.clientBackend
 
+import com.cs220.ssmessaging.MyApplication.MyApplication
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.io.File
 import java.io.FileNotFoundException
@@ -26,7 +27,7 @@ class Device(){
 
     // Companion object stores static constants
     companion object{
-        private val keyDir : String = "res/keys/"
+        private val keyDir : String = MyApplication.appContext?.getFilesDir()?.path.toString()
         private var publicKeyFileName : String = "myKey.publicKey"
         private var privateKeyFileName : String = "myKey.privateKey"
     }
@@ -52,7 +53,7 @@ class Device(){
             publicKeyFile.createNewFile()
             privateKeyFile.createNewFile()
 
-            val keyPairGen: KeyPairGenerator = KeyPairGenerator.getInstance("RSA", "BC")
+            val keyPairGen: KeyPairGenerator = KeyPairGenerator.getInstance("RSA")
             keyPairGen.initialize(2048)
             val keyPair: KeyPair = keyPairGen.generateKeyPair()
 
@@ -74,7 +75,7 @@ class Device(){
     // Second init initializes the cipher object
     init {
         // We now get the public and private keys and store them in the cipher extension
-        val keyFactory : KeyFactory = KeyFactory.getInstance("RSA", "BC")
+        val keyFactory : KeyFactory = KeyFactory.getInstance("RSA")
 
 
         val keyFiles : Array<File>? = File(keyDir).listFiles()
@@ -119,7 +120,7 @@ class Device(){
     // Moreover, the new key pair is stored in the resources directory
     // Probably needs refactoring later on.
     fun generateNewKeyPair() : Unit {
-        val keyPairGen : KeyPairGenerator = KeyPairGenerator.getInstance("RSA", "BC")
+        val keyPairGen : KeyPairGenerator = KeyPairGenerator.getInstance("RSA")
         keyPairGen.initialize(2048)
         val keyPair : KeyPair = keyPairGen.generateKeyPair()
 
@@ -133,6 +134,9 @@ class Device(){
 
         publicKeyStream.write(publicKeyBytes)
         privateKeyStream.write(privateKeyBytes)
+
+        publicKeyStream.close()
+        privateKeyStream.close()
 
         cipher.publicKeyRing.put("myKey", publicKey)
         cipher.privateKey = privateKey
