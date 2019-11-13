@@ -19,7 +19,6 @@ import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.frontend.activities.ConversationActivity
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -99,7 +98,7 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
             val conversation = currentUser.conversations[position]
             val fullname = conversation.user2.firstName + " " + conversation.user2.lastName
 
-            viewHolder.setData(fullname)
+            viewHolder.bind(fullname)
 
             viewHolder.itemView.setOnClickListener {
                 // TODO: call gotoConversation here instead
@@ -115,7 +114,7 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
     internal inner class ViewHolder constructor(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
 
-        fun setData(fullname: String) {
+        fun bind(fullname: String) {
             itemView.findViewById<TextView>(R.id.conversation_participant).text = fullname
         }
     }

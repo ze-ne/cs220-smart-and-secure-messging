@@ -1,62 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context=".frontend.activities.ConversationActivity">
 
     <include
             android:id="@+id/conversation_toolbar"
             layout="@layout/layout_toolbar" />
 
-    <ScrollView
-            android:id="@+id/messages_scroll_view"
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/messageList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/message_composition_layout"
-            android:layout_below="@id/conversation_toolbar">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="55dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:scrollbars="vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+    </androidx.recyclerview.widget.RecyclerView>
 
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-            <TextView
-                    android:id="@+id/message_text_display"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="2dp"
-                    android:layout_marginEnd="2dp"
-                    android:layout_marginBottom="50dp"
-                    android:padding="10dp"
-                    android:text="This is a message"
-                    android:textColor="@android:color/background_dark"
-                    android:textSize="20sp" />
-
-        </LinearLayout>
-    </ScrollView>
+    <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimaryDark"
+            android:layout_marginBottom="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/layout_message_area"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
 
     <LinearLayout
-            android:id="@+id/message_composition_layout"
-            android:layout_width="match_parent"
+            android:id="@+id/layout_message_area"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true">
+            android:minHeight="48dp"
+            android:background="#ffffff"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent">
 
         <EditText
                 android:id="@+id/message_input"
-                android:layout_width="350dp"
+                android:hint="enter message"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:hint="Your message here..."
-                android:padding="17dp" />
+                android:maxLines="6"/>
 
-        <ImageButton
+        <Button
                 android:id="@+id/send_message_button"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_send" />
+                android:text="SEND"
+                android:textSize="14dp"
+                android:clickable="true"
+                android:layout_width="64dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:layout_gravity="bottom" />
 
     </LinearLayout>
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
