@@ -1,8 +1,12 @@
 package com.cs220.ssmessaging.database
 
+import androidx.annotation.NonNull
+import com.cs220.ssmessaging.clientBackend.Conversation
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.auth.User as FBUser
 import com.cs220.ssmessaging.clientBackend.User
+import com.google.firebase.Timestamp
+import org.jetbrains.annotations.NotNull
 import java.security.PublicKey
 
 class FirebaseService {
@@ -96,11 +100,45 @@ class FirebaseService {
 
         return success
     }
-    // getPublicKey(user...)
+
+    fun getPublicKey(userId: String) : String {
+        var exists = false
+        var key : String = ""
+        db.collection("users").document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null){
+                    exists = true
+                    key = document.getString("publicKey")!!
+                }
+            }
+
+        return key
+    }
 
     // authentication?
 
-    // addConversation
+    fun addConversation(conversation: Conversation) : Boolean {
+        if (alreadyExists("conversations", conversation.convoId)){
+            return false
+        }
+
+        val toAdd = hashMapOf(
+            "canonicalId" to conversation.convoId,
+            "created" to Timestamp.now(),
+            "users" to arrayOf<String>(conversation.user1.userId, conversation.user2.userId)
+        )
+
+        var success = true
+        db.collection("conversations").document(conversation.convoId)
+            .set(toAdd)
+            .addOnFailureListener {
+                success = false
+            }
+
+        return success
+
+    }
 
     // sendMessage() - need to incorporate Google Store buckets for images
 
