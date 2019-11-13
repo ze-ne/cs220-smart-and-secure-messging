@@ -33,6 +33,8 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_conversation)
 
+        conversationReceiverName = intent.extras!!.get("receiver_name").toString()
+
         messageList.layoutManager = LinearLayoutManager(this)
         messagesAdapter = MessagesAdapter(this)
         messageList.adapter = messagesAdapter
@@ -41,13 +43,13 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
 
         conversationToolbar = findViewById(R.id.conversation_toolbar)
         setSupportActionBar(conversationToolbar)
-        supportActionBar?.title = "Contact name"
+        supportActionBar?.title = conversationReceiverName
 
         sendMessageButton = findViewById(R.id.send_message_button)
         userMessageInput = findViewById(R.id.message_input)
 
         //conversationReceiverName = "filler name"
-        conversationReceiverName = intent.extras!!.get("receiver_name").toString()
+
         getRecipient()
         conversationId = currentUser.userId + "-" + messageParticipant.userId
         getConversation()

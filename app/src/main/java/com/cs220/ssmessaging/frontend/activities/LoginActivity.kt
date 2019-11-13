@@ -10,6 +10,7 @@ import android.widget.Toast
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.frontend.presenters.LoginActivityPresenter
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity(), LoginActivityPresenter.View {
     private val presenter: LoginActivityPresenter = LoginActivityPresenter()
@@ -33,17 +34,47 @@ class LoginActivity : AppCompatActivity(), LoginActivityPresenter.View {
             startActivity(registerIntent)
         }
 
-        loginButton.setOnClickListener{
+        loginButton.setOnClickListener {
             val number = phoneNumber.text.toString().trim()
+            val usernameText = username.text.toString()
             if (number.isEmpty() || number.length < 10) {
-                Toast.makeText(this, "Please enter a valid phone number", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter a valid phone number.", Toast.LENGTH_SHORT)
+                    .show()
             } else {
-                val fullNumber = "+1$number"
-                val authIntent = Intent(this, PhoneAuthActivity::class.java)
-                authIntent.putExtra("phonenumber", fullNumber)
-                startActivity(authIntent)
+                usernameExists(usernameText, number)
             }
         }
+    }
+
+    private fun usernameExists(
+        usernameText: String,
+        number: String
+    ) {
+        FirebaseFirestore.getInstance().collection("Users")
+            .whereEqualTo("canonicalId", usernameText)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.size() == 1) {
+                    val user = document.toObjects(User::class.java)[0]
+                    val fullNumber = "+1$number"
+                    val authIntent = Intent(this, PhoneAuthActivity::class.java)
+                    authIntent.putExtra("phonenumber", fullNumber)
+                    authIntent.putExtra("firstname", user.firstName.toString())
+                    authIntent.putExtra("lastname", user.lastName.toString())
+                    authIntent.putExtra("username", usernameText)
+                    authIntent.putExtra("newuser", false)
+                    startActivity(authIntent)
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Username is not found. Try again or make an account.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun loginSuccessful() {
