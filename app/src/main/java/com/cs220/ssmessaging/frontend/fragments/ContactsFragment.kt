@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.frontend.activities.ConversationActivity
@@ -26,7 +27,7 @@ class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
         // Inflate the layout for this fragment
 
         // TODO: Get current user from login screen
-        currentUser = User("johndoe", "John", "Doe")
+        currentUser = MyApplication.currentUser!!
         return inflater.inflate(R.layout.fragment_contacts, container, false)
     }
 

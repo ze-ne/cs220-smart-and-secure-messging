@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.frontend.presenters.ConversationsListActivityPresenter
 import android.content.Intent
+import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.frontend.activities.ConversationActivity
 
@@ -27,7 +28,7 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
     ): View? {
 
         // TODO: Get current user from login screen
-        currentUser = User("johndoe", "John", "Doe")
+        currentUser = MyApplication.currentUser!!
 
         val conversationsView =
             inflater.inflate(R.layout.fragment_conversations_list, container, false)

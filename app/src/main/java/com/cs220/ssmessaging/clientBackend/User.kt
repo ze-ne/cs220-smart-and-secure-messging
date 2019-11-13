@@ -23,7 +23,7 @@ class User() {
      * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
 
-    val db = FirebaseFirestore.getInstance()
+    //val db = FirebaseFirestore.getInstance()
 
     constructor(userId : String, firstName: String, lastName: String) : this(){
         if(!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId)){

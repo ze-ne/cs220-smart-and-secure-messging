@@ -6,12 +6,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.User
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import org.bouncycastle.asn1.x500.style.RFC4519Style.c
 import java.util.concurrent.TimeUnit
 
 class PhoneAuthActivity : AppCompatActivity() {
@@ -22,7 +24,6 @@ class PhoneAuthActivity : AppCompatActivity() {
     private lateinit var authCode: EditText
     private lateinit var auth: FirebaseAuth
 
-    private var newUser: User? = null
     private var currentUser: User? = null
 
     private var firstname: String? = null
@@ -58,8 +59,8 @@ class PhoneAuthActivity : AppCompatActivity() {
 
     private fun createNewAccount() {
         if (firstname != null && lastname != null && username != null) {
-            newUser = User(username.toString(), firstname.toString(), lastname.toString())
-
+            val newUser = User(username.toString(), firstname.toString(), lastname.toString())
+            MyApplication.currentUser = newUser
         }
     }
 
@@ -77,10 +78,9 @@ class PhoneAuthActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val homeIntent = Intent(this, HomeActivity::class.java)
-                    if (newUser != null) {
-                        // TODO: pass user around
-                        // homeIntent.putExtra("currentUser", newUser)
-                    }
+                    // TODO: pass user around
+                    createNewAccount()
+
                     startActivity(homeIntent)
 
                 } else {
