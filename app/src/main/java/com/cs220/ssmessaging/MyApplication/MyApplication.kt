@@ -16,6 +16,6 @@ class MyApplication : Application() {
         var appContext: Context? = null
             private set
 
-        var currentUser : User = User()
+        var currentUser : User? = null
     }
 }

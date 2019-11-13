@@ -1,13 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".frontend.activities.ConversationActivity">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".frontend.activities.ConversationActivity">
 
-    <TextView
+    <include
+            android:id="@+id/conversation_toolbar"
+            layout="@layout/layout_toolbar" />
+
+    <ScrollView
+            android:id="@+id/messages_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Conversation screen"/>
+            android:layout_height="wrap_content"
+            android:layout_above="@id/message_composition_layout"
+            android:layout_below="@id/conversation_toolbar">
 
-</FrameLayout>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+            <TextView
+                    android:id="@+id/message_text_display"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="50dp"
+                    android:padding="10dp"
+                    android:text="This is a message"
+                    android:textColor="@android:color/background_dark"
+                    android:textSize="20sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+            android:id="@+id/message_composition_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true">
+
+        <EditText
+                android:id="@+id/message_input"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:hint="Your message here..."
+                android:padding="17dp" />
+
+        <ImageButton
+                android:id="@+id/send_message_button"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_send" />
+
+    </LinearLayout>
+
+</RelativeLayout>
