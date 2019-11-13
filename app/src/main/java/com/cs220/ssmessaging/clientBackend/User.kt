@@ -94,6 +94,7 @@ class User() {
         get(){
             return field
         }
+
         set(firstName : String){
             if(isValidName(firstName))
                 field = firstName
