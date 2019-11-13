@@ -306,7 +306,7 @@ class User() {
 
     // Handle incoming message from server
     fun receiveMsg(encryptedMsg: EncryptedMessage) : Message {
-        return ImageMessage(ByteArray(0),"", "", "", -1)
+        return device.cipher.decryptEncryptedMessage(encryptedMsg)
     }
 
     // Add your own public key to server
