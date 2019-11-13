@@ -53,14 +53,15 @@ class LoginActivity : AppCompatActivity(), LoginActivityPresenter.View {
         FirebaseFirestore.getInstance().collection("Users")
             .whereEqualTo("canonicalId", usernameText)
             .get()
-            .addOnSuccessListener { document ->
-                if (document.size() == 1) {
-                    val user = document.toObjects(User::class.java)[0]
+            .addOnSuccessListener { documentQuery ->
+                if (documentQuery.size() == 1) {
+                    val firstname = documentQuery.documents[0].getString("first_name")
+                    val lastname = documentQuery.documents[0].getString("last_name")
                     val fullNumber = "+1$number"
                     val authIntent = Intent(this, PhoneAuthActivity::class.java)
                     authIntent.putExtra("phonenumber", fullNumber)
-                    authIntent.putExtra("firstname", user.firstName.toString())
-                    authIntent.putExtra("lastname", user.lastName.toString())
+                    authIntent.putExtra("firstname", firstname)
+                    authIntent.putExtra("lastname", lastname)
                     authIntent.putExtra("username", usernameText)
                     authIntent.putExtra("newuser", false)
                     startActivity(authIntent)

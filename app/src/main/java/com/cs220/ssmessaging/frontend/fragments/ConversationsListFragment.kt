@@ -50,7 +50,7 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
 
         newConversationButton.setOnClickListener {
             val participantUsername = newConversationInput.text.toString()
-            if (!participantUsername.isEmpty()) {
+            if (participantUsername.isNotEmpty()) {
                 FirebaseFirestore.getInstance().collection("users")
                     .whereEqualTo("canonicalId", participantUsername)
                     .get()
@@ -60,7 +60,11 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
                             val newConvo = Conversation(currentUser, users[0], mutableListOf())
                             currentUser.addConversation(newConvo)
                         } else {
-                            Toast.makeText(activity, "User could not be found. Check the username and try again.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                activity,
+                                "User could not be found. Check the username and try again.",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                     .addOnFailureListener { exception ->

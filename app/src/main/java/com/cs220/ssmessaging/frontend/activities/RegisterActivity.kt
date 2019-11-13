@@ -38,7 +38,7 @@ class RegisterActivity : AppCompatActivity() {
             if (validRegistration(firstnameText, lastnameText, usernameText, number)) {
                 usernameExists(usernameText, firstnameText, lastnameText, number)
             } else {
-                Toast.makeText(this, "Please enter a valid information", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter valid information", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -63,8 +63,8 @@ class RegisterActivity : AppCompatActivity() {
         FirebaseFirestore.getInstance().collection("Users")
             .whereEqualTo("canonicalId", usernameText)
             .get()
-            .addOnSuccessListener { document ->
-                if (document.size() == 0) {
+            .addOnSuccessListener { documentQuery ->
+                if (documentQuery.size() == 0) {
                     val fullNumber = "+1$number"
                     val authIntent = Intent(this, PhoneAuthActivity::class.java)
                     authIntent.putExtra("phonenumber", fullNumber)

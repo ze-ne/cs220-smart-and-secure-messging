@@ -76,7 +76,6 @@ class PhoneAuthActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val homeIntent = Intent(this, HomeActivity::class.java)
-                    // TODO: handle not new user
                     setCurrentUser()
                     if (isNewUser) {
                         MyApplication.currentUser!!.addSelfToDatabase()
