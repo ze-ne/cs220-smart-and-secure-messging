@@ -141,4 +141,23 @@ class Device(){
         cipher.publicKeyRing.put("myKey", publicKey)
         cipher.privateKey = privateKey
     }
+
+    // add another user's public key to both local storage and key ring (temporary)
+    fun addUserPublicKey(userId: String, publicKey: PublicKey): Boolean {
+        var publicKeyFile = File("$keyDir$userId.publicKey")
+
+        // If either one of the two files does not exist, generate a new key pair
+        if (!publicKeyFile.exists()) {
+            publicKeyFile.createNewFile()
+            val publicKeyStream = FileOutputStream(publicKeyFile)
+            publicKeyStream.write(publicKey.encoded)
+            publicKeyStream.close()
+
+            cipher.addKeyToPublicKeyRing(userId, publicKey)
+
+            return true
+        }
+
+        return false
+    }
 }
