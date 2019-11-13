@@ -137,6 +137,7 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
     override val recipient : User
     override val timestamp : Int
     val message : ByteArray
+    var pathToImage : String = ""
     init {
         if(isValidMessage(this)){
             conversationId = _conversationId
