@@ -1,6 +1,7 @@
 package com.cs220.ssmessaging.clientBackend
 
 import android.graphics.Bitmap
+import java.lang.IllegalArgumentException
 
 /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
  * This is because variables are properties and all properties have a private field.
@@ -24,8 +25,8 @@ interface Message {
     }
 }
 
-class EncryptedMessage(message : ByteArray, conversationId : String,
-                       messageType : String, sender : User, recipient : User, timestamp : Int) : Message {
+class EncryptedMessage(_message : ByteArray, _conversationId : String,
+                       _messageType : String, _sender : User, _recipient : User, _timestamp : Int) : Message {
 
     companion object{
         // Need to unit test
@@ -45,49 +46,35 @@ class EncryptedMessage(message : ByteArray, conversationId : String,
     }
 
     override val conversationId : String
-        get(){
-            // TODO
-            return "TODO"
-        }
-
     override val sender : User
-        get(){
-            // TODO
-            return User()
-        }
-
     override val recipient : User
-        get(){
-            // TODO
-            return User()
-        }
-
     override val timestamp : Int
-        get(){
-            // TODO
-            return -1
-        }
-
-    // Message needs to be not empty
     val message : ByteArray
-        get(){
-            // TODO
-            return ByteArray(0)
-        }
-
-    // Message type can only be "image" or "text"
     val messageType : String
-        get(){
-            // TODO
-            return "TODO"
+    init {
+        if(isValidMessage(this)){
+            conversationId = _conversationId
+            sender = _sender
+            recipient = _recipient
+            timestamp = _timestamp
+            message = _message
+            messageType = _messageType
+        }else{
+            conversationId = ""
+            sender = User("","","")
+            recipient = User("","","")
+            timestamp = -1
+            message = ByteArray(0)
+            messageType = ""
         }
+    }
 }
 
 interface UnencryptedMessage : Message {
 }
 
-class TextMessage(message : String, conversationId : String,
-                  sender : User, recipient : User, timestamp : Int) : UnencryptedMessage {
+class TextMessage(_message : String, _conversationId : String,
+                  _sender : User, _recipient : User, _timestamp : Int) : UnencryptedMessage {
 
     companion object {
         // Need to unit test
@@ -103,45 +90,36 @@ class TextMessage(message : String, conversationId : String,
     }
 
     override val conversationId : String
-        get(){
-            // TODO
-            return "TODO"
-        }
-
     override val sender : User
-        get(){
-            // TODO
-            return User()
-        }
-
     override val recipient : User
-        get(){
-            // TODO
-            return User()
-        }
-
     override val timestamp : Int
-        get(){
-            // TODO
-            return -1
-        }
-
-    // Message needs to be not empty
     val message : String
-        get(){
-            // TODO
-            return "TODO"
+
+    init {
+        if(isValidMessage(this)){
+            conversationId = _conversationId
+            sender = _sender
+            recipient = _recipient
+            timestamp = _timestamp
+            message = _message
+        }else{
+            conversationId = ""
+            sender = User("","","")
+            recipient = User("","","")
+            timestamp = -1
+            message = ""
         }
+    }
+
 }
 
-class ImageMessage(message : ByteArray, conversationId : String,
-                   sender : User, recipient: User, timestamp : Int) : UnencryptedMessage {
+class ImageMessage(_message : ByteArray, _conversationId : String,
+                   _sender : User, _recipient: User, _timestamp : Int) : UnencryptedMessage {
 
     companion object{
         // Need to unit test
         fun isValidMessage(imageMessage: ImageMessage) : Boolean =
             isValidMessageBody(imageMessage.message) &&
-            isValidPathToImage(imageMessage.pathToImage) &&
             User.isValidUser(imageMessage.sender) &&
             User.isValidUser(imageMessage.recipient) &&
             Message.isValidTimestamp(imageMessage.timestamp) &&
@@ -155,41 +133,23 @@ class ImageMessage(message : ByteArray, conversationId : String,
     }
 
     override val conversationId : String
-        get(){
-            // TODO
-            return "TODO"
-        }
-
     override val sender : User
-        get(){
-            // TODO
-            return User()
-        }
-
     override val recipient : User
-        get(){
-            // TODO
-            return User()
-        }
-
     override val timestamp : Int
-        get(){
-            // TODO
-            return -1
-        }
-
-    // Message needs to be not empty
     val message : ByteArray
-        get(){
-            // TODO
-            return ByteArray(0)
+    init {
+        if(isValidMessage(this)){
+            conversationId = _conversationId
+            sender = _sender
+            recipient = _recipient
+            timestamp = _timestamp
+            message = _message
+        }else{
+            conversationId = ""
+            sender = User("","","")
+            recipient = User("","","")
+            timestamp = -1
+            message = ByteArray(0)
         }
-
-    var pathToImage : String
-        get(){
-            // TODO
-            return "TODO"
-        }
-        set(imagePath : String){
-        }
+    }
 }
