@@ -1,5 +1,6 @@
 package com.cs220.ssmessaging.clientBackend
 
+import com.cs220.ssmessaging.MyApplication.MyApplication
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.io.File
 import java.io.FileNotFoundException
@@ -26,7 +27,7 @@ class Device(){
 
     // Companion object stores static constants
     companion object{
-        private val keyDir : String = "res/keys/"
+        private val keyDir : String = MyApplication.appContext?.getFilesDir()?.path.toString()
         private var publicKeyFileName : String = "myKey.publicKey"
         private var privateKeyFileName : String = "myKey.privateKey"
     }

@@ -1,5 +1,6 @@
 package com.cs220.ssmessaging.clientBackendUnitTests
 
+import com.cs220.ssmessaging.MyApplication.MyApplication
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
@@ -18,11 +19,13 @@ import java.util.*
 
 
 class DeviceUnitTests{
+    private val expectedPublicKeyPath : String = MyApplication.appContext?.getFilesDir()?.path.toString() + "myKey.publicKey"
+    private val expectedPrivateKeyPath : String = MyApplication.appContext?.getFilesDir()?.path.toString() + "myKey.privateKey"
 
     @After
     fun deleteTestKeys(){
-        var privateKeyFile = File("res/keys/myKey.privateKey")
-        var publicKeyFile = File("res/keys/myKey.publicKey")
+        var privateKeyFile = File(expectedPrivateKeyPath)
+        var publicKeyFile = File(expectedPublicKeyPath)
         privateKeyFile.delete()
         publicKeyFile.delete()
     }
@@ -33,13 +36,13 @@ class DeviceUnitTests{
 
         // Assert that path is correct
         // UNIT TEST FIX: the expected values were flipped
-        assertEquals("res/keys/myKey.publicKey", testDevice.pathToMyPublicKey)
-        assertEquals("res/keys/myKey.privateKey", testDevice.pathToMyPrivateKey)
+        assertEquals(expectedPublicKeyPath, testDevice.pathToMyPublicKey)
+        assertEquals(expectedPrivateKeyPath, testDevice.pathToMyPrivateKey)
 
         // Assert that the files exist
-        var privateKeyFile = File("res/keys/myKey.privateKey")
+        var privateKeyFile = File(expectedPrivateKeyPath)
         assertTrue(privateKeyFile.exists())
-        var publicKeyFile = File("res/keys/myKey.publicKey")
+        var publicKeyFile = File(expectedPublicKeyPath)
         assertTrue(publicKeyFile.exists())
 
         // Verify that the keys are valid by
@@ -71,9 +74,9 @@ class DeviceUnitTests{
         val testDevice = Device()
 
         // First assert that. We need this to know the behavior of the second called constructor
-        var privateKeyFile = File("res/keys/myKey.privateKey")
+        var privateKeyFile = File(expectedPrivateKeyPath)
         assertTrue(privateKeyFile.exists())
-        var publicKeyFile = File("res/keys/myKey.publicKey")
+        var publicKeyFile = File(expectedPublicKeyPath)
         assertTrue(publicKeyFile.exists())
 
         var oldPublicKeyBytes : ByteArray = Files.readAllBytes(publicKeyFile.toPath())
@@ -81,9 +84,9 @@ class DeviceUnitTests{
         val testDevice2 = Device()
 
         // Assert that the files still exist
-        privateKeyFile = File("res/keys/myKey.privateKey")
+        privateKeyFile = File(expectedPrivateKeyPath)
         assertTrue(privateKeyFile.exists())
-        publicKeyFile = File("res/keys/myKey.publicKey")
+        publicKeyFile = File(expectedPublicKeyPath)
         assertTrue(publicKeyFile.exists())
 
         // Finally assert that keys have not changed
@@ -102,21 +105,21 @@ class DeviceUnitTests{
     fun testGetPathToMyPrivateKey(){
         // Since there is only one path, there is only one test case
         val testDevice = Device()
-        assertEquals("res/keys/myKey.privateKey", testDevice.pathToMyPrivateKey)
+        assertEquals(expectedPrivateKeyPath, testDevice.pathToMyPrivateKey)
     }
 
     @Test
     fun testGetPathToMYPublicKey(){
         // Since there is only one path, there is only one test case
         val testDevice = Device()
-        assertEquals("res/keys/myKey.publicKey", testDevice.pathToMyPublicKey)
+        assertEquals(expectedPublicKeyPath, testDevice.pathToMyPublicKey)
     }
 
     @Test
     fun testGenerateNewKeyPair(){
         var testDevice = Device()
-        var privateKeyFile = File("res/keys/myKey.privateKey")
-        var publicKeyFile = File("res/keys/myKey.publicKey")
+        var privateKeyFile = File(expectedPrivateKeyPath)
+        var publicKeyFile = File(expectedPublicKeyPath)
         var oldPublicKeyBytes : ByteArray
         var oldPrivateKeyBytes : ByteArray
 
@@ -128,9 +131,9 @@ class DeviceUnitTests{
             testDevice.generateNewKeyPair()
 
             // Verify that the files still exist
-            privateKeyFile = File("res/keys/myKey.privateKey")
+            privateKeyFile = File(expectedPrivateKeyPath)
             assertTrue(privateKeyFile.exists())
-            publicKeyFile = File("res/keys/myKey.publicKey")
+            publicKeyFile = File(expectedPublicKeyPath)
             assertTrue(publicKeyFile.exists())
 
             // Finally assert that keys have actually changed
