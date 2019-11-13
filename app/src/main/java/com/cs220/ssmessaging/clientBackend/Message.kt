@@ -52,7 +52,13 @@ class EncryptedMessage(_message : ByteArray, _conversationId : String,
     val message : ByteArray
     val messageType : String
     init {
-        if(isValidMessage(this)){
+        if( isValidMessageBody(_message) &&
+            User.isValidUser(_sender) &&
+            User.isValidUser(_recipient) &&
+            Message.isValidTimestamp(_timestamp) &&
+            Conversation.isValidConversationId(_conversationId) &&
+            isValidMessageType(_messageType)){
+
             conversationId = _conversationId
             sender = _sender
             recipient = _recipient
@@ -96,7 +102,11 @@ class TextMessage(_message : String, _conversationId : String,
     val message : String
 
     init {
-        if(isValidMessage(this)){
+        if( isValidMessageBody(_message) &&
+            User.isValidUser(_sender) &&
+            User.isValidUser(_recipient) &&
+            Message.isValidTimestamp(_timestamp) &&
+            Conversation.isValidConversationId(_conversationId)){
             conversationId = _conversationId
             sender = _sender
             recipient = _recipient
@@ -139,7 +149,11 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
     val message : ByteArray
     var pathToImage : String = ""
     init {
-        if(isValidMessage(this)){
+        if( isValidMessageBody(_message) &&
+            User.isValidUser(_sender) &&
+            User.isValidUser(_recipient) &&
+            Message.isValidTimestamp(_timestamp) &&
+            Conversation.isValidConversationId(_conversationId)){
             conversationId = _conversationId
             sender = _sender
             recipient = _recipient

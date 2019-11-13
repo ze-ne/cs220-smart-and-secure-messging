@@ -116,20 +116,24 @@ class CipherExtensionUnitTests{
         var decryptedMessage2 = testCipherExtension.decryptEncryptedMessage(encryptedMessage2)
 
         try{
-            var message : String = (decryptedMessage2 as TextMessage).message
-            var message2 : String = (decryptedMessage as TextMessage).message
+            // FIX: message was assigned to the wrong decrypted message. Same for message2
+            var message : String = (decryptedMessage as TextMessage).message
+            var message2 : String = (decryptedMessage2 as TextMessage).message
 
             assertEquals("ABC", message)
             assertEquals("testId", encryptedMessage.conversationId)
             assertEquals("person1", encryptedMessage.sender.userId)
-            assertEquals("person2", encryptedMessage.sender.userId)
+            // FIX: Now asserting the recipient rather than the sender
+            assertEquals("person2", encryptedMessage.recipient.userId)
             assertEquals(0, encryptedMessage.timestamp)
 
             assertEquals("sad46546 ----", message2)
             assertEquals("testId2", encryptedMessage2.conversationId)
             assertEquals("person1", encryptedMessage2.sender.userId)
-            assertEquals("person2", encryptedMessage2.sender.userId)
-            assertEquals(123, encryptedMessage.timestamp)
+            // FIX: Now asserting the recipient rather than the sender
+            assertEquals("person2", encryptedMessage2.recipient.userId)
+            // FIX: Now asserting encryptedMessage2 rather than encryptedMessage
+            assertEquals(123, encryptedMessage2.timestamp)
         }
         catch(e : ClassCastException){
             fail("decrypt returned the wrong type of message")
@@ -143,8 +147,9 @@ class CipherExtensionUnitTests{
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
 
         // Create new unencrypted text messages
-        var imgMessage : ImageMessage = ImageMessage(ByteArray(10), "testId", sendUser, receiveUser, 0)
-        var imgMessage2 : ImageMessage = ImageMessage(ByteArray(10), "testId2", sendUser, receiveUser, 123)
+        // FIX: The original byte array was a bunch of zeros which meant nothing. We made the array have actual values now.
+        var imgMessage : ImageMessage = ImageMessage(byteArrayOf(1,2,3), "testId", sendUser, receiveUser, 0)
+        var imgMessage2 : ImageMessage = ImageMessage(byteArrayOf(65,54,51,0), "testId2", sendUser, receiveUser, 123)
 
         var encryptedMessage = testCipherExtension.encryptUnencryptedMessage(imgMessage)
         var encryptedMessage2 = testCipherExtension.encryptUnencryptedMessage(imgMessage2)
@@ -154,20 +159,26 @@ class CipherExtensionUnitTests{
         var decryptedMessage2 = testCipherExtension.decryptEncryptedMessage(encryptedMessage2)
 
         try{
-            var message : ByteArray = (decryptedMessage2 as ImageMessage).message
-            var message2 : ByteArray = (decryptedMessage as ImageMessage).message
+            // FIX: message was assigned to the wrong decrypted message. Same for message2
+            var message : ByteArray = (decryptedMessage as ImageMessage).message
+            var message2 : ByteArray = (decryptedMessage2 as ImageMessage).message
 
-            assertEquals(imgMessage.message, message)
+            // FIX: Assert array equals rather than assert equals
+            assertArrayEquals(imgMessage.message, message)
             assertEquals("testId", encryptedMessage.conversationId)
             assertEquals("person1", encryptedMessage.sender.userId)
-            assertEquals("person2", encryptedMessage.sender.userId)
+            // FIX: Now asserting the recipient rather than the sender
+            assertEquals("person2", encryptedMessage.recipient.userId)
             assertEquals(0, encryptedMessage.timestamp)
 
-            assertEquals(imgMessage2.message, message2)
+            // FIX: Assert array equals rather than assert equals
+            assertArrayEquals(imgMessage2.message, message2)
             assertEquals("testId2", encryptedMessage2.conversationId)
             assertEquals("person1", encryptedMessage2.sender.userId)
-            assertEquals("person2", encryptedMessage2.sender.userId)
-            assertEquals(123, encryptedMessage.timestamp)
+            // FIX: Now asserting the recipient rather than the sender
+            assertEquals("person2", encryptedMessage2.recipient.userId)
+            // FIX: Now asserting encryptedMessage2 rather than encryptedMessage
+            assertEquals(123, encryptedMessage2.timestamp)
         }
         catch(e : ClassCastException){
             fail("decrypt returned the wrong type of message")
