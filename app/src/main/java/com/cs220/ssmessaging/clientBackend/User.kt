@@ -127,15 +127,8 @@ class User() {
             // TODO
         } */
 
-    var conversations : MutableList<Conversation>
-        // returns copy of conversations list
-        get() {
-            // TODO
-            return mutableListOf()
-        }
-        private set(convos : MutableList<Conversation>){
-            // TODO
-        }
+    var conversations : MutableList<Conversation> = mutableListOf()
+        private set
 
     var device : Device = Device()
         get(){
@@ -160,8 +153,12 @@ class User() {
             Log.w(TAG, "Error adding conversation document", e)
         }
         return true*/
-        // TODO
-        return false
+        if(convo in this.conversations) {
+            return false
+        }
+        this.conversations.add(convo)
+        // TODO: write convo validity checks
+        return true
     }
 
     // FIX: Write unit tests for this
@@ -177,28 +174,48 @@ class User() {
     }
 
     fun getConversationByUserId(recipientId : String) : Conversation? {
-        // TODO
-        return null
+        // TODO: validity checks
+        var retConvoList: List<Conversation> = this.conversations
+            .filter { x -> (x.user1.userId == recipientId || x.user2.userId == recipientId)}
+        if (retConvoList.isEmpty()) {
+            return null
+        }
+        return retConvoList.single()
     }
 
     fun getConversationByConversationId(convoId: String) : Conversation? {
-        // TODO
-        return null
+        // TODO: validity checks
+        var retConvoList: List<Conversation> = this.conversations
+            .filter { x -> x.convoId == convoId}
+        if (retConvoList.isEmpty()) {
+            return null
+        }
+        return retConvoList.single()
     }
 
     fun addContact(user : User) : Boolean {
-        // TODO
-        return false
+        if(user in this.contacts) {
+            return false
+        }
+        this.contacts.add(user)
+        return true
     }
 
     fun getContactById(userId : String) : User? {
-        // TODO
-        return null
+        var retUserList: List<User> = this.contacts.filter {x -> x.userId == userId}
+        if (retUserList.isEmpty()) {
+            return null
+        }
+        return retUserList.single()
     }
 
     fun deleteContact(user : User) : Boolean {
-        // TODO
-        return false
+        var index = this.contacts.indexOf(user)
+        if (index < 0) {
+            return false
+        }
+        this.contacts.removeAt(index)
+        return true
     }
 
     /* We are moving the "Manage Block List" use case that these methods implement to iteration 2

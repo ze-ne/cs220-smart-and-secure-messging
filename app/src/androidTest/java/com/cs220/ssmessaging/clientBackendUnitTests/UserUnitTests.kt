@@ -57,16 +57,13 @@ class UserUnitTests{
         assertEquals(listSize + 1, user1.contacts.size)
         assertTrue(user2 in user1.contacts)
 
-        // Invalid null add
-        listSize = user1.contacts.size
-        assertFalse(user1.addContact(null as User))
-        assertEquals(listSize, user1.contacts.size)
-
         // Invalid duplicate add
         listSize = user1.contacts.size
         assertFalse(user1.addContact(user2))
         assertEquals(listSize, user1.contacts.size)
         assertTrue(user2 in user1.contacts)
+
+
 
     }
 
@@ -85,6 +82,7 @@ class UserUnitTests{
         assertFalse(user2 in user1.contacts)
         assertEquals(listSize - 1, user1.contacts.size)
 
+
         // Invalid repeated delete
         listSize = user1.contacts.size
         assertFalse(user2 in user1.contacts)
@@ -98,12 +96,6 @@ class UserUnitTests{
         assertFalse(user1.deleteContact(user3))
         assertFalse(user3 in user1.contacts)
         assertEquals(listSize, user1.contacts.size)
-
-        // Invalid nonsense user delete
-        listSize = user1.contacts.size
-        assertFalse(user1.deleteContact(null as User))
-        assertEquals(listSize, user1.contacts.size)
-
     }
 
     @Test
@@ -124,10 +116,6 @@ class UserUnitTests{
 
         // Invalid empty parameter get
         assertNull(user1.getContactById(""))
-
-        // Invalid null parameter get
-        assertNull(user1.getContactById(null as String))
-
 
     }
 
@@ -151,11 +139,6 @@ class UserUnitTests{
         assertFalse(user1.addConversation(conversation1))
         assertEquals(listSize, user1.conversations.size)
 
-        // Invalid null add
-        listSize = user1.conversations.size
-        assertFalse(user1.addConversation(null as Conversation))
-        assertEquals(listSize, user1.conversations.size)
-
     }
 
     @Test
@@ -175,9 +158,6 @@ class UserUnitTests{
 
         // Invalid get empty parameter
         assertNull(user1.getConversationByUserId(""))
-
-        // Invalid get null parameter
-        assertNull(user1.getConversationByUserId(null as String))
 
     }
 
@@ -239,9 +219,6 @@ class UserUnitTests{
 
         // Invalid get empty parameter
         assertNull(user2.getConversationByConversationId(""))
-
-        // Invalid get null parameter
-        assertNull(user2.getConversationByConversationId(null as String))
 
     }
 
