@@ -40,33 +40,26 @@ class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
 
         private val layoutInflater = LayoutInflater.from(context)
 
-        override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): ConversationsListFragment.ViewHolder {
-            val view = layoutInflater.inflate(R.layout.item_conversation, viewGroup, false)
+        override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): ContactsFragment.ViewHolder {
+            val view = layoutInflater.inflate(R.layout.item_contact, viewGroup, false)
             return ViewHolder(view)
         }
 
-        override fun onBindViewHolder(viewHolder: ConversationsListFragment.ViewHolder, position: Int) {
-            val conversation = currentUser.conversations[position]
-            val fullname = conversation.user2.firstName + " " + conversation.user2.lastName
+        override fun onBindViewHolder(viewHolder: ContactsFragment.ViewHolder, position: Int) {
+            val contacts = currentUser.contacts[position]
+            val contactName = contacts.firstName + " " + contacts.lastName
 
-            viewHolder.setData(fullname)
-
-            viewHolder.itemView.setOnClickListener {
-                // TODO: call gotoConversation here instead
-                val conversationIntent = Intent(context, ConversationActivity::class.java)
-                conversationIntent.putExtra("receiver_name", fullname)
-                startActivity(conversationIntent)
-            }
+            viewHolder.setData(contactName)
         }
 
-        override fun getItemCount() = currentUser.conversations.size
+        override fun getItemCount() = currentUser.contacts.size
     }
 
     internal inner class ViewHolder constructor(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
 
-        fun setData(fullname: String) {
-            itemView.findViewById<TextView>(R.id.conversation_participant).text = fullname
+        fun setData(contactName: String) {
+            itemView.findViewById<TextView>(R.id.contact).text = contactName
         }
 
 }
