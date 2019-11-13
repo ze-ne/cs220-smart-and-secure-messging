@@ -17,18 +17,16 @@ class FirebaseService {
             .addOnSuccessListener {  }
     }
 */
-/*
+
     // getUserByDatabaseId
 
-    // createUser
-    fun createUser(newUser: User, password_hash : String, phone : String, publicKey: String): Boolean {
+    private fun alreadyExists(collection : String, name : String) : Boolean {
+        val ref = db.collection(collection).document(name)
         var exists = false
 
-        val usersRef = db.collection("users").document(newUser.userId)
-        usersRef.get()
+        ref.get()
             .addOnSuccessListener { document ->
                 if (document != null) {
-                } else {
                     exists = true
                 }
             }
@@ -36,7 +34,13 @@ class FirebaseService {
                 exists = false
             }
 
-        if (exists.not()) {
+        return exists
+    }
+
+    // createUser
+    fun createUser(newUser: User, password_hash : String, phone : String, publicKey: String): Boolean {
+
+        if (alreadyExists("users", newUser.userId)) {
             return false
         }
 
@@ -64,12 +68,17 @@ class FirebaseService {
     }
 
     // editUser
-    fun editUser(newUser: User, password_hash : String, phone : String, publicKey: String): Boolean {
+    fun editUser(user: User, password_hash : String, phone : String, publicKey: String): Boolean {
+
+        if(alreadyExists("users", user.userId).not()) {
+            return false
+        }
+
         val toAdd = hashMapOf(
-            "name" to newUser.userId,
-            "canonicalId" to newUser.userId,
-            "first_name" to newUser.firstName,
-            "last_name" to newUser.lastName,
+            "name" to user.userId,
+            "canonicalId" to user.userId,
+            "first_name" to user.firstName,
+            "last_name" to user.lastName,
             "password_hash" to password_hash,
             "phone" to phone,
             "publicKey" to publicKey
@@ -78,7 +87,7 @@ class FirebaseService {
         var success = true
         //success@
 
-        db.collection("users").document(newUser.userId)
+        db.collection("users").document(user.userId)
             .set(toAdd)
             .addOnSuccessListener { }
             .addOnFailureListener {
@@ -87,7 +96,6 @@ class FirebaseService {
 
         return success
     }
-*/
     // getPublicKey(user...)
 
     // authentication?
