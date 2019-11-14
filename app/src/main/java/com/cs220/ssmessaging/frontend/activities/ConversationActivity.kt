@@ -57,34 +57,18 @@ class ConversationActivity : AppCompatActivity() {
                 userMessageInput.text.clear()
             }
         }
-
-        println("ID :::: " + conversation.convoId)
-        //println("MESSAGES :::: " + conversation.messages)
         addMessageListener(conversation.convoId)
-
     }
 
     fun addMessageListener(convoId: String) {
-        println("addMessageListener")
 
         val msgRef = db.collection("conversations").document(convoId)
-        msgRef.collection("messages").addSnapshotListener { snapshot, e ->
+        msgRef.collection("messages").orderBy("timestamp").addSnapshotListener { snapshot, e ->
             if (e != null) {
                 return@addSnapshotListener
             }
 
             for (dc in snapshot!!.documentChanges) {
-
-                            /*
-                            var encryptedMessage = EncryptedMessage(
-                                (dc.document.data.getValue("data") as String).toByteArray(Charsets.UTF_8),
-                                convoId,
-                                dc.document.data.getValue("message_type") as String,
-                                senderId,
-                                dc.document.data.getValue("recipient_id") as String,
-                                dc.document.data.getValue("timestamp") as Long
-                            )
-                            */
 
                 val decryptedMessage = TextMessage(
                     (dc.document.data.getValue("data") as String),
@@ -93,10 +77,7 @@ class ConversationActivity : AppCompatActivity() {
                     dc.document.data.getValue("recipient_id") as String,
                     dc.document.data.getValue("timestamp") as Long
                 )
-                println("MESSAGE :::: " + decryptedMessage.message)
                 currentUser.receiveMsg(decryptedMessage)
-
-
             }
         }
     }
