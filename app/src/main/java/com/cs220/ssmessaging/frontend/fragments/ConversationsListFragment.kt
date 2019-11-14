@@ -62,6 +62,7 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
                         if (documentReference.size() == 1) {
                             val newConvo = Conversation(currentUser.userId, participantUsername)
                             currentUser.startConversation(newConvo)
+                            newConversationInput.text.clear()
                             val conversationIntent = Intent(activity, ConversationActivity::class.java)
                             conversationIntent.putExtra("receiver_name", participantUsername)
                             startActivity(conversationIntent)
