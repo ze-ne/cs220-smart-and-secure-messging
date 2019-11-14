@@ -14,6 +14,7 @@ import java.security.spec.X509EncodedKeySpec
 import java.time.Instant
 import java.util.*
 
+
 const val TAG = "User"
 
 class User() {
@@ -318,8 +319,12 @@ class User() {
     }
 
     // Handle incoming message from server
-    fun receiveMsg(encryptedMsg: EncryptedMessage) : Message {
-        return device.cipher.decryptEncryptedMessage(encryptedMsg)
+    fun receiveMsg(encryptedMsg: EncryptedMessage) : Boolean {
+        var decryptedMsg = device.cipher.decryptEncryptedMessage(encryptedMsg)
+        var localConvoObject = getConversationByUserId(decryptedMsg.senderId)
+        localConvoObject ?: return false
+        localConvoObject ?. addMessage(decryptedMsg)
+        return true
     }
 
     // Add your own public key to server
