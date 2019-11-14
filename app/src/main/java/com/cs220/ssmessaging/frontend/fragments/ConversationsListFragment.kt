@@ -17,10 +17,8 @@ import android.widget.EditText
 import android.widget.Toast
 import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.clientBackend.Conversation
-import com.cs220.ssmessaging.clientBackend.Message
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.frontend.activities.ConversationActivity
-import com.cs220.ssmessaging.frontend.activities.HomeActivity
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -63,7 +61,8 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
                             val newConvo = Conversation(currentUser.userId, participantUsername)
                             currentUser.startConversation(newConvo)
                             newConversationInput.text.clear()
-                            val conversationIntent = Intent(activity, ConversationActivity::class.java)
+                            val conversationIntent =
+                                Intent(activity, ConversationActivity::class.java)
                             conversationIntent.putExtra("receiver_name", participantUsername)
                             startActivity(conversationIntent)
                         } else {
@@ -132,7 +131,6 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
 
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
             val conversation = currentUser.conversations[position]
-            // TROY MODIFICATION
             val fullname = conversation.user1Id + "-" + conversation.user2Id
 
             viewHolder.bind(fullname)
