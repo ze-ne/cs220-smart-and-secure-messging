@@ -17,9 +17,11 @@ import android.widget.EditText
 import android.widget.Toast
 import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.clientBackend.Conversation
+import com.cs220.ssmessaging.clientBackend.Message
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.frontend.activities.ConversationActivity
 import com.cs220.ssmessaging.frontend.activities.HomeActivity
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -29,6 +31,7 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
     private lateinit var newConversationInput: EditText
     private lateinit var newConversationButton: Button
     private lateinit var currentUser: User
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,6 +79,8 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
             }
         }
 
+        addConversationListener()
+
         return conversationsView
     }
 
@@ -89,6 +94,29 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
 
     override fun updateConversationsList(conversationID: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun addConversationListener() {
+        db.collection("conversations").whereArrayContains("users", currentUser.userId)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && !snapshot.isEmpty()) {
+                    for (dc: DocumentChange in snapshot.documentChanges) {
+                        val document = dc.document
+                        val users = document.get("users") as List<String>
+                        val conversation = Conversation(users.get(0), users.get(1), ArrayList())
+
+                        when (dc.type) {
+                            DocumentChange.Type.ADDED -> currentUser.addConversation(conversation)
+                            DocumentChange.Type.MODIFIED -> println("TODO")
+                            DocumentChange.Type.REMOVED -> println("TODO")
+                        }
+                    }
+                }
+            }
     }
 
     internal inner class ConversationsListAdapter(context: Context) :
