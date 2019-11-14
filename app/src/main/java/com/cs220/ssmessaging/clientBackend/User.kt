@@ -345,9 +345,7 @@ class User() {
         return retVal
     }
 
-    fun receiveMsgFromDb(encryptedMsg: EncryptedMessage) : Boolean {
-        var retVal = false
-
+    fun addNewMessageListener() : Boolean {
         db.collection("conversations")
             .whereArrayContains("users", this.userId)
             .addSnapshotListener { snapshots, e ->
@@ -366,14 +364,13 @@ class User() {
                                 dc.document.data.getValue("recipient_id") as String,
                                 dc.document.data.getValue("timestamp") as Long
                             )
-                            var retMessage = receiveMsg(encryptedMsg)
+                            var retMessage = receiveMsg(encryptedMessage)
                             addMessageToConvo(retMessage)
-                            retVal = true
                         }
                     }
                 }
             }
-        return retVal
+        return true
     }
 
     // Handle incoming message from server
