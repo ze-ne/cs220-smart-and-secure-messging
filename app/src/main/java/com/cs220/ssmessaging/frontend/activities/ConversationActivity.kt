@@ -2,6 +2,7 @@ package com.cs220.ssmessaging.frontend.activities
 
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -42,13 +43,11 @@ class ConversationActivity : AppCompatActivity() {
         setSupportActionBar(conversationToolbar)
         supportActionBar?.title = conversationReceiverName
 
+        conversation = currentUser.getConversationByUserId(conversationReceiverName)!!
+        addMessageListener(conversation.convoId)
+
         sendMessageButton = findViewById(R.id.send_message_button)
         userMessageInput = findViewById(R.id.message_input)
-
-        conversation = currentUser.getConversationByUserId(conversationReceiverName)!!
-        messagesAdapter = MessagesAdapter(this, conversation.messages as ArrayList<TextMessage>)
-        message_recycler_view.scrollToPosition(conversation.messages.size - 1)
-        message_recycler_view.adapter = messagesAdapter
 
         sendMessageButton.setOnClickListener {
             val message = userMessageInput.text
@@ -57,10 +56,10 @@ class ConversationActivity : AppCompatActivity() {
                 userMessageInput.text.clear()
             }
         }
-        addMessageListener(conversation.convoId)
     }
 
-    fun addMessageListener(convoId: String) {
+    //
+    private fun addMessageListener(convoId: String) {
 
         val msgRef = db.collection("conversations").document(convoId)
         msgRef.collection("messages").orderBy("timestamp").addSnapshotListener { snapshot, e ->
@@ -79,6 +78,16 @@ class ConversationActivity : AppCompatActivity() {
                 )
                 currentUser.receiveMsg(decryptedMessage)
             }
+            displayMessages()
         }
+
     }
+
+    //
+    private fun displayMessages() {
+        messagesAdapter = MessagesAdapter(this, conversation.messages as ArrayList<TextMessage>)
+        message_recycler_view.scrollToPosition(conversation.messages.size - 1)
+        message_recycler_view.adapter = messagesAdapter
+    }
+
 }
