@@ -263,10 +263,31 @@ class User() {
         val timestamp = Instant.now().toEpochMilli()
         val txtMsg = TextMessage(msg, convo.convoId,this.userId, recipient,timestamp)
         convo.addMessage(txtMsg)
-        sendEncryptedMsg(txtMsg, convo)
+        val toSend = hashMapOf(
+            "bucket_url" to "",
+            //"data" to msg.message.toString(Charsets.UTF_8),
+            "data" to txtMsg.message,
+            //"message_type" to msg.messageType,
+            "message_type" to "text",
+            "sender_id" to txtMsg.senderId,
+            "recipient_id" to txtMsg.recipientId,
+            "timestamp" to txtMsg.timestamp
+        )
+
+        db.collection("conversations")
+            .document(convo.convoId)
+            .collection("messages")
+            .document()
+            .set(toSend)
+            .addOnSuccessListener {
+                Log.d("sendTextMsg", "success")
+            }
+            .addOnFailureListener {
+                Log.d("sendTextMsg", "failure")
+            }
     }
 
-    // Sends image message to server
+    // Sends image message to server - For iteration 2
     /*fun sendImageMsg(byteArray: ByteArray, convo : Conversation){
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
@@ -274,16 +295,14 @@ class User() {
         sendEncryptedMsg(txtMsg, convo)
     }*/
 
-    private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
+    // For iteration 2 - Encryption
+    /*private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
         // Encryption has some bugs, we are disabling it for now.
-        //val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
-        val msg = unencryptedMsg
+        val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
         val toSend = hashMapOf(
             "bucket_url" to "",
-            //"data" to msg.message.toString(Charsets.UTF_8),
-            "data" to msg,
-            //"message_type" to msg.messageType,
-            "message_type" to "text",
+            "data" to msg.message.toString(Charsets.UTF_8),
+            "message_type" to msg.messageType,
             "sender_id" to msg.senderId,
             "recipient_id" to msg.recipientId,
             "timestamp" to msg.timestamp
@@ -300,7 +319,7 @@ class User() {
             .addOnFailureListener {
                 Log.d("sendTextMsg", "failure")
             }
-    }
+    }*/
 
     // Gets and stores public key of user from server
     fun getUserPublicKey(userId : String) : Boolean{

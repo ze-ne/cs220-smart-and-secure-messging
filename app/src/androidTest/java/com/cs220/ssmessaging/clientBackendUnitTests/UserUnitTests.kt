@@ -184,7 +184,7 @@ class UserUnitTests{
         assertTrue(searchForTextMessage(conversation.messages as MutableList<TextMessage>, "Hi, how are you?"))
     }
 
-    @Test
+    /*@Test
     fun send_image_message() {
         val user1 = User("userId1", "User", "One")
         val user2 = User("userId2", "User", "Two")
@@ -197,7 +197,7 @@ class UserUnitTests{
 
         assertEquals(conversation.messages.size, oldLength + 1)
         assertEquals((conversation.messages[0] as ImageMessage).message, null)
-    }
+    }*/
 
     @Test
     fun testGetConversationByConversationId() {
