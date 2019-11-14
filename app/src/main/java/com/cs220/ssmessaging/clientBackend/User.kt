@@ -167,22 +167,18 @@ class User() {
 
     // FIX: Write unit tests for this
     fun startConversation(convo : Conversation) : Boolean {
-        Log.d("CONVO ID: ", convo.convoId)
         val toAdd = hashMapOf(
             "canonicalId" to convo.convoId,
             "created" to Timestamp.now(),
             "users" to listOf<String>(convo.user1Id, convo.user2Id)
         )
-
-        this.conversations.add(convo)
-
+        addConversation(convo)
         db.collection("conversations").document(convo.convoId)
             .set(toAdd)
             .addOnSuccessListener {
                 Log.d("startConversation", "success")
                 getUserPublicKey(convo.user1Id)
                 getUserPublicKey(convo.user2Id)
-                addConversation(convo)
             }
             .addOnFailureListener {
                 Log.d("startConversation", "failure")
@@ -266,6 +262,7 @@ class User() {
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
         val txtMsg = TextMessage(msg, convo.convoId,this.userId, recipient,timestamp)
+        convo.addMessage(txtMsg)
         sendEncryptedMsg(txtMsg, convo)
     }
 
@@ -294,7 +291,6 @@ class User() {
             .document()
             .set(toSend)
             .addOnSuccessListener {
-                convo.addMessage(msg)
                 Log.d("sendTextMsg", "success")
             }
             .addOnFailureListener {
@@ -309,6 +305,7 @@ class User() {
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 val keyField = documentSnapshot.getString("publicKey")!!
+                Log.d("hello",keyField)
                 val publicKey: PublicKey = keyFactory.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(keyField)))
 
                 val fileUserId = if (this.userId == userId) "myKey" else userId

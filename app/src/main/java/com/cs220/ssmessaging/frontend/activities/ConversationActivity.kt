@@ -18,6 +18,7 @@ import com.google.firebase.firestore.DocumentChange
 import kotlinx.android.synthetic.main.activity_conversation.*
 import java.nio.charset.Charset
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.View {
@@ -39,8 +40,8 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
         conversationReceiverName = intent.extras!!.get("receiver_name").toString()
 
         messageList.layoutManager = LinearLayoutManager(this)
-        messagesAdapter = MessagesAdapter(this)
-        messageList.adapter = messagesAdapter
+
+
 
         currentUser = MyApplication.currentUser!!
 
@@ -52,6 +53,8 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
         userMessageInput = findViewById(R.id.message_input)
 
         conversation = currentUser.getConversationByUserId(conversationReceiverName)!!
+        messagesAdapter = MessagesAdapter(this, conversation.messages as ArrayList<TextMessage>)
+        messageList.adapter = messagesAdapter
 
         sendMessageButton.setOnClickListener {
             val message = userMessageInput.text

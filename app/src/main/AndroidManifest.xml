@@ -15,6 +15,11 @@
         <activity android:name="com.cs220.ssmessaging.frontend.activities.PhoneAuthActivity">
         </activity>
         <activity android:name="com.cs220.ssmessaging.frontend.activities.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name="com.cs220.ssmessaging.frontend.activities.ConversationActivity">
         </activity>
@@ -24,11 +29,6 @@
         </activity>
         <activity android:name=".frontend.activities.RegisterActivity"></activity>
         <activity android:name="com.cs220.ssmessaging.frontend.activities.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

@@ -62,6 +62,7 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
                         if (documentReference.size() == 1) {
                             val newConvo = Conversation(currentUser.userId, participantUsername)
                             currentUser.startConversation(newConvo)
+                            newConversationInput.text.clear()
                             val conversationIntent = Intent(activity, ConversationActivity::class.java)
                             conversationIntent.putExtra("receiver_name", participantUsername)
                             startActivity(conversationIntent)
@@ -132,14 +133,14 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
             val conversation = currentUser.conversations[position]
             // TROY MODIFICATION
-            val fullname = conversation.user2Id
+            val fullname = conversation.user1Id + "-" + conversation.user2Id
 
             viewHolder.bind(fullname)
 
             viewHolder.itemView.setOnClickListener {
                 // TODO: call gotoConversation here instead
                 val conversationIntent = Intent(context, ConversationActivity::class.java)
-                conversationIntent.putExtra("receiver_name", fullname)
+                conversationIntent.putExtra("receiver_name", conversation.user2Id)
                 startActivity(conversationIntent)
             }
         }
