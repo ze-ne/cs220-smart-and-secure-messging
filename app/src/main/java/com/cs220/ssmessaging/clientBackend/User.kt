@@ -259,19 +259,19 @@ class User() {
     }
 
     // Sends image message to server
-    fun sendImageMsg(byteArray: ByteArray, convo : Conversation){
+    /*fun sendImageMsg(byteArray: ByteArray, convo : Conversation){
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
         val txtMsg = ImageMessage(byteArray, convo.convoId,this.userId, recipient,timestamp)
         sendEncryptedMsg(txtMsg, convo)
-    }
+    }*/
 
-    private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
-        val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
+    private fun sendEncryptedMsg(msg: TextMessage, convo: Conversation) {
+        //val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
         val toSend = hashMapOf(
             "bucket_url" to "",
             "data" to msg.message,
-            "message_type" to msg.messageType,
+            "message_type" to "0",
             "sender_id" to msg.senderId,
             "recipient_id" to msg.recipientId,
             "timestamp" to msg.timestamp
