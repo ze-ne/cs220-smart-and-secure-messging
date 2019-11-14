@@ -7,6 +7,7 @@ import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.Device
 import com.cs220.ssmessaging.clientBackend.Message
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import java.security.KeyFactory
 import java.security.spec.X509EncodedKeySpec
@@ -304,9 +305,78 @@ class User() {
         return false
     }
 
+    fun receiveConvoFromDb(encryptedMsg: EncryptedMessage) : Boolean {
+        var retVal = false
+
+        db.collection("conversations")
+            .whereArrayContains("users", this.userId)
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    Log.w(TAG, "listen:error", e)
+                    return@addSnapshotListener
+                }
+
+                for (dc in snapshots!!.documentChanges) {
+                    when (dc.type) {
+                        DocumentChange.Type.ADDED -> {
+                            var encryptedMessage = EncryptedMessage(dc.document.data.getValue("data") as ByteArray,
+                                "",
+                                dc.document.data.getValue("message_type") as String,
+                                dc.document.data.getValue("sender_id") as String,
+                                dc.document.data.getValue("recipient_id") as String,
+                                dc.document.data.getValue("timestamp") as Long
+                            )
+                            var retMessage = receiveMsg(encryptedMsg)
+                            addMessageToConvo(retMessage)
+                            retVal = true
+                        }
+                    }
+                }
+            }
+        return retVal
+    }
+
+    fun receiveMsgFromDb(encryptedMsg: EncryptedMessage) : Boolean {
+        var retVal = false
+
+        db.collection("conversations")
+            .whereArrayContains("users", this.userId)
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    Log.w(TAG, "listen:error", e)
+                    return@addSnapshotListener
+                }
+
+                for (dc in snapshots!!.documentChanges) {
+                    when (dc.type) {
+                        DocumentChange.Type.ADDED -> {
+                            var encryptedMessage = EncryptedMessage(dc.document.data.getValue("data") as ByteArray,
+                                "",
+                                dc.document.data.getValue("message_type") as String,
+                                dc.document.data.getValue("sender_id") as String,
+                                dc.document.data.getValue("recipient_id") as String,
+                                dc.document.data.getValue("timestamp") as Long
+                            )
+                            var retMessage = receiveMsg(encryptedMsg)
+                            addMessageToConvo(retMessage)
+                            retVal = true
+                        }
+                    }
+                }
+            }
+        return retVal
+    }
+
     // Handle incoming message from server
     fun receiveMsg(encryptedMsg: EncryptedMessage) : Message {
         return device.cipher.decryptEncryptedMessage(encryptedMsg)
+    }
+
+    fun addMessageToConvo(message: Message): Boolean {
+        var localConvoObject = getConversationByUserId(message.senderId)
+        localConvoObject ?: return false
+        localConvoObject ?. addMessage(message)
+        return true
     }
 
     // Add your own public key to server
