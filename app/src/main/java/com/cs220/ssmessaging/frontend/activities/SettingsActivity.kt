@@ -40,6 +40,7 @@ class SettingsActivity : AppCompatActivity(), SettingsActivityPresenter.View {
 
         }
 
+        // TODO: does this change in the database as well??
         changeFirstNameButton.setOnClickListener {
             if (isNullOrEmpty (firstName))
                 changeFirstNameFail()

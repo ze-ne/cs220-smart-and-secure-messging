@@ -19,6 +19,7 @@ import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.frontend.activities.ConversationActivity
+import com.cs220.ssmessaging.frontend.activities.HomeActivity
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -55,10 +56,12 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
                     .whereEqualTo("canonicalId", participantUsername)
                     .get()
                     .addOnSuccessListener { documentReference ->
-                        val users = documentReference.toObjects(User::class.java)
-                        if (users.size == 1) {
-                            val newConvo = Conversation(currentUser.userId, users[0].userId, mutableListOf())
-                            currentUser.addConversation(newConvo)
+                        if (documentReference.size() == 1) {
+                            val newConvo = Conversation(currentUser.userId, participantUsername)
+                            currentUser.startConversation(newConvo)
+                            val conversationIntent = Intent(activity, ConversationActivity::class.java)
+                            conversationIntent.putExtra("receiver_name", participantUsername)
+                            startActivity(conversationIntent)
                         } else {
                             Toast.makeText(
                                 activity,

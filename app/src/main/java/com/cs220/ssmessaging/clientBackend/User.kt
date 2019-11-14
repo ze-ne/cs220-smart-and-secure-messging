@@ -166,11 +166,14 @@ class User() {
 
     // FIX: Write unit tests for this
     fun startConversation(convo : Conversation) : Boolean {
+        Log.d("CONVO ID: ", convo.convoId)
         val toAdd = hashMapOf(
             "canonicalId" to convo.convoId,
             "created" to Timestamp.now(),
             "users" to listOf<String>(convo.user1Id, convo.user2Id)
         )
+
+        this.conversations.add(convo)
 
         db.collection("conversations").document(convo.convoId)
             .set(toAdd)
@@ -334,8 +337,8 @@ class User() {
 
     // FIX: Write unit tests for this
     fun addSelfToDatabase() : Boolean {
-        //var base64EncodedPublicKey =
-            //Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)
+        var base64EncodedPublicKey =
+            Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)
 
         val toAdd = hashMapOf(
             "name" to this.userId,
@@ -344,7 +347,7 @@ class User() {
             "last_name" to this.lastName,
             "password_hash" to "",
             "phone" to "123",
-            "publicKey" to ""
+            "publicKey" to base64EncodedPublicKey
         )
 
         db.collection("users").document(this.userId)

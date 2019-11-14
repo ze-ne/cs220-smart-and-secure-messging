@@ -22,100 +22,38 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
     private lateinit var conversationToolbar: Toolbar
     private lateinit var sendMessageButton: Button
     private lateinit var userMessageInput: EditText
-    //private lateinit var conversationReceiverName: String
+    private lateinit var conversationReceiverName: String
     private lateinit var messagesAdapter: MessagesAdapter
-    //private lateinit var currentUser: User
-    private lateinit var messageParticipant: User
-    private lateinit var conversationId: String
+    private lateinit var currentUser: User
     private lateinit var conversation: Conversation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_conversation)
 
-        //conversationReceiverName = intent.extras!!.get("receiver_name").toString()
+        conversationReceiverName = intent.extras!!.get("receiver_name").toString()
 
         messageList.layoutManager = LinearLayoutManager(this)
         messagesAdapter = MessagesAdapter(this)
         messageList.adapter = messagesAdapter
 
-        //currentUser = MyApplication.currentUser!!
+        currentUser = MyApplication.currentUser!!
 
         conversationToolbar = findViewById(R.id.conversation_toolbar)
         setSupportActionBar(conversationToolbar)
-        //supportActionBar?.title = conversationReceiverName
+        supportActionBar?.title = conversationReceiverName
 
         sendMessageButton = findViewById(R.id.send_message_button)
         userMessageInput = findViewById(R.id.message_input)
 
-        //conversationReceiverName = "filler name"
-
-        //getRecipient()
-        //conversationId = currentUser.userId + "-" + messageParticipant.userId
-        //getConversation()
-        conversation = Conversation("abc", "def")
-        conversationId = conversation.convoId
+        conversation = currentUser.getConversationByUserId(conversationReceiverName)!!
 
         sendMessageButton.setOnClickListener {
             val message = userMessageInput.text
-            // TROY MODIFICAITON
             if (message.isNotEmpty()) {
-                val newMessage = TextMessage(
-                    message.toString(),
-                    conversationId,
-                    conversation.user1Id,
-                    //currentUser.userId,
-                    //messageParticipant.userId,
-                    conversation.user2Id,
-                    Calendar.getInstance().timeInMillis
-                )
-                conversation.addMessage(newMessage)
+                currentUser.sendTextMsg(message.toString(), conversation)
             }
         }
-    }
-
-   /* private fun getRecipient() {
-        FirebaseFirestore.getInstance().collection("users")
-            .whereEqualTo("canonicalId", conversationReceiverName)
-            .get()
-            .addOnSuccessListener { documentReference ->
-                val users = documentReference.toObjects(User::class.java)
-                if (users.size == 1) {
-                    messageParticipant = users[0]
-                } else {
-                    Toast.makeText(
-                        this,
-                        "Invalid user in conversation.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
-            }
-
-    }*/
-
-    private fun getConversation() {
-        FirebaseFirestore.getInstance().collection("conversations")
-            .whereEqualTo("canonicalId", conversationId)
-            .get()
-            .addOnSuccessListener { documentReference ->
-                val conversations = documentReference.toObjects(Conversation::class.java)
-                if (conversations.size == 1) {
-                    conversation = conversations[0]
-                } else {
-                    Toast.makeText(
-                        this,
-                        "Invalid conversation.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
-            }
-
     }
 
     override fun updateDisplayedMessages(message: Message) {
