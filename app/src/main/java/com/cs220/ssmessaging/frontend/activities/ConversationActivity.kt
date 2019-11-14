@@ -84,7 +84,6 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
                         if(convoId != null) {
                             println("DATA::")
                             println("data=" + dc.document.data.getValue("data"))
-                            println("type=" + dc.document.data.getValue("message_type"))
                             println("sender=" + dc.document.data.getValue("sender_id"))
                             /*
                             var encryptedMessage = EncryptedMessage(
@@ -112,9 +111,6 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
                 }
             }
         }
-
-
-
     }
 
     override fun updateDisplayedMessages(message: Message) {
