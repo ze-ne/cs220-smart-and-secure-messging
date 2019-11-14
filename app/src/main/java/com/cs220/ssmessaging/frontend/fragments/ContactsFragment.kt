@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.cs220.ssmessaging.MyApplication.MyApplication
@@ -14,16 +15,14 @@ import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.frontend.activities.ConversationActivity
 import com.cs220.ssmessaging.frontend.presenters.ContactsActivityPresenter
+import com.google.firebase.firestore.FirebaseFirestore
 
 class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
 
     private lateinit var currentUser: User
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
 
         // TODO: Get current user from login screen
@@ -32,15 +31,34 @@ class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
     }
 
     override fun showConfirmationMessage() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Toast.makeText(activity, "Confirmation Message", Toast.LENGTH_SHORT).show()
+
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun showErrorMessage() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Toast.makeText(activity, "Error Message", Toast.LENGTH_SHORT).show()
+
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun updateContactsList(userID: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//        val db = FirebaseFirestore.getInstance()
+//        db.collection("users").whereEqualTo("canonicalId", userID)
+//            .get()
+//            .addOnSuccessListener { querySnapshot ->
+//                // Toast.makeText(this, "Added Contact", Toast.LENGTH_SHORT).show()
+//                if (querySnapshot.documents.size >= 1) {
+//                    val user = querySnapshot.documents.get(0)
+//                }
+//                boo = currentUser.addContact(newcontact)
+//            }
+//            .addOnFailureListener { querySnapshot ->
+//                // Toast.makeText(this, "Failed to Add Contact", Toast.LENGTH_SHORT).show()
+//            }
+        currentUser.addContact(userID)
+
+//        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     internal inner class ContactsAdapter(context: Context) :
@@ -54,12 +72,12 @@ class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
         }
 
         override fun onBindViewHolder(viewHolder: ContactsFragment.ViewHolder, position: Int) {
-            val contacts = currentUser.contacts[position]
+//            val contacts = currentUser.contacts[position]
+//            val contactName = contacts.firstName + " " + contacts.lastName
 
-            // TROY MODIFICATION
-            val contactName = contacts
+            val contactUserId: String = currentUser.contacts[position]
 
-            viewHolder.setData(contactName)
+            viewHolder.setData(contactUserId)
         }
 
         override fun getItemCount() = currentUser.contacts.size
