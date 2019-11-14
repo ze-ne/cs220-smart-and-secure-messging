@@ -275,11 +275,15 @@ class User() {
     }*/
 
     private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
-        val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
+        // Encryption has some bugs, we are disabling it for now.
+        //val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
+        val msg = unencryptedMsg
         val toSend = hashMapOf(
             "bucket_url" to "",
-            "data" to msg.message.toString(Charsets.UTF_8),
-            "message_type" to msg.messageType,
+            //"data" to msg.message.toString(Charsets.UTF_8),
+            "data" to msg,
+            //"message_type" to msg.messageType,
+            "message_type" to "text",
             "sender_id" to msg.senderId,
             "recipient_id" to msg.recipientId,
             "timestamp" to msg.timestamp
