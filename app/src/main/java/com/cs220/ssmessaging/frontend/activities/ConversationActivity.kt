@@ -11,17 +11,14 @@ import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.*
 import com.cs220.ssmessaging.frontend.adapters.MessagesAdapter
-import com.cs220.ssmessaging.frontend.presenters.ConversationActivityPresenter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.DocumentChange
 
 import kotlinx.android.synthetic.main.activity_conversation.*
-import java.nio.charset.Charset
-import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.View {
+class ConversationActivity : AppCompatActivity() {
     private lateinit var conversationToolbar: Toolbar
     private lateinit var sendMessageButton: Button
     private lateinit var userMessageInput: EditText
@@ -39,9 +36,7 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
 
         conversationReceiverName = intent.extras!!.get("receiver_name").toString()
 
-        messageList.layoutManager = LinearLayoutManager(this)
-
-
+        message_recycler_view.layoutManager = LinearLayoutManager(this)
 
         currentUser = MyApplication.currentUser!!
 
@@ -54,12 +49,14 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
 
         conversation = currentUser.getConversationByUserId(conversationReceiverName)!!
         messagesAdapter = MessagesAdapter(this, conversation.messages as ArrayList<TextMessage>)
-        messageList.adapter = messagesAdapter
+        message_recycler_view.scrollToPosition(conversation.messages.size - 1)
+        message_recycler_view.adapter = messagesAdapter
 
         sendMessageButton.setOnClickListener {
             val message = userMessageInput.text
             if (message.isNotEmpty()) {
                 currentUser.sendTextMsg(message.toString(), conversation)
+                userMessageInput.text.clear()
             }
         }
 
@@ -81,7 +78,7 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
                     DocumentChange.Type.ADDED -> {
                         var senderId = dc.document.data.getValue("sender_id") as String
                         var convoId = currentUser.getConversationByUserId(senderId)?.convoId
-                        if(convoId != null) {
+                        if (convoId != null) {
                             println("DATA::")
                             println("data=" + dc.document.data.getValue("data"))
                             println("sender=" + dc.document.data.getValue("sender_id"))
@@ -104,20 +101,10 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
                             )
 
                             currentUser.receiveMsg(decryptedMessage)
-
-
                         }
                     }
                 }
             }
         }
-    }
-
-    override fun updateDisplayedMessages(message: Message) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun addImageToDisplay(image: Image) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

@@ -8,12 +8,9 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.cs220.ssmessaging.R
-import com.cs220.ssmessaging.clientBackend.User
-import com.cs220.ssmessaging.frontend.presenters.LoginActivityPresenter
 import com.google.firebase.firestore.FirebaseFirestore
 
-class LoginActivity : AppCompatActivity(), LoginActivityPresenter.View {
-    private val presenter: LoginActivityPresenter = LoginActivityPresenter()
+class LoginActivity : AppCompatActivity() {
 
     private lateinit var username: EditText
     private lateinit var phoneNumber: EditText
@@ -77,21 +74,4 @@ class LoginActivity : AppCompatActivity(), LoginActivityPresenter.View {
                 Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
             }
     }
-
-    override fun loginSuccessful() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun loginFail() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun registerFail() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun registerSuccessful() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
 }
