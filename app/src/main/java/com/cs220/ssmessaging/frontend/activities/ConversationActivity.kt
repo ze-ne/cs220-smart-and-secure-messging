@@ -1,7 +1,6 @@
 package com.cs220.ssmessaging.frontend.activities
 
 
-import android.media.Image
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity

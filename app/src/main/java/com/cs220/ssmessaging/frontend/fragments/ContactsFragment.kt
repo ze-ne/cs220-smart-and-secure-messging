@@ -18,10 +18,9 @@ import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.frontend.activities.ConversationActivity
-import com.cs220.ssmessaging.frontend.presenters.ContactsActivityPresenter
 import com.google.firebase.firestore.FirebaseFirestore
 
-class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
+class ContactsFragment : Fragment() {
 
     private lateinit var contactsRecyclerView: RecyclerView
     private lateinit var contactsListAdapter: ContactsListAdapter
@@ -72,36 +71,6 @@ class ContactsFragment : Fragment(), ContactsActivityPresenter.View {
         return contactsView
     }
 
-    override fun showConfirmationMessage() {
-        Toast.makeText(activity, "Confirmation Message", Toast.LENGTH_SHORT).show()
-
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun showErrorMessage() {
-        Toast.makeText(activity, "Error Message", Toast.LENGTH_SHORT).show()
-
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun updateContactsList(userID: String) {
-//        val db = FirebaseFirestore.getInstance()
-//        db.collection("users").whereEqualTo("canonicalId", userID)
-//            .get()
-//            .addOnSuccessListener { querySnapshot ->
-//                // Toast.makeText(this, "Added Contact", Toast.LENGTH_SHORT).show()
-//                if (querySnapshot.documents.size >= 1) {
-//                    val user = querySnapshot.documents.get(0)
-//                }
-//                boo = currentUser.addContact(newcontact)
-//            }
-//            .addOnFailureListener { querySnapshot ->
-//                // Toast.makeText(this, "Failed to Add Contact", Toast.LENGTH_SHORT).show()
-//            }
-        currentUser.addContact(userID)
-
-//        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     internal inner class ContactsListAdapter(context: Context) :
         RecyclerView.Adapter<ViewHolder>() {

@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cs220.ssmessaging.R
-import com.cs220.ssmessaging.frontend.presenters.ConversationsListActivityPresenter
 import android.content.Intent
 import android.widget.Button
 import android.widget.EditText
@@ -23,7 +22,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 
 
-class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter.View {
+class ConversationsListFragment : Fragment() {
     private lateinit var conversationsRecyclerView: RecyclerView
     private lateinit var conversationsListAdapter: ConversationsListAdapter
     private lateinit var newConversationInput: EditText
@@ -82,18 +81,6 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
         addConversationListener()
 
         return conversationsView
-    }
-
-    override fun gotoConversation(conversationID: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun showIDNotFoundMessage(userID: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun updateConversationsList(conversationID: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun addConversationListener() {
