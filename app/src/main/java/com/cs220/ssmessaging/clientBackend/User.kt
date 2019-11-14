@@ -4,11 +4,12 @@ import android.graphics.Bitmap
 import android.util.Log
 import android.widget.ImageView
 import com.cs220.ssmessaging.clientBackend.Conversation
-import com.cs220.ssmessaging.clientBackend.Device
 import com.cs220.ssmessaging.clientBackend.Message
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import java.nio.charset.Charset
 import java.security.KeyFactory
+import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.time.Instant
 import java.util.*
@@ -175,17 +176,23 @@ class User() {
             .set(toAdd)
             .addOnSuccessListener {
                 Log.d("startConversation", "success")
+                getUserPublicKey(convo.user1Id)
+                getUserPublicKey(convo.user2Id)
                 addConversation(convo)
             }
             .addOnFailureListener {
                 Log.d("startConversation", "failure")
             }
+
         return true
     }
 
     // FIX: Write unit tests for this
-    fun recieveConversation(convo : Conversation) : Boolean {
+    fun receiveConversation(convo : Conversation) : Boolean {
         // TODO
+        getUserPublicKey(convo.user1Id)
+        getUserPublicKey(convo.user2Id)
+        addConversation(convo)
         return false
     }
 
@@ -266,12 +273,12 @@ class User() {
         sendEncryptedMsg(txtMsg, convo)
     }*/
 
-    private fun sendEncryptedMsg(msg: TextMessage, convo: Conversation) {
-        //val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
+    private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
+        val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
         val toSend = hashMapOf(
             "bucket_url" to "",
-            "data" to msg.message,
-            "message_type" to "0",
+            "data" to msg.message.toString(Charsets.UTF_8),
+            "message_type" to msg.messageType,
             "sender_id" to msg.senderId,
             "recipient_id" to msg.recipientId,
             "timestamp" to msg.timestamp
@@ -298,8 +305,11 @@ class User() {
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 val keyField = documentSnapshot.getString("publicKey")!!
-                val publicKey = keyFactory.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(keyField)))
-                device.cipher.publicKeyRing["myKey"] = publicKey
+                val publicKey: PublicKey = keyFactory.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(keyField)))
+
+                val fileUserId = if (this.userId == userId) "myKey" else userId
+
+                device.addUserPublicKey(fileUserId, publicKey)
             }
         return false
     }

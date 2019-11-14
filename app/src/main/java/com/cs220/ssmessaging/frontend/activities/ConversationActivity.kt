@@ -53,7 +53,7 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
         //getRecipient()
         //conversationId = currentUser.userId + "-" + messageParticipant.userId
         //getConversation()
-        conversation = Conversation("g1", "p1")
+        conversation = Conversation("abc", "def")
         conversationId = conversation.convoId
 
         sendMessageButton.setOnClickListener {
@@ -65,7 +65,8 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
                     conversationId,
                     conversation.user1Id,
                     //currentUser.userId,
-                    messageParticipant.userId,
+                    //messageParticipant.userId,
+                    conversation.user2Id,
                     Calendar.getInstance().timeInMillis
                 )
                 conversation.addMessage(newMessage)
