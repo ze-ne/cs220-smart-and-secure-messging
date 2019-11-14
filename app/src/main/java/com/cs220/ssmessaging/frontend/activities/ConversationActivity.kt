@@ -59,7 +59,7 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
             }
         }
 
-        addMessageListener(conversation.convoId)
+        //addMessageListener(conversation.convoId)
 
     }
 
