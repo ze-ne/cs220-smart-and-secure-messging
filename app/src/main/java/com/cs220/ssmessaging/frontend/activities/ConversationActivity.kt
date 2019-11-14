@@ -20,11 +20,11 @@ import java.util.*
 
 class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.View {
     private lateinit var conversationToolbar: Toolbar
-    private lateinit var sendMessageButton: ImageButton
+    private lateinit var sendMessageButton: Button
     private lateinit var userMessageInput: EditText
-    private lateinit var conversationReceiverName: String
+    //private lateinit var conversationReceiverName: String
     private lateinit var messagesAdapter: MessagesAdapter
-    private lateinit var currentUser: User
+    //private lateinit var currentUser: User
     private lateinit var messageParticipant: User
     private lateinit var conversationId: String
     private lateinit var conversation: Conversation
@@ -33,26 +33,28 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_conversation)
 
-        conversationReceiverName = intent.extras!!.get("receiver_name").toString()
+        //conversationReceiverName = intent.extras!!.get("receiver_name").toString()
 
         messageList.layoutManager = LinearLayoutManager(this)
         messagesAdapter = MessagesAdapter(this)
         messageList.adapter = messagesAdapter
 
-        currentUser = MyApplication.currentUser!!
+        //currentUser = MyApplication.currentUser!!
 
         conversationToolbar = findViewById(R.id.conversation_toolbar)
         setSupportActionBar(conversationToolbar)
-        supportActionBar?.title = conversationReceiverName
+        //supportActionBar?.title = conversationReceiverName
 
         sendMessageButton = findViewById(R.id.send_message_button)
         userMessageInput = findViewById(R.id.message_input)
 
         //conversationReceiverName = "filler name"
 
-        getRecipient()
-        conversationId = currentUser.userId + "-" + messageParticipant.userId
-        getConversation()
+        //getRecipient()
+        //conversationId = currentUser.userId + "-" + messageParticipant.userId
+        //getConversation()
+        conversation = Conversation("abc", "def")
+        conversationId = conversation.convoId
 
         sendMessageButton.setOnClickListener {
             val message = userMessageInput.text
@@ -61,8 +63,10 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
                 val newMessage = TextMessage(
                     message.toString(),
                     conversationId,
-                    currentUser.userId,
-                    messageParticipant.userId,
+                    conversation.user1Id,
+                    //currentUser.userId,
+                    //messageParticipant.userId,
+                    conversation.user2Id,
                     Calendar.getInstance().timeInMillis
                 )
                 conversation.addMessage(newMessage)
@@ -70,7 +74,7 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
         }
     }
 
-    private fun getRecipient() {
+   /* private fun getRecipient() {
         FirebaseFirestore.getInstance().collection("users")
             .whereEqualTo("canonicalId", conversationReceiverName)
             .get()
@@ -90,7 +94,7 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
                 Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
             }
 
-    }
+    }*/
 
     private fun getConversation() {
         FirebaseFirestore.getInstance().collection("conversations")
