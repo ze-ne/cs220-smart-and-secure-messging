@@ -29,6 +29,7 @@ class ConversationActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
 
+    // Refreshes conversation
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_conversation)
@@ -58,17 +59,21 @@ class ConversationActivity : AppCompatActivity() {
         }
     }
 
-    //
+    // Adds listeners to check for new messages within a given conversation
     private fun addMessageListener(convoId: String) {
 
+        // Query messages within target conversation, sorted in chronological order
         val msgRef = db.collection("conversations").document(convoId)
-        msgRef.collection("messages").orderBy("timestamp").addSnapshotListener { snapshot, e ->
+        val msgCollection = msgRef.collection("messages").orderBy("timestamp")
+        msgCollection.addSnapshotListener { snapshot, e ->
             if (e != null) {
                 return@addSnapshotListener
             }
 
+            // Add messages to local backend objects
             for (dc in snapshot!!.documentChanges) {
 
+                // Convert server data to message objects
                 val decryptedMessage = TextMessage(
                     (dc.document.data.getValue("data") as String),
                     convoId,
@@ -83,7 +88,7 @@ class ConversationActivity : AppCompatActivity() {
 
     }
 
-    //
+    // Display the messages onscreen
     private fun displayMessages() {
         messagesAdapter = MessagesAdapter(this, conversation.messages as ArrayList<TextMessage>)
         message_recycler_view.scrollToPosition(conversation.messages.size - 1)
