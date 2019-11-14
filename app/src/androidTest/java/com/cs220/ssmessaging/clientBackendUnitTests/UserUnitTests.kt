@@ -184,6 +184,7 @@ class UserUnitTests{
         assertTrue(searchForTextMessage(conversation.messages as MutableList<TextMessage>, "Hi, how are you?"))
     }
 
+    // FIX: Since we do not send image message this iteration, we don't test send_image_message
     /*@Test
     fun send_image_message() {
         val user1 = User("userId1", "User", "One")
@@ -252,5 +253,26 @@ class UserUnitTests{
         assertFalse(User.isValidName("!!!@___"))
         assertFalse(User.isValidName("<"))
         assertFalse(User.isValidName(""))
+    }
+
+    @Test
+    fun testReceiveMsg(){
+        val user1 = User("a", "b", "c", mutableListOf(), mutableListOf(Conversation("a", "b")))
+        val textMessage = TextMessage("ecks", "a", "b", "a", 52)
+        val textMessage2 = TextMessage("ecks", "bsa", "beqw", "a", 52)
+
+        assertTrue(user1.receiveMsg(textMessage))
+        assertEquals(1, user1.conversations[0].messages.size)
+
+        assertFalse(user1.receiveMsg(textMessage2))
+        assertEquals(1, user1.conversations[0].messages.size)
+    }
+
+    @Test
+    fun testGetOtherUser(){
+        val user1 = User("a", "b", "c", mutableListOf(), mutableListOf(Conversation("a", "b")))
+        val textMessage = TextMessage("ecks", "a", "b", "a", 52)
+
+        assertEquals("b", user1.getOtherUser(textMessage))
     }
 }

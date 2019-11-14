@@ -2,6 +2,8 @@ package com.cs220.ssmessaging.clientBackendUnitTests
 
 import com.cs220.ssmessaging.clientBackend.TextMessage
 import com.cs220.ssmessaging.clientBackend.User
+import junit.framework.Assert.assertFalse
+import junit.framework.Assert.assertTrue
 import org.junit.Assert
 import org.junit.Test
 
@@ -70,5 +72,18 @@ class TextMessageUnitTests{
         Assert.assertTrue(TextMessage.isValidMessageBody("abc -!@#123"))
         Assert.assertTrue(TextMessage.isValidMessageBody("x"))
         Assert.assertFalse(TextMessage.isValidMessageBody(""))
+    }
+
+    @Test
+    fun testMEquals(){
+        var msg1 = TextMessage("a!", "123213", user1Id, user2Id, 12)
+        var msg2 = TextMessage("a!", "123213", user1Id, user2Id, 13)
+        var msg3 = TextMessage("a!", "1233", user1Id, user2Id, 12)
+        var msg4 = TextMessage("a!", "123213", user2Id, user2Id, 12)
+
+        assertTrue(msg1.mEquals(msg1))
+        assertFalse(msg1.mEquals(msg2))
+        assertFalse(msg1.mEquals(msg3))
+        assertFalse(msg1.mEquals(msg4))
     }
 }

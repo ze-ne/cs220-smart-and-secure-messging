@@ -142,30 +142,16 @@ class User() {
             field = dvice
         }
 
+    // Add conversation locally to conversation list
     fun addConversation(convo : Conversation) : Boolean {
-        /*val conversation = hashMapOf(
-            "created" to Timestamp(Date()),
-            "users" to arrayListOf<String>(convo.user1Id, convo.user2.userId)
-        )
-
-        db.collection("/collections")
-        .add(conversation)
-        .addOnSuccessListener { documentReference ->
-            Log.d(TAG, "Conversation DocumentSnapshot written with ID: ${documentReference.id}")
-        }
-        .addOnFailureListener { e ->
-            Log.w(TAG, "Error adding conversation document", e)
-        }
-        return true*/
         if(convo in this.conversations) {
             return false
         }
         this.conversations.add(convo)
-        // TODO: write convo validity checks
         return true
     }
 
-    // FIX: Write unit tests for this
+    // start conversation with another user by sending conversation to database
     fun startConversation(convo : Conversation) : Boolean {
         val toAdd = hashMapOf(
             "canonicalId" to convo.convoId,
@@ -187,9 +173,8 @@ class User() {
         return true
     }
 
-    // FIX: Write unit tests for this
+    // Gets conversation and public keys from the database
     fun receiveConversation(convo : Conversation) : Boolean {
-        // TODO
         getUserPublicKey(convo.user1Id)
         getUserPublicKey(convo.user2Id)
         addConversation(convo)
@@ -197,7 +182,6 @@ class User() {
     }
 
     fun getConversationByUserId(recipientId : String) : Conversation? {
-        // TODO: validity checks
         var retConvoList: List<Conversation> = this.conversations
             .filter { x -> (x.user1Id == recipientId || x.user2Id == recipientId)}
         if (retConvoList.isEmpty()) {
@@ -207,7 +191,6 @@ class User() {
     }
 
     fun getConversationByConversationId(convoId: String) : Conversation? {
-        // TODO: validity checks
         var retConvoList: List<Conversation> = this.conversations
             .filter { x -> x.convoId == convoId}
         if (retConvoList.isEmpty()) {
@@ -338,6 +321,7 @@ class User() {
         return false
     }
 
+    // gets the other user in a message given yourself.
     fun getOtherUser(msg : Message) : String {
         if(msg.senderId == this.userId) {
             return msg.recipientId
@@ -369,7 +353,7 @@ class User() {
         return false
     }
 
-    // FIX: Write unit tests for this
+    // Adds the current user to the database
     fun addSelfToDatabase() : Boolean {
         var base64EncodedPublicKey =
             Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)

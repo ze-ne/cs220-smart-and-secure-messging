@@ -98,7 +98,6 @@ class TextMessage(_message : String, _conversationId : String,
                   _senderId : String, _recipientId : String, _timestamp : Long) : UnencryptedMessage {
 
     companion object {
-        // Need to unit test
         fun isValidMessage(textMessage : TextMessage) : Boolean =
             isValidMessageBody(textMessage.message) &&
             User.isValidUserId(textMessage.senderId) &&
@@ -106,7 +105,6 @@ class TextMessage(_message : String, _conversationId : String,
             Message.isValidTimestamp(textMessage.timestamp) &&
             Conversation.isValidConversationId(textMessage.conversationId)
 
-        // Need to unit test
         fun isValidMessageBody(msg : String) : Boolean = msg.isNotEmpty()
     }
 
@@ -116,7 +114,6 @@ class TextMessage(_message : String, _conversationId : String,
     override val timestamp : Long
     val message : String
 
-    // Need to write unit test
     override fun mEquals(m : Message) : Boolean{
         return if(m is ImageMessage|| m is EncryptedMessage)
             false
@@ -155,7 +152,6 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
                    _senderId : String, _recipientId: String, _timestamp : Long) : UnencryptedMessage {
 
     companion object{
-        // Need to unit test
         fun isValidMessage(imageMessage: ImageMessage) : Boolean =
             isValidMessageBody(imageMessage.message) &&
             User.isValidUserId(imageMessage.senderId) &&
@@ -163,10 +159,8 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
             Message.isValidTimestamp(imageMessage.timestamp) &&
             Conversation.isValidConversationId(imageMessage.conversationId)
 
-        // Need to unit test
         fun isValidMessageBody(byteArray: ByteArray) : Boolean = byteArray.isNotEmpty()
 
-        // Need to unit test
         fun isValidPathToImage(path : String) : Boolean = path.matches(Regex("^[a-zA-Z0-9./:_-]*$")) && path.isNotEmpty()
     }
 
@@ -182,7 +176,6 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
             }
         }
 
-    // Need to write unit test
     override fun mEquals(m : Message) : Boolean{
         return if(m is EncryptedMessage || m is TextMessage)
             false
