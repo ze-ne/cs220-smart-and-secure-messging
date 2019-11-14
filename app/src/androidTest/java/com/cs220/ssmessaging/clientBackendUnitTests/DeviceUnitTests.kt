@@ -19,8 +19,8 @@ import java.util.*
 
 
 class DeviceUnitTests{
-    private val expectedPublicKeyPath : String = MyApplication.appContext?.getFilesDir()?.path.toString() + "myKey.publicKey"
-    private val expectedPrivateKeyPath : String = MyApplication.appContext?.getFilesDir()?.path.toString() + "myKey.privateKey"
+    private val expectedPublicKeyPath : String = MyApplication.appContext?.getFilesDir()?.path.toString() + "/myKey.publicKey"
+    private val expectedPrivateKeyPath : String = MyApplication.appContext?.getFilesDir()?.path.toString() + "/myKey.privateKey"
 
     @After
     fun deleteTestKeys(){

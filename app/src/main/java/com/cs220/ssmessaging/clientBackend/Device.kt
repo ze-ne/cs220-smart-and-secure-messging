@@ -28,7 +28,7 @@ class Device() {
 
     // Companion object stores static constants
     companion object{
-        private val keyDir : String = MyApplication.appContext?.getFilesDir()?.path.toString()
+        private val keyDir : String = MyApplication.appContext?.getFilesDir()?.path.toString() + "/"
         private var publicKeyFileName : String = "myKey.publicKey"
         private var privateKeyFileName : String = "myKey.privateKey"
     }
