@@ -5,6 +5,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.PrintWriter
 import java.nio.file.Files
 import java.security.*
 import java.security.spec.PKCS8EncodedKeySpec
@@ -14,7 +15,7 @@ import javax.crypto.Cipher
 import javax.crypto.CipherSpi
 
 
-class Device(){
+class Device() {
     /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
      * This is because variables are properties and all properties have a private field.
      * Therefore we achieve encapsulation Kotlin by defining custom getters and setters.
@@ -146,18 +147,18 @@ class Device(){
     fun addUserPublicKey(userId: String, publicKey: PublicKey): Boolean {
         var publicKeyFile = File("$keyDir$userId.publicKey")
 
-        // If either one of the two files does not exist, generate a new key pair
-        if (!publicKeyFile.exists()) {
-            publicKeyFile.createNewFile()
-            val publicKeyStream = FileOutputStream(publicKeyFile)
-            publicKeyStream.write(publicKey.encoded)
-            publicKeyStream.close()
-
-            cipher.addKeyToPublicKeyRing(userId, publicKey)
-
-            return true
+        if (publicKeyFile.exists()) {
+            publicKeyFile.delete()
         }
 
-        return false
+        publicKeyFile.createNewFile()
+
+        val publicKeyStream = FileOutputStream(publicKeyFile)
+        publicKeyStream.write(publicKey.encoded)
+        publicKeyStream.close()
+
+        cipher.addKeyToPublicKeyRing(userId, publicKey)
+
+        return true
     }
 }
