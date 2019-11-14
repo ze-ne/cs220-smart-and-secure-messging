@@ -8,6 +8,7 @@ import com.cs220.ssmessaging.clientBackend.Message
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import java.nio.charset.Charset
 import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
@@ -277,7 +278,7 @@ class User() {
         val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
         val toSend = hashMapOf(
             "bucket_url" to "",
-            "data" to msg.message,
+            "data" to msg.message.toString(Charsets.UTF_8),
             "message_type" to msg.messageType,
             "sender_id" to msg.senderId,
             "recipient_id" to msg.recipientId,
