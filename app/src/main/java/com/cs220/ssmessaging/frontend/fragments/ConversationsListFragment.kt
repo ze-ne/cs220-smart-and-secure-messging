@@ -125,6 +125,13 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
 
         private val layoutInflater = LayoutInflater.from(context)
 
+        fun getOtherUserId(conversation: Conversation) : String {
+            if(currentUser.userId == conversation.user1Id) {
+                return conversation.user2Id
+            }
+            return conversation.user1Id
+        }
+
         override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): ViewHolder {
             val view = layoutInflater.inflate(R.layout.item_conversation, viewGroup, false)
             return ViewHolder(view)
@@ -140,7 +147,7 @@ class ConversationsListFragment : Fragment(), ConversationsListActivityPresenter
             viewHolder.itemView.setOnClickListener {
                 // TODO: call gotoConversation here instead
                 val conversationIntent = Intent(context, ConversationActivity::class.java)
-                conversationIntent.putExtra("receiver_name", conversation.user2Id)
+                conversationIntent.putExtra("receiver_name", getOtherUserId(conversation))
                 startActivity(conversationIntent)
             }
         }

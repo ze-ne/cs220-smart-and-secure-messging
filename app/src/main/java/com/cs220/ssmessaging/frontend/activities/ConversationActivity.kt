@@ -36,12 +36,9 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_conversation)
 
-
         conversationReceiverName = intent.extras!!.get("receiver_name").toString()
 
         messageList.layoutManager = LinearLayoutManager(this)
-
-
 
         currentUser = MyApplication.currentUser!!
 
@@ -63,6 +60,8 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
             }
         }
 
+        println("ID :::: " + conversation.convoId)
+        //println("MESSAGES :::: " + conversation.messages)
         addMessageListener(conversation.convoId)
 
     }
@@ -77,14 +76,7 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
             }
 
             for (dc in snapshot!!.documentChanges) {
-                when (dc.type) {
-                    DocumentChange.Type.ADDED -> {
-                        var senderId = dc.document.data.getValue("sender_id") as String
-                        var convoId = currentUser.getConversationByUserId(senderId)?.convoId
-                        if(convoId != null) {
-                            println("DATA::")
-                            println("data=" + dc.document.data.getValue("data"))
-                            println("sender=" + dc.document.data.getValue("sender_id"))
+
                             /*
                             var encryptedMessage = EncryptedMessage(
                                 (dc.document.data.getValue("data") as String).toByteArray(Charsets.UTF_8),
@@ -95,20 +87,17 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
                                 dc.document.data.getValue("timestamp") as Long
                             )
                             */
-                            var decryptedMessage = TextMessage(
-                                (dc.document.data.getValue("data") as String),
-                                convoId,
-                                senderId,
-                                dc.document.data.getValue("recipient_id") as String,
-                                dc.document.data.getValue("timestamp") as Long
-                            )
 
-                            currentUser.receiveMsg(decryptedMessage)
+                val decryptedMessage = TextMessage(
+                    (dc.document.data.getValue("data") as String),
+                    convoId,
+                    dc.document.data.getValue("sender_id") as String,
+                    dc.document.data.getValue("recipient_id") as String,
+                    dc.document.data.getValue("timestamp") as Long
+                )
+                println("MESSAGE :::: " + decryptedMessage.message)
+                currentUser.receiveMsg(decryptedMessage)
 
-
-                        }
-                    }
-                }
             }
         }
     }

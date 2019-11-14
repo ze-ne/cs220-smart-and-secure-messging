@@ -338,10 +338,19 @@ class User() {
         return false
     }
 
+    fun getOtherUser(msg : Message) : String {
+        if(msg.senderId == this.userId) {
+            return msg.recipientId
+        }
+        return msg.senderId
+    }
+
+
     // Handle incoming message from server
     fun receiveMsg(decryptedMsg: TextMessage) : Boolean {
         // var decryptedMessage = device.cipher.decryptEncryptedMessage(encryptedMsg)
-        var localConvoObject = getConversationByUserId(decryptedMsg.senderId)
+
+        var localConvoObject = getConversationByUserId(getOtherUser(decryptedMsg))
         localConvoObject ?: return false
         localConvoObject ?. addMessage(decryptedMsg)
         return true
