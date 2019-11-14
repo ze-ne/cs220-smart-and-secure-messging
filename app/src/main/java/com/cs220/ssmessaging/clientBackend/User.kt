@@ -262,6 +262,7 @@ class User() {
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
         val txtMsg = TextMessage(msg, convo.convoId,this.userId, recipient,timestamp)
+        convo.addMessage(txtMsg)
         sendEncryptedMsg(txtMsg, convo)
     }
 
@@ -290,7 +291,6 @@ class User() {
             .document()
             .set(toSend)
             .addOnSuccessListener {
-                convo.addMessage(msg)
                 Log.d("sendTextMsg", "success")
             }
             .addOnFailureListener {
