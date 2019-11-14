@@ -324,8 +324,8 @@ class User() {
 
     // FIX: Write unit tests for this
     fun addSelfToDatabase() : Boolean {
-        var base64EncodedPublicKey =
-            Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)
+        //var base64EncodedPublicKey =
+            //Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)
 
         val toAdd = hashMapOf(
             "name" to this.userId,
@@ -334,7 +334,7 @@ class User() {
             "last_name" to this.lastName,
             "password_hash" to "",
             "phone" to "123",
-            "publicKey" to base64EncodedPublicKey
+            "publicKey" to ""
         )
 
         db.collection("users").document(this.userId)

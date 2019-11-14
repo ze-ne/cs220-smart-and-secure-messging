@@ -50,7 +50,7 @@ class LoginActivity : AppCompatActivity(), LoginActivityPresenter.View {
         usernameText: String,
         number: String
     ) {
-        FirebaseFirestore.getInstance().collection("Users")
+        FirebaseFirestore.getInstance().collection("users")
             .whereEqualTo("canonicalId", usernameText)
             .get()
             .addOnSuccessListener { documentQuery ->

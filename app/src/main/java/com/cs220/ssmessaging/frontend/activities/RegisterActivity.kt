@@ -34,7 +34,6 @@ class RegisterActivity : AppCompatActivity() {
             val lastnameText = lastname.text.toString()
             val usernameText = username.text.toString()
 
-            // TODO: check that username isn't already taken
             if (validRegistration(firstnameText, lastnameText, usernameText, number)) {
                 usernameExists(usernameText, firstnameText, lastnameText, number)
             } else {
@@ -60,7 +59,7 @@ class RegisterActivity : AppCompatActivity() {
         lastnameText: String,
         number: String
     ) {
-        FirebaseFirestore.getInstance().collection("Users")
+        FirebaseFirestore.getInstance().collection("users")
             .whereEqualTo("canonicalId", usernameText)
             .get()
             .addOnSuccessListener { documentQuery ->
