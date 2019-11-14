@@ -16,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.DocumentChange
 
 import kotlinx.android.synthetic.main.activity_conversation.*
+import java.nio.charset.Charset
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -62,11 +63,13 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
             }
         }
 
-        //addMessageListener(conversation.convoId)
+        addMessageListener(conversation.convoId)
 
     }
 
     fun addMessageListener(convoId: String) {
+        println("addMessageListener")
+
         val msgRef = db.collection("conversations").document(convoId)
         msgRef.collection("messages").addSnapshotListener { snapshot, e ->
             if (e != null) {
@@ -79,20 +82,38 @@ class ConversationActivity : AppCompatActivity(), ConversationActivityPresenter.
                         var senderId = dc.document.data.getValue("sender_id") as String
                         var convoId = currentUser.getConversationByUserId(senderId)?.convoId
                         if(convoId != null) {
+                            println("DATA::")
+                            println("data=" + dc.document.data.getValue("data"))
+                            println("type=" + dc.document.data.getValue("message_type"))
+                            println("sender=" + dc.document.data.getValue("sender_id"))
+                            /*
                             var encryptedMessage = EncryptedMessage(
-                                dc.document.data.getValue("data") as ByteArray,
+                                (dc.document.data.getValue("data") as String).toByteArray(Charsets.UTF_8),
                                 convoId,
                                 dc.document.data.getValue("message_type") as String,
                                 senderId,
                                 dc.document.data.getValue("recipient_id") as String,
                                 dc.document.data.getValue("timestamp") as Long
                             )
-                            currentUser.receiveMsg(encryptedMessage)
+                            */
+                            var decryptedMessage = TextMessage(
+                                (dc.document.data.getValue("data") as String),
+                                convoId,
+                                senderId,
+                                dc.document.data.getValue("recipient_id") as String,
+                                dc.document.data.getValue("timestamp") as Long
+                            )
+
+                            currentUser.receiveMsg(decryptedMessage)
+
+
                         }
                     }
                 }
             }
         }
+
+
 
     }
 

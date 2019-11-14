@@ -203,7 +203,7 @@ class User() {
         if (retConvoList.isEmpty()) {
             return null
         }
-        return retConvoList.single()
+        return retConvoList[0]
     }
 
     fun getConversationByConversationId(convoId: String) : Conversation? {
@@ -213,7 +213,7 @@ class User() {
         if (retConvoList.isEmpty()) {
             return null
         }
-        return retConvoList.single()
+        return retConvoList[0]
     }
 
     fun addContact(user : String) : Boolean {
@@ -229,7 +229,7 @@ class User() {
         if (retUserList.isEmpty()) {
             return null
         }
-        return retUserList.single()
+        return retUserList[0]
     }
 
     fun deleteContact(user : String) : Boolean {
@@ -316,8 +316,8 @@ class User() {
     }
 
     // Handle incoming message from server
-    fun receiveMsg(encryptedMsg: EncryptedMessage) : Boolean {
-        var decryptedMsg = device.cipher.decryptEncryptedMessage(encryptedMsg)
+    fun receiveMsg(decryptedMsg: TextMessage) : Boolean {
+        // var decryptedMessage = device.cipher.decryptEncryptedMessage(encryptedMsg)
         var localConvoObject = getConversationByUserId(decryptedMsg.senderId)
         localConvoObject ?: return false
         localConvoObject ?. addMessage(decryptedMsg)
