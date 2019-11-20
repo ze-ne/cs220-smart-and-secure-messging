@@ -242,6 +242,17 @@ class User() {
         return true
     }
 
+    fun getUserIdsByFirstName(firstName: String) {
+
+    }
+
+    fun getUserIdsByLastName(lastName: String) {
+
+    }
+
+    fun doesUserExistByUserId(userId: String) {
+
+    }
     /* We are moving the "Manage Block List" use case that these methods implement to iteration 2
     fun findBlockedContactById(userId : String) : User? {
         // TODO
