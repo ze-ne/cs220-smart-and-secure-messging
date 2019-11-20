@@ -2,6 +2,7 @@ package com.cs220.ssmessaging.clientBackend
 import android.media.Image
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.clientBackend.Message
+import org.json.JSONObject
 
 class Conversation() {
     /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
@@ -145,5 +146,17 @@ class Conversation() {
         }
 
         return addMessage
+    }
+
+    fun getSubConversation(startTimestamp : Long, endTimestamp : Long) : Conversation {
+        //TODO
+        return Conversation("", "", mutableListOf<Message>())
+    }
+
+    fun formatConversationData() : JSONObject {
+        //TODO
+        //json docs at https://developer.android.com/training/volley/request
+        // and https://developer.android.com/reference/org/json/JSONObject.html
+        return JSONObject()
     }
 }
