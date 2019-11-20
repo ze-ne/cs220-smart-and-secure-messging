@@ -203,7 +203,7 @@ class User() {
 
 
 
-    fun addContact(user : String, ) : Boolean {
+    fun addContact(user : String) : Boolean {
         if(user in this.contacts) {
             return false
         }
@@ -246,9 +246,9 @@ class User() {
         return false
     }
 
-    fun findBlockedContactById(userId : String) : User? {
+    fun findBlockedContactById(userId : String) : String? {
         // TODO
-        return User()
+        return null
     }
 
     // Untestable - relies on database functionality
@@ -257,7 +257,7 @@ class User() {
         return null
     }
 
-    fun addBlockedContact(userId : String, blockedUsers : MutableList<String>) : Boolean {
+    fun addBlockedContact(userId : String) : Boolean {
         // TODO
         return false
     }
