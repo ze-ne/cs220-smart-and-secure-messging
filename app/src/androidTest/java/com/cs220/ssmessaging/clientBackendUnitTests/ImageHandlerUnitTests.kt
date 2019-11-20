@@ -1,12 +1,16 @@
 package com.cs220.ssmessaging.clientBackendUnitTests
 
 import android.content.ContentValues
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.media.Image
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
+import androidx.test.platform.app.InstrumentationRegistry
 import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.clientBackend.EncryptedMessage
 import com.cs220.ssmessaging.clientBackend.ImageHandler
@@ -20,15 +24,20 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 
 class ImageHandlerUnitTests{
-    private val pathToSunflowerImage = "testResources/sunflower.jpg"
-    private val pathToDiceImage = "testResources/dice.png"
-    private val sunflowerImage : Bitmap = BitmapFactory.decodeFile(pathToSunflowerImage)
-    private val diceImage : Bitmap = BitmapFactory.decodeFile(pathToDiceImage)
+    private val sunflowerImage : Bitmap
+    private val diceImage : Bitmap
 
     private val sunflowerByteArray : ByteArray
     private val diceByteArray : ByteArray
 
     init {
+        // Get the images from the resources folder
+        val assets = InstrumentationRegistry.getInstrumentation().context.assets
+        val sunflowerInput = assets.open("sunflower.jpg")
+        val diceInput = assets.open("dice.png")
+        sunflowerImage = BitmapFactory.decodeStream(sunflowerInput)
+        diceImage = BitmapFactory.decodeStream(diceInput)
+
         // In order to get byte array, need to store image bitmap in stream
         var sunflowerStream : ByteArrayOutputStream = ByteArrayOutputStream()
         sunflowerImage.compress(Bitmap.CompressFormat.JPEG, 100, sunflowerStream)
@@ -68,13 +77,14 @@ class ImageHandlerUnitTests{
     }
 
     @Test
-    fun testGetPNGImageFromStorage(){
+    fun testGetJPGImageFromStorage(){
         // First need to store image
         val values = ContentValues()
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg")
         values.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000);
         values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
-        values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages/sunflower.jpg")
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages")
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, "sunflower.jpg")
         values.put(MediaStore.Images.Media.IS_PENDING, true)
 
         val uri: Uri? = MyApplication.appContext!!.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
@@ -91,23 +101,96 @@ class ImageHandlerUnitTests{
             values.clear()
             values.put(MediaStore.Images.Media.IS_PENDING, false)
             MyApplication.appContext!!.contentResolver.update(uri, values, null, null)
+            values.clear()
+
+            // Start Test
+            val imageHandler = ImageHandler()
+            val jpgImage = imageHandler.getImageFromStorage(uri)
+
+            // Need to delete image from external storage
+            val deleteUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendQueryParameter(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages").build()
+            MyApplication.appContext?.contentResolver?.delete(deleteUri, null, null)
+
+            // Finally assert equals
+            assertTrue(sunflowerImage.sameAs(jpgImage))
+            assertNotNull(imageHandler.currentlySelectedImage)
+            assertTrue(sunflowerImage.sameAs(imageHandler.currentlySelectedImage))
+        }
+        else {
+            fail()
+        }
+    }
+
+    @Test
+    fun testGetPNGImageFromStorage(){
+        // First need to store image
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+        values.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000);
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages")
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, "dice.png")
+        values.put(MediaStore.Images.Media.IS_PENDING, true)
+
+        val uri: Uri? = MyApplication.appContext!!.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        if (uri != null) {
+            var outputStream = MyApplication.appContext?.contentResolver?.openOutputStream(uri)
+            if (outputStream != null) {
+                try {
+                    diceImage.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    outputStream.close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            values.clear()
+            values.put(MediaStore.Images.Media.IS_PENDING, false)
+            MyApplication.appContext!!.contentResolver.update(uri, values, null, null)
+            values.clear()
 
             // Start Test
             val imageHandler = ImageHandler()
             val pngImage = imageHandler.getImageFromStorage(uri)
 
             // Need to delete image from external storage
-            
+            val deleteUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendQueryParameter(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages").build()
+            MyApplication.appContext?.contentResolver?.delete(deleteUri, null, null)
+
             // Finally assert equals
-            assertTrue(sunflowerImage.sameAs(pngImage))
+            assertTrue(diceImage.sameAs(pngImage))
+            assertNotNull(imageHandler.currentlySelectedImage)
+            assertTrue(diceImage.sameAs(imageHandler.currentlySelectedImage))
         }
-
-
+        else {
+            fail()
+        }
     }
 
     @Test
     fun testStoreImageToStorage(){
+        val imageHandler = ImageHandler()
 
+        val sunflowerUri = imageHandler.storeImageToStorage("sunflower.jpg", sunflowerImage)
+        val diceUri = imageHandler.storeImageToStorage("dice.png", diceImage)
+
+        val expectedSunflowerUri =  MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon()
+            .appendQueryParameter(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages")
+            .appendQueryParameter(MediaStore.Images.Media.DISPLAY_NAME, "sunflower.jpg")
+            .build()
+        assertNotNull(sunflowerUri)
+        assertTrue(sunflowerUri!!.equals(expectedSunflowerUri))
+
+        val expectedDiceUri =  MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon()
+            .appendQueryParameter(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages")
+            .appendQueryParameter(MediaStore.Images.Media.DISPLAY_NAME, "dice.png")
+            .build()
+        assertNotNull(diceUri)
+        assertTrue(diceUri!!.equals(expectedDiceUri))
+
+        val sunflowerSource  = ImageDecoder.createSource(MyApplication.appContext!!.contentResolver, expectedSunflowerUri)
+        val diceSource  = ImageDecoder.createSource(MyApplication.appContext!!.contentResolver, expectedDiceUri)
+        assertTrue(sunflowerImage.sameAs(ImageDecoder.decodeBitmap(sunflowerSource)))
+        assertTrue(diceImage.sameAs(ImageDecoder.decodeBitmap(diceSource)))
     }
 
     @Test
