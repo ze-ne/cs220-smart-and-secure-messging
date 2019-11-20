@@ -4,6 +4,7 @@ import com.cs220.ssmessaging.clientBackend.*
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
+import kotlin.coroutines.coroutineContext
 
 
 class ConversationUnitTests{
@@ -173,6 +174,41 @@ class ConversationUnitTests{
         assertEquals(mutableListOf(textMessage, imgMessage), conversation.messages)
     }
 
+    @Test
+    fun testRemoveMessage(){
+        var conversation = Conversation(user1Id, user2Id)
+
+        // Invalid remove from empty
+        assertEquals(conversation.messages.size, 0)
+        assertFalse(conversation.removeMessage(textMessage))
+        assertEquals(conversation.messages.size, 0)
+
+        // Valid remove
+        conversation.addMessage(textMessage)
+        assertEquals(conversation.messages.size, 1)
+        assertTrue(conversation.removeMessage(textMessage))
+        assertEquals(conversation.messages.size, 0)
+
+        // Invalid duplicate remove
+        assertFalse(conversation.removeMessage(textMessage))
+        assertEquals(conversation.messages.size, 0)
+
+        // Valid remove image
+        conversation.addMessage(imgMessage)
+        assertEquals(conversation.messages.size, 1)
+        assertTrue(conversation.removeMessage(imgMessage))
+        assertEquals(conversation.messages.size, 0)
+
+
+        // Invalid remove message not in conversation
+        conversation.addMessage(textMessage)
+        assertEquals(conversation.messages.size, 1)
+        assertFalse(conversation.removeMessage(imgMessage))
+        assertEquals(conversation.messages.size, 1)
+
+        assertFalse(conversation.removeMessage(textMessageDifferentUsers))
+        assertEquals(conversation.messages.size, 1)
+    }
     // FIX: The following tests test the added static helper functions for property checking
     @Test
     fun testIsValidLastTimeSynched(){

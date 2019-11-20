@@ -146,4 +146,9 @@ class Conversation() {
 
         return addMessage
     }
+
+    // Iteration 2
+    fun removeMessage(msg: Message): Boolean {
+        return false
+    }
 }
