@@ -22,6 +22,7 @@ class ImageMessageUnitTests{
         assertEquals("123213", imagemessage.conversationId)
         assertEquals(user1Id, imagemessage.senderId)
         assertEquals(12, imagemessage.timestamp)
+        assertTrue(imagemessage.isVisible)
     }
 
     @Test

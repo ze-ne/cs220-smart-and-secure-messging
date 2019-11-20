@@ -22,6 +22,7 @@ class TextMessageUnitTests{
         Assert.assertEquals(user1Id, textmessage.senderId)
         Assert.assertEquals(user2Id, textmessage.recipientId)
         Assert.assertEquals(12, textmessage.timestamp)
+        Assert.assertTrue(textmessage.isVisible)
     }
 
     @Test

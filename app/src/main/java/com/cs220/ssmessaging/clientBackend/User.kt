@@ -147,6 +147,12 @@ class User() {
         return true
     }
 
+    // Iteration 2
+    // Removes conversation from conversation list
+    fun deleteConversation(convo: Conversation): Boolean {
+        return false
+    }
+
     // start conversation with another user by sending conversation to database
     fun startConversation(convo : Conversation) : Boolean {
         val toAdd = hashMapOf(
@@ -366,6 +372,12 @@ class User() {
         localConvoObject ?: return false
         localConvoObject ?. addMessage(message)
         return true
+    }
+
+    // Iteration 2
+    // Remove a message from a conversation in conversations list
+    fun deleteSentMessage(message: Message): Boolean {
+        return false
     }
 
     // Add your own public key to server

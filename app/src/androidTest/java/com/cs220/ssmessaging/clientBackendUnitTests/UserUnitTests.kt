@@ -142,6 +142,45 @@ class UserUnitTests{
     }
 
     @Test
+    fun testDeleteConversation() {
+        val user1 = User("id1","first", "last")
+        val convo1 = Conversation(user1.userId,"id2")
+        val convo2 = Conversation(user1.userId,"id3")
+        val convo3 = Conversation(user1.userId,"id4")
+        val unusedConvo = Conversation("id2", "id3")
+
+        // Remove from empty conversations list
+        assertFalse(user1.deleteConversation(convo1))
+        assertEquals(user1.conversations.size, 0)
+
+        // Add and remove a conversation
+        assertTrue(user1.addConversation(convo1))
+        assertTrue(convo1 in user1.conversations)
+
+        assertTrue(user1.deleteConversation(convo1))
+        assertEquals(user1.conversations.size, 0)
+        assertFalse(convo1 in user1.conversations)
+
+        // Valid remove from a user with multiple conversations
+        assertTrue(user1.addConversation(convo1))
+        assertTrue(user1.addConversation(convo2))
+        assertTrue(user1.addConversation(convo3))
+        assertEquals(user1.conversations.size, 3)
+
+        assertTrue(user1.deleteConversation(convo2))
+        assertEquals(user1.conversations.size, 2)
+        assertFalse(convo2 in user1.conversations)
+
+        //Invalid repeated remove
+        assertFalse(user1.deleteConversation(convo2))
+        assertEquals(user1.conversations.size, 2)
+
+        // Invalid unknown conversation remove
+        assertFalse(user1.deleteConversation(unusedConvo))
+        assertEquals(user1.conversations.size, 2)
+    }
+
+    @Test
     fun testGetConversationByUserId() {
         val user1 = User("id1","first", "last")
         val user2 = User("id2","first", "last")
@@ -161,6 +200,7 @@ class UserUnitTests{
 
     }
 
+
     fun searchForTextMessage(textMessages: MutableList<TextMessage>, query: String): Boolean {
         for (textMessage in textMessages) {
             if (textMessage.message.equals(query)) {
@@ -168,6 +208,47 @@ class UserUnitTests{
             }
         }
         return false
+    }
+
+    @Test
+    fun testDeleteSentMessage(){
+        val user1 = User("id1","first", "last")
+        val user2 = User("id2","first", "last")
+        val conversation1 = Conversation(user1.userId, user2.userId)
+        val txtMsg = TextMessage("heyyy", conversation1.convoId, user1.userId,
+            user2.userId, 0)
+        val unusedTxtMsg = TextMessage("heyyy", "convoid", user1.userId,
+            user2.userId, 0)
+
+        val imgMsg = ImageMessage(ByteArray(0), conversation1.convoId, user1.userId,
+            user2.userId, 0)
+
+        user1.addConversation(conversation1)
+        // Valid delete text message from conversation
+        conversation1.addMessage(txtMsg)
+        assertEquals(conversation1.messages.size, 1)
+        assertTrue(user1.deleteSentMessage(txtMsg))
+        assertEquals(conversation1.messages.size, 0)
+
+        // Invalid repeated delete message from conversation
+        assertFalse(user1.deleteSentMessage(txtMsg))
+        assertEquals(conversation1.messages.size, 0)
+
+        // Valid delete image message from conversation
+        conversation1.addMessage(imgMsg)
+        assertEquals(conversation1.messages.size, 1)
+        assertTrue(user1.deleteSentMessage(imgMsg))
+        assertEquals(conversation1.messages.size, 0)
+
+        // Invalid delete message not present in any conversation
+        conversation1.addMessage(txtMsg)
+        assertEquals(conversation1.messages.size, 1)
+        assertFalse(user1.deleteSentMessage(imgMsg))
+        assertEquals(conversation1.messages.size, 1)
+
+        // Invalid delete message from conversation not in conversations list
+        assertFalse(user1.deleteSentMessage(unusedTxtMsg))
+        assertEquals(conversation1.messages.size, 1)
     }
 
     @Test
