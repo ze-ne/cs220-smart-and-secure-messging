@@ -24,8 +24,8 @@ class ImageHandler {
 
     // loads an image from the gallery and convert the Bitmap to bytearray
     // returns the image as bitmap and stores the image as a bitmap in currentlySelectedImage
-    fun getImageFromStorage(uri : Uri) : Bitmap {
-        return BitmapFactory.decodeByteArray(ByteArray(0), 0, 0)
+    fun getImageFromStorage(uri : Uri) : Bitmap? {
+        return null
     }
 
     // Takes a bitmap of an image, converts it to a bitmap, and then stores the image to local gallery
