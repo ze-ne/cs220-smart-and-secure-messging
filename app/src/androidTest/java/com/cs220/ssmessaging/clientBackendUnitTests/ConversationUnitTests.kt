@@ -212,10 +212,10 @@ class ConversationUnitTests{
         var emptyConversation = Conversation(user1Id, user2Id)
         var fullConversation = Conversation(user1Id, user2Id, mutableListOf(imgMessageTime1, textMessageTime2, imgMessageTime3))
 
-        assertEquals(fullConversation.getSubConversation(1,1).messages, mutableListOf<Message>(imgMessageTime1))
-        assertEquals(emptyConversation.getSubConversation(0,10).messages, mutableListOf<Message>())
-        assertEquals(fullConversation.getSubConversation(5,0).messages, mutableListOf<Message>())
-        assertEquals(fullConversation.getSubConversation(0,4).messages, mutableListOf(imgMessageTime1, textMessageTime2, imgMessageTime3))
+        assertEquals(mutableListOf<Message>(imgMessageTime1), fullConversation.getSubConversation(1,1).messages)
+        assertEquals(mutableListOf<Message>(), emptyConversation.getSubConversation(0,10).messages)
+        assertEquals(mutableListOf<Message>(), fullConversation.getSubConversation(5,0).messages)
+        assertEquals(mutableListOf(imgMessageTime1, textMessageTime2, imgMessageTime3), fullConversation.getSubConversation(0,4).messages)
     }
 
     @Test
@@ -243,8 +243,8 @@ class ConversationUnitTests{
         var twoSidedConversationJSON = JSONObject()
         twoSidedConversationJSON.put("utterances", conv2Uts)
 
-        assertEquals(emptyConversation.formatConversationData(), emptyConversationJSON)
-        assertEquals(oneSidedConversation.formatConversationData(), oneSidedConversationJSON)
-        assertEquals(twoSidedConversation.formatConversationData(), twoSidedConversationJSON)
+        assertEquals(emptyConversationJSON, emptyConversation.formatConversationData())
+        assertEquals(oneSidedConversationJSON, oneSidedConversation.formatConversationData())
+        assertEquals(twoSidedConversationJSON, twoSidedConversation.formatConversationData())
     }
 }
