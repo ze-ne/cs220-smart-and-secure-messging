@@ -1,6 +1,7 @@
 package com.cs220.ssmessaging.clientBackendUnitTests
 
 import com.cs220.ssmessaging.clientBackend.*
+import org.json.JSONObject
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
@@ -17,6 +18,7 @@ class ConversationUnitTests{
     private var imgMessageTime1 : ImageMessage = ImageMessage(byteArrayOf(1,2), "user1-user2", user1Id, user2Id, 1)
     private var textMessageTime2 : TextMessage = TextMessage("troglobite", "user1-user2", user1Id, user2Id, 2)
     private var imgMessageTime3 : ImageMessage = ImageMessage(byteArrayOf(1,2), "user1-user2", user1Id, user2Id, 3)
+    private var textMessageU2U1 : TextMessage = TextMessage("troglobite", "user1-user2", user2Id, user1Id, 0)
 
     @Test
     fun testDefaultConstructor() {
@@ -214,11 +216,35 @@ class ConversationUnitTests{
         assertEquals(emptyConversation.getSubConversation(0,10).messages, mutableListOf<Message>())
         assertEquals(fullConversation.getSubConversation(5,0).messages, mutableListOf<Message>())
         assertEquals(fullConversation.getSubConversation(0,4).messages, mutableListOf(imgMessageTime1, textMessageTime2, imgMessageTime3))
-        //TODO
     }
 
     @Test
     fun testFormatConversationData() {
-        //TODO
+        var emptyConversation = Conversation(user1Id, user2Id)
+        var oneSidedConversation = Conversation(user1Id, user2Id, mutableListOf(textMessageTime2))
+        var twoSidedConversation = Conversation(user1Id, user2Id, mutableListOf(textMessageTime2, textMessageU2U1))
+        var ut1 = JSONObject()
+        ut1.put("text:", textMessageTime2.message)
+        ut1.put("user:", textMessageTime2.senderId)
+
+        var ut2 = JSONObject()
+        ut1.put("text:", textMessageU2U1.message)
+        ut1.put("user:", textMessageU2U1.senderId)
+
+        var conv1Uts = listOf(ut1)
+        var conv2Uts = listOf(ut1, ut2)
+
+        var emptyConversationJSON = JSONObject()
+        emptyConversationJSON.put("utterances", listOf<JSONObject>())
+
+        var oneSidedConversationJSON = JSONObject()
+        oneSidedConversationJSON.put("utterances", conv1Uts)
+
+        var twoSidedConversationJSON = JSONObject()
+        twoSidedConversationJSON.put("utterances", conv2Uts)
+
+        assertEquals(emptyConversation.formatConversationData(), emptyConversationJSON)
+        assertEquals(oneSidedConversation.formatConversationData(), oneSidedConversationJSON)
+        assertEquals(twoSidedConversation.formatConversationData(), twoSidedConversationJSON)
     }
 }
