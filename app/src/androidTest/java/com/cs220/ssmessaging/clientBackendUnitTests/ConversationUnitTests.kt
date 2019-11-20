@@ -229,8 +229,8 @@ class ConversationUnitTests{
         ut1.put("user:", textMessageTime2.senderId)
 
         var ut2 = JSONObject()
-        ut1.put("text:", textMessageU2U1.message)
-        ut1.put("user:", textMessageU2U1.senderId)
+        ut2.put("text:", textMessageU2U1.message)
+        ut2.put("user:", textMessageU2U1.senderId)
 
         var conv1Uts = listOf(ut1)
         var conv2Uts = listOf(ut1, ut2)
