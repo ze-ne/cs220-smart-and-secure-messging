@@ -339,64 +339,6 @@ class User() {
         return false
     }
 
-    fun receiveConvoFromDb(encryptedMsg: EncryptedMessage) : Boolean {
-        var retVal = false
-
-        db.collection("conversations")
-            .whereArrayContains("users", this.userId)
-            .addSnapshotListener { snapshots, e ->
-                if (e != null) {
-                    Log.w(TAG, "listen:error", e)
-                    return@addSnapshotListener
-                }
-
-                for (dc in snapshots!!.documentChanges) {
-                    when (dc.type) {
-                        DocumentChange.Type.ADDED -> {
-                            var encryptedMessage = EncryptedMessage(dc.document.data.getValue("data") as ByteArray,
-                                "",
-                                dc.document.data.getValue("message_type") as String,
-                                dc.document.data.getValue("sender_id") as String,
-                                dc.document.data.getValue("recipient_id") as String,
-                                dc.document.data.getValue("timestamp") as Long
-                            )
-                            //var retMessage = receiveMsg(encryptedMsg)
-                            //addMessageToConvo(retMessage)
-                            retVal = true
-                        }
-                    }
-                }
-            }
-        return retVal
-    }
-
-    fun addNewMessageListener() : Boolean {
-        db.collection("conversations")
-            .whereArrayContains("users", this.userId)
-            .addSnapshotListener { snapshots, e ->
-                if (e != null) {
-                    Log.w(TAG, "listen:error", e)
-                    return@addSnapshotListener
-                }
-
-                for (dc in snapshots!!.documentChanges) {
-                    when (dc.type) {
-                        DocumentChange.Type.ADDED -> {
-                            var encryptedMessage = EncryptedMessage(dc.document.data.getValue("data") as ByteArray,
-                                "",
-                                dc.document.data.getValue("message_type") as String,
-                                dc.document.data.getValue("sender_id") as String,
-                                dc.document.data.getValue("recipient_id") as String,
-                                dc.document.data.getValue("timestamp") as Long
-                            )
-                            //var retMessage = receiveMsg(encryptedMessage)
-                            //addMessageToConvo(retMessage)
-                        }
-                    }
-                }
-            }
-        return true
-    }
     // gets the other user in a message given yourself.
     fun getOtherUser(msg : Message) : String {
         if(msg.senderId == this.userId) {
