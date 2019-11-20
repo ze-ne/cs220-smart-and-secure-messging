@@ -14,6 +14,9 @@ class ConversationUnitTests{
     private var imgMessage : ImageMessage = ImageMessage(byteArrayOf(1,2), "user1-user2", user1Id, user2Id, 0)
     private var textMessage : TextMessage = TextMessage("troglobite", "user1-user2", user1Id, user2Id, 0)
     private var textMessageDifferentUsers : TextMessage = TextMessage("troglobitdse", "users-user2", nullUser, user2Id, 0)
+    private var imgMessageTime1 : ImageMessage = ImageMessage(byteArrayOf(1,2), "user1-user2", user1Id, user2Id, 1)
+    private var textMessageTime2 : TextMessage = TextMessage("troglobite", "user1-user2", user1Id, user2Id, 2)
+    private var imgMessageTime3 : ImageMessage = ImageMessage(byteArrayOf(1,2), "user1-user2", user1Id, user2Id, 3)
 
     @Test
     fun testDefaultConstructor() {
@@ -200,5 +203,22 @@ class ConversationUnitTests{
         assertFalse(Conversation.isValidConversation(Conversation(user1Id, "", mutableListOf(imgMessage))))
 
         // Can't test invalid last time synched because setting it to a negative is blocked by the setter
+    }
+
+    @Test
+    fun testGetSubConversation() {
+        var emptyConversation = Conversation(user1Id, user2Id)
+        var fullConversation = Conversation(user1Id, user2Id, mutableListOf(imgMessageTime1, textMessageTime2, imgMessageTime3))
+
+        assertEquals(fullConversation.getSubConversation(1,1).messages, mutableListOf<Message>(imgMessageTime1))
+        assertEquals(emptyConversation.getSubConversation(0,10).messages, mutableListOf<Message>())
+        assertEquals(fullConversation.getSubConversation(5,0).messages, mutableListOf<Message>())
+        assertEquals(fullConversation.getSubConversation(0,4).messages, mutableListOf(imgMessageTime1, textMessageTime2, imgMessageTime3))
+        //TODO
+    }
+
+    @Test
+    fun testFormatConversationData() {
+        //TODO
     }
 }
