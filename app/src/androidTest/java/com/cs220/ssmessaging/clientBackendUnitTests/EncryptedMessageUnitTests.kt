@@ -1,7 +1,10 @@
 package com.cs220.ssmessaging.clientBackendUnitTests
 
 import com.cs220.ssmessaging.clientBackend.EncryptedMessage
+import com.cs220.ssmessaging.clientBackend.ImageMessage
 import com.cs220.ssmessaging.clientBackend.User
+import junit.framework.Assert.assertFalse
+import junit.framework.Assert.assertTrue
 import org.junit.Assert
 import org.junit.Test
 
@@ -114,5 +117,18 @@ class EncryptedMessageUnitTests{
         Assert.assertFalse(EncryptedMessage.isValidMessageType(""))
         Assert.assertFalse(EncryptedMessage.isValidMessageType("545"))
         Assert.assertFalse(EncryptedMessage.isValidMessageType("images"))
+    }
+
+    @Test
+    fun testMEquals(){
+        var msg1 = EncryptedMessage(byteArrayOf(1,2,3), "123213", "image", user1Id, user2Id, 12)
+        var msg2 = EncryptedMessage(byteArrayOf(1,2,3), "123213","image", user1Id, user2Id, 13)
+        var msg3 = EncryptedMessage(byteArrayOf(1,2), "1233", "image", user1Id, user2Id, 12)
+        var msg4 = EncryptedMessage(byteArrayOf(1,2,3), "123213", "text", user1Id, user2Id, 12)
+
+        assertTrue(msg1.mEquals(msg1))
+        assertFalse(msg1.mEquals(msg2))
+        assertFalse(msg1.mEquals(msg3))
+        assertFalse(msg1.mEquals(msg4))
     }
 }

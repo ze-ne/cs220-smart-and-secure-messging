@@ -15,6 +15,7 @@ import java.security.spec.X509EncodedKeySpec
 import java.time.Instant
 import java.util.*
 
+
 const val TAG = "User"
 
 class User() {
@@ -142,44 +143,29 @@ class User() {
             field = dvice
         }
 
+    // Add conversation locally to conversation list
     fun addConversation(convo : Conversation) : Boolean {
-        /*val conversation = hashMapOf(
-            "created" to Timestamp(Date()),
-            "users" to arrayListOf<String>(convo.user1Id, convo.user2.userId)
-        )
-
-        db.collection("/collections")
-        .add(conversation)
-        .addOnSuccessListener { documentReference ->
-            Log.d(TAG, "Conversation DocumentSnapshot written with ID: ${documentReference.id}")
-        }
-        .addOnFailureListener { e ->
-            Log.w(TAG, "Error adding conversation document", e)
-        }
-        return true*/
         if(convo in this.conversations) {
             return false
         }
         this.conversations.add(convo)
-        // TODO: write convo validity checks
         return true
     }
 
-    // FIX: Write unit tests for this
+    // start conversation with another user by sending conversation to database
     fun startConversation(convo : Conversation) : Boolean {
         val toAdd = hashMapOf(
             "canonicalId" to convo.convoId,
             "created" to Timestamp.now(),
             "users" to listOf<String>(convo.user1Id, convo.user2Id)
         )
-
+        addConversation(convo)
         db.collection("conversations").document(convo.convoId)
             .set(toAdd)
             .addOnSuccessListener {
                 Log.d("startConversation", "success")
                 getUserPublicKey(convo.user1Id)
                 getUserPublicKey(convo.user2Id)
-                addConversation(convo)
             }
             .addOnFailureListener {
                 Log.d("startConversation", "failure")
@@ -188,9 +174,8 @@ class User() {
         return true
     }
 
-    // FIX: Write unit tests for this
+    // Gets conversation and public keys from the database
     fun receiveConversation(convo : Conversation) : Boolean {
-        // TODO
         getUserPublicKey(convo.user1Id)
         getUserPublicKey(convo.user2Id)
         addConversation(convo)
@@ -198,23 +183,21 @@ class User() {
     }
 
     fun getConversationByUserId(recipientId : String) : Conversation? {
-        // TODO: validity checks
         var retConvoList: List<Conversation> = this.conversations
             .filter { x -> (x.user1Id == recipientId || x.user2Id == recipientId)}
         if (retConvoList.isEmpty()) {
             return null
         }
-        return retConvoList.single()
+        return retConvoList[0]
     }
 
     fun getConversationByConversationId(convoId: String) : Conversation? {
-        // TODO: validity checks
         var retConvoList: List<Conversation> = this.conversations
             .filter { x -> x.convoId == convoId}
         if (retConvoList.isEmpty()) {
             return null
         }
-        return retConvoList.single()
+        return retConvoList[0]
     }
 
     fun addContact(user : String) : Boolean {
@@ -230,7 +213,7 @@ class User() {
         if (retUserList.isEmpty()) {
             return null
         }
-        return retUserList.single()
+        return retUserList[0]
     }
 
     fun deleteContact(user : String) : Boolean {
@@ -274,18 +257,42 @@ class User() {
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
         val txtMsg = TextMessage(msg, convo.convoId,this.userId, recipient,timestamp)
-        sendEncryptedMsg(txtMsg, convo)
+        convo.addMessage(txtMsg)
+        val toSend = hashMapOf(
+            "bucket_url" to "",
+            //"data" to msg.message.toString(Charsets.UTF_8),
+            "data" to txtMsg.message,
+            //"message_type" to msg.messageType,
+            "message_type" to "text",
+            "sender_id" to txtMsg.senderId,
+            "recipient_id" to txtMsg.recipientId,
+            "timestamp" to txtMsg.timestamp
+        )
+
+        db.collection("conversations")
+            .document(convo.convoId)
+            .collection("messages")
+            .document()
+            .set(toSend)
+            .addOnSuccessListener {
+                Log.d("sendTextMsg", "success")
+            }
+            .addOnFailureListener {
+                Log.d("sendTextMsg", "failure")
+            }
     }
 
-    // Sends image message to server
-    fun sendImageMsg(byteArray: ByteArray, convo : Conversation){
+    // Sends image message to server - For iteration 2
+    /*fun sendImageMsg(byteArray: ByteArray, convo : Conversation){
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
         val txtMsg = ImageMessage(byteArray, convo.convoId,this.userId, recipient,timestamp)
         sendEncryptedMsg(txtMsg, convo)
-    }
+    }*/
 
-    private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
+    // For iteration 2 - Encryption
+    /*private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
+        // Encryption has some bugs, we are disabling it for now.
         val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
         val toSend = hashMapOf(
             "bucket_url" to "",
@@ -302,13 +309,12 @@ class User() {
             .document()
             .set(toSend)
             .addOnSuccessListener {
-                convo.addMessage(msg)
                 Log.d("sendTextMsg", "success")
             }
             .addOnFailureListener {
                 Log.d("sendTextMsg", "failure")
             }
-    }
+    }*/
 
     // Gets and stores public key of user from server
     fun getUserPublicKey(userId : String) : Boolean{
@@ -317,6 +323,7 @@ class User() {
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 val keyField = documentSnapshot.getString("publicKey")!!
+                Log.d("hello",keyField)
                 val publicKey: PublicKey = keyFactory.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(keyField)))
 
                 val fileUserId = if (this.userId == userId) "myKey" else userId
@@ -384,10 +391,23 @@ class User() {
             }
         return true
     }
+    // gets the other user in a message given yourself.
+    fun getOtherUser(msg : Message) : String {
+        if(msg.senderId == this.userId) {
+            return msg.recipientId
+        }
+        return msg.senderId
+    }
+
 
     // Handle incoming message from server
-    fun receiveMsg(encryptedMsg: EncryptedMessage) : Message {
-        return device.cipher.decryptEncryptedMessage(encryptedMsg)
+    fun receiveMsg(decryptedMsg: TextMessage) : Boolean {
+        // var decryptedMessage = device.cipher.decryptEncryptedMessage(encryptedMsg)
+
+        var localConvoObject = getConversationByUserId(getOtherUser(decryptedMsg))
+        localConvoObject ?: return false
+        localConvoObject ?. addMessage(decryptedMsg)
+        return true
     }
 
     fun addMessageToConvo(message: Message): Boolean {
@@ -410,7 +430,7 @@ class User() {
         return false
     }
 
-    // FIX: Write unit tests for this
+    // Adds the current user to the database
     fun addSelfToDatabase() : Boolean {
         var base64EncodedPublicKey =
             Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)

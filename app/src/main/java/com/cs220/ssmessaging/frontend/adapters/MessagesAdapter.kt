@@ -13,8 +13,7 @@ import com.cs220.ssmessaging.clientBackend.TextMessage
 private const val MY_MESSAGE = 1
 private const val OTHER_MESSAGE = 2
 
-class MessagesAdapter(val context: Context) : RecyclerView.Adapter<MessageViewHolder>() {
-    private val messages: ArrayList<TextMessage> = ArrayList()
+class MessagesAdapter(val context: Context, val messages: ArrayList<TextMessage>) : RecyclerView.Adapter<MessageViewHolder>() {
 
     fun addMessage(message: TextMessage){
         messages.add(message)
@@ -28,7 +27,6 @@ class MessagesAdapter(val context: Context) : RecyclerView.Adapter<MessageViewHo
     override fun getItemViewType(position: Int): Int {
         val message = messages[position]
 
-        // TROY MODIFICATION
         return if(MyApplication.currentUser?.userId == message.senderId) {
             MY_MESSAGE
         }

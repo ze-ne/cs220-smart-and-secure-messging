@@ -13,33 +13,35 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
-import org.bouncycastle.asn1.x500.style.RFC4519Style.c
 import java.util.concurrent.TimeUnit
 
 class PhoneAuthActivity : AppCompatActivity() {
 
     private lateinit var phonenumber: String
-    private lateinit var verificationId: String
+    private var verificationId: String = ""
     private lateinit var signinButton: Button
     private lateinit var authCode: EditText
     private lateinit var auth: FirebaseAuth
 
-    private var currentUser: User? = null
-
+    private var isNewUser: Boolean = false
     private var firstname: String? = null
     private var lastname: String? = null
     private var username: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_phone_auth)
 
+        phonenumber = intent.getStringExtra("phonenumber")
+        sendPhoneVerification(phonenumber)
+
         auth = FirebaseAuth.getInstance()
 
-        phonenumber = intent.getStringExtra("phonenumber")
         firstname = intent.getStringExtra("firstname")
         lastname = intent.getStringExtra("lastname")
         username = intent.getStringExtra("username")
+        isNewUser = intent.getBooleanExtra("newuser", false)
 
         authCode = findViewById(R.id.signin_code)
         signinButton = findViewById(R.id.signin_button)
@@ -54,19 +56,14 @@ class PhoneAuthActivity : AppCompatActivity() {
             verifyCode(code)
         }
 
-        sendPhoneVerification(phonenumber)
+
     }
 
-    private fun createNewAccount() {
+    private fun setCurrentUser() {
         if (firstname != null && lastname != null && username != null) {
             val newUser = User(username.toString(), firstname.toString(), lastname.toString())
             MyApplication.currentUser = newUser
-            newUser.addSelfToDatabase()
         }
-    }
-
-    private fun getCurrentUser() {
-        // TODO: set newUser
     }
 
     private fun verifyCode(code: String) {
@@ -79,13 +76,14 @@ class PhoneAuthActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val homeIntent = Intent(this, HomeActivity::class.java)
-                    // TODO: pass user around
-                    createNewAccount()
-
+                    setCurrentUser()
+                    if (isNewUser) {
+                        MyApplication.currentUser!!.addSelfToDatabase()
+                    }
                     startActivity(homeIntent)
-
                 } else {
-                    Toast.makeText(applicationContext, task.exception!!.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(applicationContext, task.exception!!.message, Toast.LENGTH_LONG)
+                        .show()
                 }
             }
     }
@@ -103,11 +101,11 @@ class PhoneAuthActivity : AppCompatActivity() {
     private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
         override fun onCodeSent(
-            s: String,
+            verification: String,
             forceResendingToken: PhoneAuthProvider.ForceResendingToken
         ) {
-            super.onCodeSent(s, forceResendingToken)
-            verificationId = s
+            super.onCodeSent(verification, forceResendingToken)
+            verificationId = verification
         }
 
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -121,4 +119,6 @@ class PhoneAuthActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, e.message, Toast.LENGTH_LONG).show()
         }
     }
+
+
 }

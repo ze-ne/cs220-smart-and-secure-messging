@@ -1,7 +1,10 @@
 package com.cs220.ssmessaging.clientBackendUnitTests
 
+import android.media.Image
 import com.cs220.ssmessaging.clientBackend.ImageMessage
+import com.cs220.ssmessaging.clientBackend.TextMessage
 import com.cs220.ssmessaging.clientBackend.User
+import junit.framework.Assert
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -118,6 +121,19 @@ class ImageMessageUnitTests{
         assertTrue(ImageMessage.isValidPathToImage("."))
         assertFalse(ImageMessage.isValidPathToImage("Wrong!"))
         assertFalse(ImageMessage.isValidPathToImage("<>!@"))
+    }
+
+    @Test
+    fun testMEquals(){
+        var msg1 = ImageMessage(byteArrayOf(1,2,3), "123213", user1Id, user2Id, 12)
+        var msg2 = ImageMessage(byteArrayOf(1,2,3), "123213", user1Id, user2Id, 13)
+        var msg3 = ImageMessage(byteArrayOf(1,2), "1233", user1Id, user2Id, 12)
+        var msg4 = ImageMessage(byteArrayOf(1,2,3), "123213", user2Id, user2Id, 12)
+
+        assertTrue(msg1.mEquals(msg1))
+        assertFalse(msg1.mEquals(msg2))
+        assertFalse(msg1.mEquals(msg3))
+        assertFalse(msg1.mEquals(msg4))
     }
 
 }

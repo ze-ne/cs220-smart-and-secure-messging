@@ -8,11 +8,9 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.cs220.ssmessaging.R
-import com.cs220.ssmessaging.clientBackend.User
-import com.cs220.ssmessaging.frontend.presenters.LoginActivityPresenter
+import com.google.firebase.firestore.FirebaseFirestore
 
-class LoginActivity : AppCompatActivity(), LoginActivityPresenter.View {
-    private val presenter: LoginActivityPresenter = LoginActivityPresenter()
+class LoginActivity : AppCompatActivity() {
 
     private lateinit var username: EditText
     private lateinit var phoneNumber: EditText
@@ -33,33 +31,47 @@ class LoginActivity : AppCompatActivity(), LoginActivityPresenter.View {
             startActivity(registerIntent)
         }
 
-        loginButton.setOnClickListener{
+        loginButton.setOnClickListener {
             val number = phoneNumber.text.toString().trim()
+            val usernameText = username.text.toString()
             if (number.isEmpty() || number.length < 10) {
-                Toast.makeText(this, "Please enter a valid phone number", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter a valid phone number.", Toast.LENGTH_SHORT)
+                    .show()
             } else {
-                val fullNumber = "+1$number"
-                val authIntent = Intent(this, PhoneAuthActivity::class.java)
-                authIntent.putExtra("phonenumber", fullNumber)
-                startActivity(authIntent)
+                usernameExists(usernameText, number)
             }
         }
     }
 
-    override fun loginSuccessful() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun usernameExists(
+        usernameText: String,
+        number: String
+    ) {
+        FirebaseFirestore.getInstance().collection("users")
+            .whereEqualTo("canonicalId", usernameText)
+            .get()
+            .addOnSuccessListener { documentQuery ->
+                if (documentQuery.size() == 1) {
+                    val firstname = documentQuery.documents[0].getString("first_name")
+                    val lastname = documentQuery.documents[0].getString("last_name")
+                    val fullNumber = "+1$number"
+                    val authIntent = Intent(this, PhoneAuthActivity::class.java)
+                    authIntent.putExtra("phonenumber", fullNumber)
+                    authIntent.putExtra("firstname", firstname)
+                    authIntent.putExtra("lastname", lastname)
+                    authIntent.putExtra("username", usernameText)
+                    authIntent.putExtra("newuser", false)
+                    startActivity(authIntent)
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Username is not found. Try again or make an account.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+            }
     }
-
-    override fun loginFail() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun registerFail() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun registerSuccessful() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
 }

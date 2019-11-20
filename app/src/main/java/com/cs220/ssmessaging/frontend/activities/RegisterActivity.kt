@@ -7,6 +7,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.cs220.ssmessaging.R
+import com.cs220.ssmessaging.clientBackend.User
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -26,26 +28,56 @@ class RegisterActivity : AppCompatActivity() {
         lastname = findViewById(R.id.register_lastname)
         registerButton = findViewById(R.id.register_button)
 
-        registerButton.setOnClickListener{
+        registerButton.setOnClickListener {
             val number = phoneNumber.text.toString().trim()
             val firstnameText = firstname.text.toString()
             val lastnameText = lastname.text.toString()
             val usernameText = username.text.toString()
 
-            // TODO: check for valid name/username
-            // TODO: check that username isn't already taken
-            if (number.isEmpty() || number.length < 10 || firstnameText.isEmpty() || lastnameText.isEmpty() || usernameText.isEmpty()  ) {
-                Toast.makeText(this, "Please enter a valid information", Toast.LENGTH_SHORT).show()
+            if (validRegistration(firstnameText, lastnameText, usernameText, number)) {
+                usernameExists(usernameText, firstnameText, lastnameText, number)
             } else {
-
-                val fullNumber = "+1$number"
-                val authIntent = Intent(this, PhoneAuthActivity::class.java)
-                authIntent.putExtra("phonenumber", fullNumber)
-                authIntent.putExtra("firstname", firstnameText)
-                authIntent.putExtra("lastname", lastnameText)
-                authIntent.putExtra("username", usernameText)
-                startActivity(authIntent)
+                Toast.makeText(this, "Please enter valid information", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun validRegistration(
+        firstname: String,
+        lastname: String,
+        username: String,
+        number: String
+    ): Boolean {
+        return (User.isValidName(firstname) && User.isValidName(lastname) && User.isValidUserId(
+            username
+        ) && number.isNotEmpty() && number.length == 10)
+    }
+
+    private fun usernameExists(
+        usernameText: String,
+        firstnameText: String,
+        lastnameText: String,
+        number: String
+    ) {
+        FirebaseFirestore.getInstance().collection("users")
+            .whereEqualTo("canonicalId", usernameText)
+            .get()
+            .addOnSuccessListener { documentQuery ->
+                if (documentQuery.size() == 0) {
+                    val fullNumber = "+1$number"
+                    val authIntent = Intent(this, PhoneAuthActivity::class.java)
+                    authIntent.putExtra("phonenumber", fullNumber)
+                    authIntent.putExtra("firstname", firstnameText)
+                    authIntent.putExtra("lastname", lastnameText)
+                    authIntent.putExtra("username", usernameText)
+                    authIntent.putExtra("newuser", true)
+                    startActivity(authIntent)
+                } else {
+                    Toast.makeText(this, "Username is already taken", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+            }
     }
 }

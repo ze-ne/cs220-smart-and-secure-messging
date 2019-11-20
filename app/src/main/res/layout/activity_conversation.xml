@@ -1,70 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:context=".frontend.activities.ConversationActivity">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".frontend.activities.ConversationActivity">
 
     <include
-            android:id="@+id/conversation_toolbar"
-            layout="@layout/layout_toolbar" />
+        android:id="@+id/conversation_toolbar"
+        layout="@layout/layout_toolbar" />
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/messageList"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/conversation_toolbar">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/message_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="55dp"
-            android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="55dp"
             android:scrollbars="vertical"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent">
-    </androidx.recyclerview.widget.RecyclerView>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <View
+        <View
             android:layout_width="0dp"
             android:layout_height="2dp"
-            android:background="@color/colorPrimaryDark"
             android:layout_marginBottom="0dp"
+            android:background="@color/colorPrimaryDark"
             app:layout_constraintBottom_toTopOf="@+id/layout_message_area"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toRightOf="parent" />
 
-    <LinearLayout
+        <LinearLayout
             android:id="@+id/layout_message_area"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:minHeight="48dp"
             android:background="#ffffff"
+            android:minHeight="48dp"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent">
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
 
-        <EditText
+            <EditText
                 android:id="@+id/message_input"
-                android:hint="enter message"
-                android:background="@android:color/transparent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:maxLines="6"/>
+                android:background="@android:color/transparent"
+                android:hint="enter message"
+                android:maxLines="6" />
 
-        <Button
+            <Button
                 android:id="@+id/send_message_button"
-                android:text="SEND"
-                android:textSize="14dp"
-                android:clickable="true"
                 android:layout_width="64dp"
                 android:layout_height="48dp"
+                android:layout_gravity="bottom"
+                android:clickable="true"
                 android:gravity="center"
-                android:layout_gravity="bottom" />
+                android:text="SEND"
+                android:textSize="14dp" />
 
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
