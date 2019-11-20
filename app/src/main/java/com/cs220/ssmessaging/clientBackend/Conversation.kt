@@ -162,13 +162,6 @@ class Conversation() {
         return Conversation("", "", mutableListOf<Message>())
     }
 
-    fun formatConversationData() : JSONObject {
-        //TODO
-        //json docs at https://developer.android.com/training/volley/request
-        // and https://developer.android.com/reference/org/json/JSONObject.html
-        return JSONObject()
-    }
-
     fun getAnalytics() : UtteranceAnalyses {
         //TODO
         /* might exclude from unit testing on account of having a
