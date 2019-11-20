@@ -6,6 +6,7 @@ import android.widget.ImageView
 import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.Message
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import java.nio.charset.Charset
 import java.security.KeyFactory
@@ -224,6 +225,17 @@ class User() {
         return true
     }
 
+    fun getUserIdsByFirstName(firstName: String) {
+
+    }
+
+    fun getUserIdsByLastName(lastName: String) {
+
+    }
+
+    fun doesUserExistByUserId(userId: String) {
+
+    }
     /* We are moving the "Manage Block List" use case that these methods implement to iteration 2
     fun findBlockedContactById(userId : String) : User? {
         // TODO
@@ -321,6 +333,64 @@ class User() {
         return false
     }
 
+    fun receiveConvoFromDb(encryptedMsg: EncryptedMessage) : Boolean {
+        var retVal = false
+
+        db.collection("conversations")
+            .whereArrayContains("users", this.userId)
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    Log.w(TAG, "listen:error", e)
+                    return@addSnapshotListener
+                }
+
+                for (dc in snapshots!!.documentChanges) {
+                    when (dc.type) {
+                        DocumentChange.Type.ADDED -> {
+                            var encryptedMessage = EncryptedMessage(dc.document.data.getValue("data") as ByteArray,
+                                "",
+                                dc.document.data.getValue("message_type") as String,
+                                dc.document.data.getValue("sender_id") as String,
+                                dc.document.data.getValue("recipient_id") as String,
+                                dc.document.data.getValue("timestamp") as Long
+                            )
+                            var retMessage = receiveMsg(encryptedMsg)
+                            addMessageToConvo(retMessage)
+                            retVal = true
+                        }
+                    }
+                }
+            }
+        return retVal
+    }
+
+    fun addNewMessageListener() : Boolean {
+        db.collection("conversations")
+            .whereArrayContains("users", this.userId)
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    Log.w(TAG, "listen:error", e)
+                    return@addSnapshotListener
+                }
+
+                for (dc in snapshots!!.documentChanges) {
+                    when (dc.type) {
+                        DocumentChange.Type.ADDED -> {
+                            var encryptedMessage = EncryptedMessage(dc.document.data.getValue("data") as ByteArray,
+                                "",
+                                dc.document.data.getValue("message_type") as String,
+                                dc.document.data.getValue("sender_id") as String,
+                                dc.document.data.getValue("recipient_id") as String,
+                                dc.document.data.getValue("timestamp") as Long
+                            )
+                            var retMessage = receiveMsg(encryptedMessage)
+                            addMessageToConvo(retMessage)
+                        }
+                    }
+                }
+            }
+        return true
+    }
     // gets the other user in a message given yourself.
     fun getOtherUser(msg : Message) : String {
         if(msg.senderId == this.userId) {
@@ -337,6 +407,13 @@ class User() {
         var localConvoObject = getConversationByUserId(getOtherUser(decryptedMsg))
         localConvoObject ?: return false
         localConvoObject ?. addMessage(decryptedMsg)
+        return true
+    }
+
+    fun addMessageToConvo(message: Message): Boolean {
+        var localConvoObject = getConversationByUserId(message.senderId)
+        localConvoObject ?: return false
+        localConvoObject ?. addMessage(message)
         return true
     }
 
