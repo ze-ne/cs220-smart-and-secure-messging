@@ -159,4 +159,11 @@ class Conversation() {
         // and https://developer.android.com/reference/org/json/JSONObject.html
         return JSONObject()
     }
+
+    fun getAnalytics() : JSONObject {
+        //TODO
+        /* might exclude from unit testing on account of having a
+           relatively low monthly limit on api calls before we have to pay */
+        return JSONObject()
+    }
 }
