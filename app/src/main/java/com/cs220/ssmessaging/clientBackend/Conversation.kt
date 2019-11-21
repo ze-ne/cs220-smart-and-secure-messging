@@ -2,6 +2,12 @@ package com.cs220.ssmessaging.clientBackend
 import android.media.Image
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.clientBackend.Message
+import com.ibm.cloud.sdk.core.security.IamAuthenticator
+import com.ibm.watson.tone_analyzer.v3.ToneAnalyzer
+import com.ibm.watson.tone_analyzer.v3.model.ToneChatOptions
+import com.ibm.watson.tone_analyzer.v3.model.Utterance
+import com.ibm.watson.tone_analyzer.v3.model.UtteranceAnalyses
+import org.json.JSONObject
 
 class Conversation() {
     /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
@@ -13,6 +19,10 @@ class Conversation() {
      * when we want the variable getter and setter to be private.
      * Please go here for more information: https://kotlinlang.org/docs/reference/properties.html
      */
+
+    private val authenticator = IamAuthenticator("niLJk0JS8fRbqrqFmPoRgqQMt9PnWMC7EKOfCZHty9no")
+    private val toneAnalyzer = ToneAnalyzer("8.0.1", authenticator)
+    private val WATSON_URL = "https://gateway.watsonplatform.net/tone-analyzer/api"
 
     constructor(firstUser : String, secondUser : String, msgs : MutableList<Message>) : this(){
 
@@ -147,8 +157,37 @@ class Conversation() {
         return addMessage
     }
 
+
     // Iteration 2
     fun removeMessage(msg: Message): Boolean {
         return false
+
+    fun getSubConversation(startTimestamp : Long, endTimestamp : Long) : Conversation {
+        //TODO
+        return Conversation("", "", mutableListOf<Message>())
+    }
+
+    fun getAnalytics() : UtteranceAnalyses {
+        //TODO
+        /* might exclude from unit testing on account of having a
+           relatively low monthly limit on api calls before we have to pay */
+
+        val utterances = _messages
+            .filterIsInstance<TextMessage>()
+            .map {
+                Utterance.Builder()
+                    .user(it.senderId)
+                    .text(it.message)
+                    .build()
+            }
+
+        toneAnalyzer.serviceUrl = WATSON_URL
+
+        val toneChatOptions = ToneChatOptions.Builder()
+            .utterances(utterances)
+            .build()
+        val utteranceAnalyses = toneAnalyzer.toneChat(toneChatOptions).execute().result
+
+        return utteranceAnalyses
     }
 }

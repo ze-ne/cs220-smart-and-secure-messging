@@ -1,6 +1,9 @@
 package com.cs220.ssmessaging.clientBackendUnitTests
 
 import com.cs220.ssmessaging.clientBackend.*
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
+import org.json.JSONObject
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.runner.RunWith
@@ -15,6 +18,10 @@ class ConversationUnitTests{
     private var imgMessage : ImageMessage = ImageMessage(byteArrayOf(1,2), "user1-user2", user1Id, user2Id, 0)
     private var textMessage : TextMessage = TextMessage("troglobite", "user1-user2", user1Id, user2Id, 0)
     private var textMessageDifferentUsers : TextMessage = TextMessage("troglobitdse", "users-user2", nullUser, user2Id, 0)
+    private var imgMessageTime1 : ImageMessage = ImageMessage(byteArrayOf(1,2), "user1-user2", user1Id, user2Id, 1)
+    private var textMessageTime2 : TextMessage = TextMessage("troglobite", "user1-user2", user1Id, user2Id, 2)
+    private var imgMessageTime3 : ImageMessage = ImageMessage(byteArrayOf(1,2), "user1-user2", user1Id, user2Id, 3)
+    private var textMessageU2U1 : TextMessage = TextMessage("troglobite", "user1-user2", user2Id, user1Id, 0)
 
     @Test
     fun testDefaultConstructor() {
@@ -237,4 +244,16 @@ class ConversationUnitTests{
 
         // Can't test invalid last time synched because setting it to a negative is blocked by the setter
     }
+
+    @Test
+    fun testGetSubConversation() {
+        var emptyConversation = Conversation(user1Id, user2Id)
+        var fullConversation = Conversation(user1Id, user2Id, mutableListOf(imgMessageTime1, textMessageTime2, imgMessageTime3))
+
+        assertEquals(mutableListOf<Message>(imgMessageTime1), fullConversation.getSubConversation(1,1).messages)
+        assertEquals(mutableListOf<Message>(), emptyConversation.getSubConversation(0,10).messages)
+        assertEquals(mutableListOf<Message>(), fullConversation.getSubConversation(5,0).messages)
+        assertEquals(mutableListOf(imgMessageTime1, textMessageTime2, imgMessageTime3), fullConversation.getSubConversation(0,4).messages)
+    }
+
 }
