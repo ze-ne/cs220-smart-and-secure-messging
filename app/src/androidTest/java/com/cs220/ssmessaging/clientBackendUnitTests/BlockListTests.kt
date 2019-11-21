@@ -9,6 +9,7 @@ import com.cs220.ssmessaging.clientBackend.User
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import junit.framework.Assert.*
 import org.junit.Assert
 import org.junit.Test
 import java.nio.charset.Charset
@@ -21,51 +22,51 @@ import java.util.*
 class BlockListUnitTests{
 
     @Test
-    fun testaddToBlockList{
+    fun testaddToBlockedContact(){
         //User(id,first,last,contacts,conversations,blocklist)
-        val user1 = User("id1","Ronald", "McDonald", mutableListOf<String>(), mutableListOf<Conversation>(), mutableListOf<User>())
-        val user2 = User("id2","Pooh", "Bear", mutableListOf<String>(), mutableListOf<Conversation>(), mutableListOf<User>())
-        Assert.assertEquals(0, user1.blocklist.size)
-        user1.addToBlockList(user2)
-        Assert.assertEquals(1, user1.blocklist.size)
+        val user1 = User("id1","Ronald", "McDonald", mutableListOf<String>(), mutableListOf<Conversation>())
+
+        assertEquals(0, user1.blockedContacts.size)
+        assertTrue(user1.addBlockedContact("id2"))
+        assertEquals(1, user1.blockedContacts.size)
+        assertTrue(user1.addBlockedContact("id11"))
+        assertEquals(2, user1.blockedContacts.size)
+
+        // Error case, malformed userid or same userid
+        assertFalse(user1.addBlockedContact("id1"))
+        assertEquals(2, user1.blockedContacts.size)
+
+        assertFalse(user1.addBlockedContact(""))
+        assertEquals(2, user1.blockedContacts.size)
     }
 
     @Test
-    fun testremoveFromBlockList{
-        val user1 = User("id1","Ronald", "McDonald", mutableListOf<String>(), mutableListOf<Conversation>(), mutableListOf<User>())
-        val user2 = User("id2","Pooh", "Bear", mutableListOf<String>(), mutableListOf<Conversation>(), mutableListOf<User>())
-        user1.addToBlockList(user2)
-        Assert.assertEquals(1, user1.blocklist.size)
-        user1.removeFromBlockList(user2)
-        Assert.assertEquals(0, user1.blocklist.size)
-    }
+    fun testremoveFromBlockList(){
+        val user1 = User("id1","Ronald", "McDonald", mutableListOf<String>(), mutableListOf<Conversation>())
 
-    @Test
-    fun testaddContactIfBlocked{
-        val user1 = User("id1","Ronald", "McDonald", mutableListOf<String>(), mutableListOf<Conversation>(), mutableListOf<User>())
-        val user2 = User("id2","Pooh", "Bear", mutableListOf<String>(), mutableListOf<Conversation>(), mutableListOf<User>())
-        user1.addToBlockList(user2)
-        user2.addContact(user1)
-        user1.addContact(user2)
-        Assert.assertEquals(0, user2.contacts.size)
-        Assert.assertEquals(0,user1.contacts.size)
-    }
+        user1.blockedContacts = mutableListOf("hey", "hey2", "hey3")
+        assertEquals(3, user1.blockedContacts.size)
 
-    @Test
-    fun testaddConversationIfBlocked{
-        val user1 = User("id1","Ronald", "McDonald", mutableListOf<String>(), mutableListOf<Conversation>(), mutableListOf<User>())
-        val user2 = User("id2","Pooh", "Bear", mutableListOf<String>(), mutableListOf<Conversation>(), mutableListOf<User>())
-        user1.addToBlockList(user2)
-        val convo1 = Conversation(user1, user2, mutableListOf<Message>())
-        Assert.assertEquals(null,convo1)
-    }
+        assertTrue(user1.deleteBlockedContact("hey2"))
+        assertEquals(2, user1.blockedContacts.size)
+        assertFalse("hey2" in user1.blockedContacts)
 
-    @Test
-    fun testautoRemoveContact{
-        val user1 = User("id1","Ronald", "McDonald", mutableListOf<String>(), mutableListOf<Conversation>(), mutableListOf<User>())
-        val user2 = User("id2","Pooh", "Bear", mutableListOf<String>(), mutableListOf<Conversation>(), mutableListOf<User>())
-        user1.addToBlockList(user2)
-        Assert.assertEquals(false, (user1 in user2.contacts))
-        Assert.assertEquals(false, (user2 in user1.contacts))
+        assertTrue(user1.deleteBlockedContact("hey1"))
+        assertEquals(1, user1.blockedContacts.size)
+        assertFalse("hey1" in user1.blockedContacts)
+
+        // Invalid deletions or userid does not exist
+        assertFalse(user1.deleteBlockedContact(""))
+        assertEquals(1, user1.blockedContacts.size)
+        assertTrue("hey3" in user1.blockedContacts)
+
+        assertFalse(user1.deleteBlockedContact("hey1"))
+        assertEquals(1, user1.blockedContacts.size)
+        assertTrue("hey3" in user1.blockedContacts)
+
+        user1.blockedContacts = mutableListOf()
+
+        assertFalse(user1.deleteBlockedContact("hey1"))
+        assertEquals(0, user1.blockedContacts.size)
     }
 }
