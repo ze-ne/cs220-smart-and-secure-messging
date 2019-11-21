@@ -267,6 +267,11 @@ class User() {
         return false
     }
 
+    // Sends image message to server - partially testable
+    fun sendImageMsg(msg : ByteArray, convo: Conversation){
+        // TODO
+    }
+
     // Sends text message to server
     fun sendTextMsg(msg : String, convo : Conversation){
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id

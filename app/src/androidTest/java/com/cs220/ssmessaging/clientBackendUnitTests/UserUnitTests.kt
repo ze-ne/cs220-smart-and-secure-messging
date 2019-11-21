@@ -266,7 +266,7 @@ class UserUnitTests{
     }
 
     // FIX: Since we do not send image message this iteration, we don't test send_image_message
-    /*@Test
+    @Test
     fun send_image_message() {
         val user1 = User("userId1", "User", "One")
         val user2 = User("userId2", "User", "Two")
@@ -279,7 +279,7 @@ class UserUnitTests{
 
         assertEquals(conversation.messages.size, oldLength + 1)
         assertEquals((conversation.messages[0] as ImageMessage).message, null)
-    }*/
+    }
 
     @Test
     fun testGetConversationByConversationId() {
