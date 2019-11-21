@@ -161,6 +161,7 @@ class Conversation() {
     // Iteration 2
     fun removeMessage(msg: Message): Boolean {
         return false
+    }
 
     fun getSubConversation(startTimestamp : Long, endTimestamp : Long) : Conversation {
         //TODO
