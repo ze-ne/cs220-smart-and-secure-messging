@@ -22,7 +22,7 @@ import java.util.*
 class BlockListUnitTests{
 
     @Test
-    fun testaddToBlockedContact(){
+    fun testAddToBlockedContactList(){
         //User(id,first,last,contacts,conversations,blocklist)
         val user1 = User("id1","Ronald", "McDonald", mutableListOf<String>(), mutableListOf<Conversation>())
 
@@ -41,7 +41,7 @@ class BlockListUnitTests{
     }
 
     @Test
-    fun testremoveFromBlockList() {
+    fun testRemoveFromBlockList() {
         val user1 = User(
             "id1",
             "Ronald",
