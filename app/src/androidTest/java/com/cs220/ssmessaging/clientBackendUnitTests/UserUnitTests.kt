@@ -265,7 +265,6 @@ class UserUnitTests{
         assertTrue(searchForTextMessage(conversation.messages as MutableList<TextMessage>, "Hi, how are you?"))
     }
 
-    // FIX: Since we do not send image message this iteration, we don't test send_image_message
     @Test
     fun send_image_message() {
         val user1 = User("userId1", "User", "One")

@@ -175,7 +175,7 @@ class User() {
         return true
     }
 
-    // Gets conversation and public keys from the database
+    // Gets conversation and public keys from the database - Untestable because server
     fun receiveConversation(convo : Conversation) : Boolean {
         getUserPublicKey(convo.user1Id)
         getUserPublicKey(convo.user2Id)
@@ -302,6 +302,11 @@ class User() {
             }
     }
 
+    // Fully untestable because all this does is hit the server
+    private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
+        // TODO
+    }
+
     // Sends image message to server - For iteration 2
     /*fun sendImageMsg(byteArray: ByteArray, convo : Conversation){
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
@@ -372,20 +377,13 @@ class User() {
         return true
     }
 
-    fun addMessageToConvo(message: Message): Boolean {
-        var localConvoObject = getConversationByUserId(message.senderId)
-        localConvoObject ?: return false
-        localConvoObject ?. addMessage(message)
-        return true
-    }
-
     // Iteration 2
     // Remove a message from a conversation in conversations list
     fun deleteSentMessage(message: Message): Boolean {
         return false
     }
 
-    // Add your own public key to server
+    // Add your own public key to server - Untestable because it deals with server
     fun addPublicKeyToServer(key : String, user : User) : Boolean {
         db.collection("users").document(user.userId)
             .update("publicKey", key)
