@@ -246,9 +246,9 @@ class User() {
         return false
     }
 
-    fun findBlockedContactById(userId : String) : String? {
+    fun checkIfBlocked(userId : String) : Boolean {
         // TODO
-        return null
+        return false
     }
 
     // Untestable - relies on database functionality
