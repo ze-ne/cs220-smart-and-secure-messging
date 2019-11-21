@@ -6,14 +6,14 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/conversation_toolbar"
+        android:id="@+id/contact_toolbar"
         layout="@layout/layout_toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/conversation_dialog_header"
+        android:id="@+id/contact_dialog_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -29,7 +29,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/dialog_add_conversation_field"
+        android:id="@+id/dialog_add_contact_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="46dp"
@@ -37,21 +37,21 @@
         android:hint="username"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/conversation_dialog_header" />
+        app:layout_constraintTop_toTopOf="@id/contact_dialog_header" />
 
     <TextView
-        android:id="@+id/dialog_new_conversation_button"
+        android:id="@+id/dialog_add_contact_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:clickable="true"
-        android:text="START CONVERSATION"
+        android:text="ADD CONTACT"
         android:textColor="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_add_conversation_field" />
+        app:layout_constraintTop_toBottomOf="@+id/dialog_add_contact_field" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

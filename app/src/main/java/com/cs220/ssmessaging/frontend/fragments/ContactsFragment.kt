@@ -8,21 +8,22 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.User
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ContactsFragment : Fragment() {
 
     private lateinit var contactsRecyclerView: RecyclerView
     private lateinit var contactsListAdapter: ContactsListAdapter
-    private lateinit var newContactInput: EditText
-    private lateinit var newContactButton: Button
+    private lateinit var searchContactInput: EditText
+    private lateinit var searchContactButton: Button
+    private lateinit var newContactButton: FloatingActionButton
     private lateinit var currentUser: User
     private val db = FirebaseFirestore.getInstance()
 
@@ -43,30 +44,17 @@ class ContactsFragment : Fragment() {
         contactsListAdapter = ContactsListAdapter(activity)
         contactsRecyclerView.adapter = contactsListAdapter
 
-        newContactInput = contactsView.findViewById(R.id.add_conversation_field)
-        newContactButton = contactsView.findViewById(R.id.new_conversation_button)
+        searchContactInput = contactsView.findViewById(R.id.search_contacts_field)
+        searchContactButton = contactsView.findViewById(R.id.search_contacts_button)
+        newContactButton = contactsView.findViewById(R.id.new_contact_button)
+
+        searchContactButton.setOnClickListener {
+            // TODO
+        }
 
         newContactButton.setOnClickListener {
-            val participantUsername = newContactInput.text.toString()
-            if (participantUsername.isNotEmpty()) {
-                FirebaseFirestore.getInstance().collection("users")
-                    .whereEqualTo("canonicalId", participantUsername)
-                    .get()
-                    .addOnSuccessListener { documentReference ->
-                        if (documentReference.size() == 1) {
-                            currentUser.addContact(participantUsername)
-                        } else {
-                            Toast.makeText(
-                                activity,
-                                "User could not be found. Check the username and try again.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                    .addOnFailureListener { exception ->
-                        Toast.makeText(activity, exception.message, Toast.LENGTH_SHORT).show()
-                    }
-            }
+            val addContactDialog = AddContactDialog()
+            addContactDialog.show(fragmentManager!!, "AddContactDialog")
         }
 
         return contactsView
@@ -81,12 +69,12 @@ class ContactsFragment : Fragment() {
         override fun onCreateViewHolder(
             viewGroup: ViewGroup,
             position: Int
-        ): ContactsFragment.ViewHolder {
+        ): ViewHolder {
             val view = layoutInflater.inflate(R.layout.item_contact, viewGroup, false)
             return ViewHolder(view)
         }
 
-        override fun onBindViewHolder(viewHolder: ContactsFragment.ViewHolder, position: Int) {
+        override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
             val contactUserId: String = currentUser.contacts[position]
 
             viewHolder.setData(contactUserId)
