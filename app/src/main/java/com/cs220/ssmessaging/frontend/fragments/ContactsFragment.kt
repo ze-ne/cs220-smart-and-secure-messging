@@ -1,7 +1,6 @@
 package com.cs220.ssmessaging.frontend.fragments
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,9 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.R
-import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.User
-import com.cs220.ssmessaging.frontend.activities.ConversationActivity
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ContactsFragment : Fragment() {
@@ -30,7 +27,11 @@ class ContactsFragment : Fragment() {
     private val db = FirebaseFirestore.getInstance()
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         currentUser = MyApplication.currentUser!!
 
         val contactsView =
@@ -77,15 +78,15 @@ class ContactsFragment : Fragment() {
 
         private val layoutInflater = LayoutInflater.from(context)
 
-        override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): ContactsFragment.ViewHolder {
+        override fun onCreateViewHolder(
+            viewGroup: ViewGroup,
+            position: Int
+        ): ContactsFragment.ViewHolder {
             val view = layoutInflater.inflate(R.layout.item_contact, viewGroup, false)
             return ViewHolder(view)
         }
 
         override fun onBindViewHolder(viewHolder: ContactsFragment.ViewHolder, position: Int) {
-//            val contacts = currentUser.contacts[position]
-//            val contactName = contacts.firstName + " " + contacts.lastName
-
             val contactUserId: String = currentUser.contacts[position]
 
             viewHolder.setData(contactUserId)
