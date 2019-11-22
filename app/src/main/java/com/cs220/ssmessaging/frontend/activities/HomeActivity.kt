@@ -18,10 +18,6 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var homeTabLayout: TabLayout
     private lateinit var homeTabAdapter: HomeTabAdapter
 
-    // private var currentUser: FirebaseUser? = null
-    // private lateinit var firebaseAuth: FirebaseAuth
-    // TODO: private lateinit var database: DatabaseReference
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -30,7 +26,7 @@ class HomeActivity : AppCompatActivity() {
         setSupportActionBar(homeToolbar)
 
         homeViewPager = findViewById(R.id.home_tab_pager)
-        homeTabAdapter =  HomeTabAdapter(supportFragmentManager)
+        homeTabAdapter = HomeTabAdapter(supportFragmentManager)
         homeViewPager.adapter = homeTabAdapter
 
         homeTabLayout = findViewById(R.id.home_tabs)
@@ -51,18 +47,8 @@ class HomeActivity : AppCompatActivity() {
         return true
     }
 
-    private fun verifyUserExistence() {
-        //val currentUserId = firebaseAuth.currentUser!!.uid
-        // TODO: Connect to database
-    }
-
     private fun sendUserToSettingsActivity() {
         val settingsIntent = Intent(this, SettingsActivity::class.java)
         startActivity(settingsIntent)
-    }
-
-    private fun sendUserToLoginActivity() {
-        val loginIntent = Intent(this, LoginActivity::class.java)
-        startActivity(loginIntent)
     }
 }
