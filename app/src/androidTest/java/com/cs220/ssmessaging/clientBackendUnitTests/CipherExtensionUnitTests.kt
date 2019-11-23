@@ -282,7 +282,8 @@ class CipherExtensionUnitTests{
         // Unlike encryption, decryption should only fail when there is a bad message or bad type
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
-        var encryptedMessage : EncryptedMessage = EncryptedMessage(ByteArray(0), "testId", "image", sendUserId, receiveUserId, -1)
+        // FIX: Added additiona AES Key
+        var encryptedMessage : EncryptedMessage = EncryptedMessage(ByteArray(0), "testId", "image", sendUserId, receiveUserId, -1, byteArrayOf())
         testCipherExtension.decryptEncryptedMessage(encryptedMessage)
     }
 
@@ -291,7 +292,8 @@ class CipherExtensionUnitTests{
         // Unlike encryption, decryption should only fail when there is a bad message or bad type
         var testCipherExtension =
             CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
-        var encryptedMessage : EncryptedMessage = EncryptedMessage(ByteArray(566), "testId", "", sendUserId, receiveUserId, -1)
+        // FIX: Added additional AES Key
+        var encryptedMessage : EncryptedMessage = EncryptedMessage(ByteArray(566), "testId", "", sendUserId, receiveUserId, -1, byteArrayOf())
         testCipherExtension.decryptEncryptedMessage(encryptedMessage)
     }
 }

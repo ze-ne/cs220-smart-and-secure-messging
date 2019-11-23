@@ -26,8 +26,11 @@ interface Message {
     }
 }
 
+// Note: Add one more parameter and field: aesKey for symmetric encryption.
+// We do not check its validity (unless it is empty).
 class EncryptedMessage(_message : ByteArray, _conversationId : String,
-                       _messageType : String, _senderId : String, _recipientId : String, _timestamp : Long) : Message {
+                       _messageType : String, _senderId : String, _recipientId : String,
+                       _timestamp : Long, _encryptedAESKey : ByteArray) : Message {
 
     companion object{
         // Need to unit test
@@ -37,7 +40,8 @@ class EncryptedMessage(_message : ByteArray, _conversationId : String,
             User.isValidUserId(encryptedMessage.senderId) &&
             User.isValidUserId(encryptedMessage.recipientId) &&
             Message.isValidTimestamp(encryptedMessage.timestamp) &&
-            Conversation.isValidConversationId(encryptedMessage.conversationId)
+            Conversation.isValidConversationId(encryptedMessage.conversationId) &&
+            (encryptedMessage.encryptedAESKey.isNotEmpty())
 
         // Need to unit test
         fun isValidMessageBody(byteArray: ByteArray) : Boolean = byteArray.isNotEmpty()
@@ -61,18 +65,21 @@ class EncryptedMessage(_message : ByteArray, _conversationId : String,
             (m.recipientId == recipientId) &&
             (m.timestamp == timestamp) &&
             (m.message.contentEquals(message)) &&
-            (m.messageType == messageType)
+            (m.messageType == messageType) &&
+            (m.encryptedAESKey.equals(encryptedAESKey))
         }
     }
     val message : ByteArray
     val messageType : String
+    val encryptedAESKey : ByteArray
     init {
         if( isValidMessageBody(_message) &&
             User.isValidUserId(_senderId) &&
             User.isValidUserId(_recipientId) &&
             Message.isValidTimestamp(_timestamp) &&
             Conversation.isValidConversationId(_conversationId) &&
-            isValidMessageType(_messageType)){
+            isValidMessageType(_messageType) &&
+            _encryptedAESKey.isNotEmpty()){
 
             conversationId = _conversationId
             senderId = _senderId
@@ -80,6 +87,7 @@ class EncryptedMessage(_message : ByteArray, _conversationId : String,
             timestamp = _timestamp
             message = _message
             messageType = _messageType
+            encryptedAESKey = _encryptedAESKey
         }else{
             conversationId = ""
             senderId = ""
@@ -87,6 +95,7 @@ class EncryptedMessage(_message : ByteArray, _conversationId : String,
             timestamp = 0
             message = ByteArray(0)
             messageType = ""
+            encryptedAESKey = ByteArray(0)
         }
     }
 }

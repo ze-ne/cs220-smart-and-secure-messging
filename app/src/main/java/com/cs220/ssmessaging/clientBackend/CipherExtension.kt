@@ -8,6 +8,8 @@ import java.security.*
 
 import javax.crypto.Cipher
 import javax.crypto.CipherSpi
+import javax.crypto.KeyGenerator
+import javax.crypto.spec.SecretKeySpec
 
 class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, PublicKey>) {
 
@@ -16,10 +18,6 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         val CHARSET = Charsets.UTF_8
     }
 
-    init{
-        // Need to add bouncy castle provider
-        Security.addProvider(BouncyCastleProvider())
-    }
     // The key is the userId and the value is the public key
     var publicKeyRing : MutableMap<String, PublicKey> = publicKeys
         get(){
@@ -52,9 +50,9 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
 
     init{
         // Init ciphers
-        decryptorCipher = Cipher.getInstance("RSA", "BC")
+        decryptorCipher = Cipher.getInstance("RSA")
         decryptorCipher.init(Cipher.DECRYPT_MODE, privateKey)
-        encryptorCipher = Cipher.getInstance("RSA", "BC")
+        encryptorCipher = Cipher.getInstance("RSA")
     }
 
     fun addKeyToPublicKeyRing(userId : String, publicKey: PublicKey) : Unit {
@@ -67,14 +65,22 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         }
 
         // Need to init decryptor cipher with new private key every time (this is how it works for Cipher)
+        // Then decrypt the AES Key
         decryptorCipher.init(Cipher.DECRYPT_MODE, privateKey)
-        val decryptedBytes : ByteArray = decryptorCipher.doFinal(encryptedMsg.message)
+        val decryptedAESKeyBytes : ByteArray = decryptorCipher.doFinal(encryptedMsg.encryptedAESKey)
+        val aesKey = SecretKeySpec(decryptedAESKeyBytes, "AES")
+
+        // Now create the AES Cipher with the key and decrypt the bytes of the message
+        // Use ECB (default) padding for now. Might change to CBC later.
+        val aesCipher = Cipher.getInstance("AES")
+        aesCipher.init(Cipher.DECRYPT_MODE, aesKey)
+        val decryptedMessageBytes = aesCipher.doFinal(encryptedMsg.message)
 
         return when(encryptedMsg.messageType == "image") {
             true ->
-                ImageMessage(decryptedBytes, encryptedMsg.conversationId, encryptedMsg.senderId, encryptedMsg.recipientId, encryptedMsg.timestamp)
+                ImageMessage(decryptedMessageBytes, encryptedMsg.conversationId, encryptedMsg.senderId, encryptedMsg.recipientId, encryptedMsg.timestamp)
             false ->
-                TextMessage(decryptedBytes.toString(CHARSET), encryptedMsg.conversationId, encryptedMsg.senderId, encryptedMsg.recipientId, encryptedMsg.timestamp)
+                TextMessage(decryptedMessageBytes.toString(CHARSET), encryptedMsg.conversationId, encryptedMsg.senderId, encryptedMsg.recipientId, encryptedMsg.timestamp)
         }
     }
 
@@ -91,21 +97,33 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             throw NullPointerException("senderId public key not found. This means that the keys are unsynced with the server")
         }
 
-        // Need to init encryptor cipher with new private key every time (this is how it works for Cipher)
+        // Need to init encryptor cipher with new public key every time (this is how it works for Cipher)
         encryptorCipher.init(Cipher.ENCRYPT_MODE, recipientIdPublicKey)
+
+        // What we now have to do is create a random AES key for encryption and initialize an AES Cipher
+        val aesKeyGen = KeyGenerator.getInstance("AES")
+        aesKeyGen.init(128)
+        val aesKey = aesKeyGen.generateKey()
+        // Use ECB (default) padding for now. Might change to CBC later.
+        val aesCipher = Cipher.getInstance("AES")
+        aesCipher.init(Cipher.ENCRYPT_MODE, aesKey)
+
         var encryptedByteArray : ByteArray
         var messageType : String
 
+        // Encrypt the message with AES, then encrypt the aes key with RSA
         if(unencryptedMsg is ImageMessage){
-            encryptedByteArray = encryptorCipher.doFinal(unencryptedMsg.message)
+            encryptedByteArray = aesCipher.doFinal(unencryptedMsg.message)
             messageType = "image"
         }
         else{
             val textByteArray : ByteArray = (unencryptedMsg as TextMessage).message.toByteArray(CHARSET)
-            encryptedByteArray = encryptorCipher.doFinal(textByteArray)
+            encryptedByteArray = aesCipher.doFinal(textByteArray)
             messageType = "text"
         }
+        val encryptedAESKeyBytes = encryptorCipher.doFinal(aesKey.encoded)
 
-        return EncryptedMessage(encryptedByteArray, unencryptedMsg.conversationId, messageType, unencryptedMsg.senderId, unencryptedMsg.recipientId, unencryptedMsg.timestamp)
+        return EncryptedMessage(encryptedByteArray, unencryptedMsg.conversationId,
+            messageType, unencryptedMsg.senderId, unencryptedMsg.recipientId, unencryptedMsg.timestamp, encryptedAESKeyBytes)
     }
 }
