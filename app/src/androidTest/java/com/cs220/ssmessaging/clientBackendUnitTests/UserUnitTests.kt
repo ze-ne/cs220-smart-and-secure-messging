@@ -141,6 +141,8 @@ class UserUnitTests{
 
     }
 
+    // Fix: Change unit test to in response to changed argument of deleteConversation.
+    // deleteConversation now takes in an ID string instead of a full conversation
     @Test
     fun testDeleteConversation() {
         val user1 = User("id1","first", "last")
@@ -150,14 +152,14 @@ class UserUnitTests{
         val unusedConvo = Conversation("id2", "id3")
 
         // Remove from empty conversations list
-        assertFalse(user1.deleteConversation(convo1))
+        assertFalse(user1.deleteConversation("1d1-id2"))
         assertEquals(user1.conversations.size, 0)
 
         // Add and remove a conversation
         assertTrue(user1.addConversation(convo1))
         assertTrue(convo1 in user1.conversations)
 
-        assertTrue(user1.deleteConversation(convo1))
+        assertTrue(user1.deleteConversation("1d1-id2"))
         assertEquals(user1.conversations.size, 0)
         assertFalse(convo1 in user1.conversations)
 
@@ -167,16 +169,16 @@ class UserUnitTests{
         assertTrue(user1.addConversation(convo3))
         assertEquals(user1.conversations.size, 3)
 
-        assertTrue(user1.deleteConversation(convo2))
+        assertTrue(user1.deleteConversation("id1-id3"))
         assertEquals(user1.conversations.size, 2)
         assertFalse(convo2 in user1.conversations)
 
         //Invalid repeated remove
-        assertFalse(user1.deleteConversation(convo2))
+        assertFalse(user1.deleteConversation("id1-id3"))
         assertEquals(user1.conversations.size, 2)
 
         // Invalid unknown conversation remove
-        assertFalse(user1.deleteConversation(unusedConvo))
+        assertFalse(user1.deleteConversation("id2-id3"))
         assertEquals(user1.conversations.size, 2)
     }
 
@@ -220,7 +222,9 @@ class UserUnitTests{
         val unusedTxtMsg = TextMessage("heyyy", "convoid", user1.userId,
             user2.userId, 0)
 
-        val imgMsg = ImageMessage(ByteArray(0), conversation1.convoId, user1.userId,
+        // Fix: Changed unit test to use a byte array with valid byte array
+        val imgMsg = ImageMessage(
+            byteArrayOf(1,2,3), conversation1.convoId, user1.userId,
             user2.userId, 0)
 
         user1.addConversation(conversation1)

@@ -149,7 +149,15 @@ class User() {
 
     // Iteration 2
     // Removes conversation from conversation list
-    fun deleteConversation(convo: Conversation): Boolean {
+    // Note: using conversationId instead of conversation now
+    fun deleteConversation(convoId : String): Boolean {
+        val conversationsLen = conversations.size
+        for(index in 0..conversationsLen){
+            if(conversations[index].convoId == convoId){
+                conversations.removeAt(index)
+                return true
+            }
+        }
         return false
     }
 
@@ -380,6 +388,30 @@ class User() {
     // Iteration 2
     // Remove a message from a conversation in conversations list
     fun deleteSentMessage(message: Message): Boolean {
+        /* We delete a message based on a few criteria:
+         * timestamps are the same (this should be unique since you can't send two messages at the same exact millisecond)
+         * sender and receiver ids are the same
+         * message content is the same
+         */
+        val senderId = message.senderId
+        val recipientId = message.recipientId
+        val timestamp = message.timestamp
+        val possibleConvoId1 = senderId + "-" + recipientId
+        val possibleConvoId2 = recipientId + "-" + senderId
+        for(c in conversations){
+            if(c.convoId == possibleConvoId1 || c.convoId == possibleConvoId2){
+                val messages = c.messages
+                val numMessages = messages.size
+                for(index in 0..numMessages){
+                    if(message.mEquals(messages[index])){
+                        messages.removeAt(index)
+                        return true
+                    }
+                }
+                // Return false if we cannot find the message since conversations are unique!
+                return false
+            }
+        }
         return false
     }
 
