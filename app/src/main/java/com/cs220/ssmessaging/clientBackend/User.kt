@@ -338,7 +338,8 @@ class User() {
                     "sender_id" to encryptedMessage.senderId,
                     "recipient_id" to encryptedMessage.recipientId,
                     "timestamp" to encryptedMessage.timestamp,
-                    "encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedAESKey)
+                    "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
+                    "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
                 )
 
                 db.collection("conversations")
@@ -368,7 +369,8 @@ class User() {
                         "sender_id" to encryptedMessage.senderId,
                         "recipient_id" to encryptedMessage.recipientId,
                         "timestamp" to encryptedMessage.timestamp,
-                        "encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedAESKey)
+                        "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
+                        "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
                     )
 
                     db.collection("conversations")

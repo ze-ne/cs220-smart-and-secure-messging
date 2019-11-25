@@ -94,9 +94,10 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         }
 
         val recipientIdPublicKey : PublicKey? = publicKeyRing[unencryptedMsg.recipientId]
+        val myKey : PublicKey? = publicKeyRing["myKey"]
 
-        if(recipientIdPublicKey == null){
-            throw NullPointerException("recipientId public key not found. This means that the keys are unsynced with the server")
+        if(recipientIdPublicKey == null || myKey  == null){
+            throw NullPointerException("recipientId or my public key not found. This means that the keys are unsynced with the server")
         }
 
         // What we now have to do is create a random AES key for encryption and initialize an AES Cipher
@@ -125,7 +126,7 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         encryptorCipher.init(Cipher.ENCRYPT_MODE, recipientIdPublicKey)
         val encryptedRecipientAESKeyBytes = encryptorCipher.doFinal(aesKey.encoded)
 
-        encryptorCipher.init(Cipher.ENCRYPT_MODE, publicKeyRing["myKey"])
+        encryptorCipher.init(Cipher.ENCRYPT_MODE, myKey)
         val encryptedSenderAESKeyBytes = encryptorCipher.doFinal(aesKey.encoded)
 
         return EncryptedMessage(encryptedByteArray, unencryptedMsg.conversationId,
