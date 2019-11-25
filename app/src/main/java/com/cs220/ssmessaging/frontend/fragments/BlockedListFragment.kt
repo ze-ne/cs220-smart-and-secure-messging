@@ -19,8 +19,6 @@ class BlockedListFragment : Fragment() {
     ): View? {
         currentUser = MyApplication.currentUser!!
 
-        val contactsView =
-            inflater.inflate(R.layout.fragment_blocked_list, container, false)
-        return contactsView
+        return inflater.inflate(R.layout.fragment_blocked_list, container, false)
     }
 }
