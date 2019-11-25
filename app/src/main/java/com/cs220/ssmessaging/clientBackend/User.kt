@@ -277,7 +277,10 @@ class User() {
 
     // Sends image message to server - partially testable
     fun sendImageMsg(msg : ByteArray, convo: Conversation){
-        // TODO
+        val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
+        val timestamp = Instant.now().toEpochMilli()
+        val msg = ImageMessage(msg, convo.convoId,this.userId, recipient,timestamp)
+        convo.addMessage(msg)
     }
 
     // Sends text message to server
@@ -288,9 +291,7 @@ class User() {
         convo.addMessage(txtMsg)
         val toSend = hashMapOf(
             "bucket_url" to "",
-            //"data" to msg.message.toString(Charsets.UTF_8),
             "data" to txtMsg.message,
-            //"message_type" to msg.messageType,
             "message_type" to "text",
             "sender_id" to txtMsg.senderId,
             "recipient_id" to txtMsg.recipientId,
@@ -376,7 +377,7 @@ class User() {
 
 
     // Handle incoming message from server
-    fun receiveMsg(decryptedMsg: TextMessage) : Boolean {
+    fun receiveMsg(decryptedMsg: UnencryptedMessage) : Boolean {
         // var decryptedMessage = device.cipher.decryptEncryptedMessage(encryptedMsg)
 
         var localConvoObject = getConversationByUserId(getOtherUser(decryptedMsg))
