@@ -229,21 +229,42 @@ class User() {
     }
 
     // Untestable - relies on database functionality
-    fun getUserIdsByFirstName(firstName : String) : User? {
-        // TODO
-        return null
+    fun getUserIdsByFirstName(firstName : String) : List<String> {
+        val retList = mutableListOf<String>()
+        val query = db.collection("users").whereEqualTo("first_name", firstName)
+        query.get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    retList.add(document.data.getValue("canonicalId") as String)
+                }
+            }
+        return retList
     }
 
     // Untestable - relies on database functionality
-    fun getUserIdsByLastName(lastName : String) : User? {
-        // TODO
-        return null
+    fun getUserIdsByLastName(lastName : String) : List<String> {
+        val retList = mutableListOf<String>()
+        val query = db.collection("users").whereEqualTo("last_name", lastName)
+        query.get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    retList.add(document.data.getValue("canonicalId") as String)
+                }
+            }
+        return retList
     }
 
     // Untestable - relies on database functionality
     fun doesUserExistByUserId(userId : String) : Boolean {
-        // TODO
-        return false
+        var retVal = false
+        val query = db.collection("users").whereEqualTo("canonicalId", userId)
+        query.get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    retVal = true
+                }
+            }
+        return retVal
     }
 
     fun checkIfBlocked(userId : String) : Boolean {
@@ -365,7 +386,6 @@ class User() {
         }
         return msg.senderId
     }
-
 
     // Handle incoming message from server
     fun receiveMsg(decryptedMsg: TextMessage) : Boolean {
