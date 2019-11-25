@@ -1,6 +1,7 @@
 package com.cs220.ssmessaging.clientBackend
 import android.content.res.Resources
 import android.media.Image
+import android.util.Log
 import com.cs220.ssmessaging.clientBackend.Message
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.w3c.dom.Text
