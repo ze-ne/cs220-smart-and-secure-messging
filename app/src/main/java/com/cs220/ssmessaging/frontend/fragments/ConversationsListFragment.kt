@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cs220.ssmessaging.R
 import android.content.Intent
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.*
@@ -19,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_conversations_list.*
+import java.lang.Exception
 
 class ConversationsListFragment : Fragment() {
     private lateinit var conversationsRecyclerView: RecyclerView
@@ -69,12 +71,28 @@ class ConversationsListFragment : Fragment() {
                         val conversation = Conversation(users[0], users[1], ArrayList())
 
                         when (dc.type) {
-                            DocumentChange.Type.ADDED -> currentUser.addConversation(conversation)
+                            DocumentChange.Type.ADDED -> {
+                                try{
+                                    val otherUser =
+                                        if(users[0] == currentUser.userId)
+                                            users[1]
+                                        else
+                                            users[0]
+                                    // From Task documentation: If multiple listeners are added, they will be called in the order in which they were added.
+                                    currentUser.getUserPublicKey(otherUser).addOnSuccessListener {
+                                        Log.i("Key Exchange", "Key Exchange passed and now adding conversation")
+                                        currentUser.addConversation(conversation)
+                                        displayConversations()
+                                    }
+                                }
+                                catch (e : Exception){
+                                    Log.e("Key Exchange", e.toString())
+                                }
+                            }
                             DocumentChange.Type.MODIFIED -> println("TODO")
                             DocumentChange.Type.REMOVED -> println("TODO")
                         }
                     }
-                    displayConversations()
                 }
             }
     }

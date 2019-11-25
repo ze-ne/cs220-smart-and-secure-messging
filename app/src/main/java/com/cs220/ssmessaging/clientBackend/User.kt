@@ -5,8 +5,11 @@ import android.util.Log
 import android.widget.ImageView
 import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.Message
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import java.nio.charset.Charset
 import java.security.KeyFactory
@@ -168,13 +171,12 @@ class User() {
             "created" to Timestamp.now(),
             "users" to listOf<String>(convo.user1Id, convo.user2Id)
         )
+        // IMPORTANT: Implement somewhere the function to delete this added conversation IF key exchange or adding conversation fails!!!
         addConversation(convo)
         db.collection("conversations").document(convo.convoId)
             .set(toAdd)
             .addOnSuccessListener {
                 Log.d("startConversation", "success")
-                getUserPublicKey(convo.user1Id)
-                getUserPublicKey(convo.user2Id)
             }
             .addOnFailureListener {
                 Log.d("startConversation", "failure")
@@ -383,20 +385,24 @@ class User() {
     }*/
 
     // Gets and stores public key of user from server
-    fun getUserPublicKey(userId : String) : Boolean{
+    fun getUserPublicKey(userId : String) : Task<DocumentSnapshot> {
         val keyFactory : KeyFactory = KeyFactory.getInstance("RSA")
-        db.collection("users").document(userId)
+        val keyTask : Task<DocumentSnapshot> = db.collection("users").document(userId)
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 val keyField = documentSnapshot.getString("publicKey")!!
-                Log.d("hello",keyField)
-                val publicKey: PublicKey = keyFactory.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(keyField)))
+                Log.d("We got the key: ", keyField)
+                val publicKey: PublicKey =
+                    keyFactory.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(keyField)))
 
                 val fileUserId = if (this.userId == userId) "myKey" else userId
 
                 device.addUserPublicKey(fileUserId, publicKey)
+            }.addOnFailureListener {
+                e -> throw e
             }
-        return false
+
+        return keyTask
     }
 
     // gets the other user in a message given yourself.
