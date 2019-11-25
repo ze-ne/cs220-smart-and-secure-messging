@@ -8,6 +8,7 @@ import com.cs220.ssmessaging.clientBackend.Message
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import java.nio.charset.Charset
 import java.security.KeyFactory
 import java.security.PublicKey
@@ -30,6 +31,7 @@ class User() {
      */
 
     val db = FirebaseFirestore.getInstance()
+    val storage = FirebaseStorage.getInstance()
 
     constructor(userId: String, firstName: String, lastName: String) : this() {
         if (!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId)) {
@@ -292,60 +294,84 @@ class User() {
         val timestamp = Instant.now().toEpochMilli()
         val msg = ImageMessage(msg, convo.convoId,this.userId, recipient,timestamp)
         convo.addMessage(msg)
-        //TODO: Refactor with sendTextMsg and sendEncryptedMsg
-        val toSend = hashMapOf(
-            "bucket_url" to "",
-            "data" to Base64.getEncoder().encodeToString(msg.message),
-            "message_type" to "image",
-            "sender_id" to msg.senderId,
-            "recipient_id" to msg.recipientId,
-            "timestamp" to msg.timestamp
-        )
 
-        db.collection("conversations")
-            .document(convo.convoId)
-            .collection("messages")
-            .document()
-            .set(toSend)
-            .addOnSuccessListener {
-                Log.d("sendImageMsg", "success")
-            }
-            .addOnFailureListener {
-                Log.d("sendImageMsg", "failure")
-            }
+        sendEncryptedMsg(msg, convo)
     }
 
     // Sends text message to server
     fun sendTextMsg(msg : String, convo : Conversation){
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
-        val txtMsg = TextMessage(msg, convo.convoId,this.userId, recipient,timestamp)
+        val txtMsg = TextMessage(msg, convo.convoId, this.userId, recipient, timestamp)
         convo.addMessage(txtMsg)
-        val toSend = hashMapOf(
-            "bucket_url" to "",
-            "data" to txtMsg.message,
-            "message_type" to "text",
-            "sender_id" to txtMsg.senderId,
-            "recipient_id" to txtMsg.recipientId,
-            "timestamp" to txtMsg.timestamp
-        )
 
-        db.collection("conversations")
-            .document(convo.convoId)
-            .collection("messages")
-            .document()
-            .set(toSend)
-            .addOnSuccessListener {
-                Log.d("sendTextMsg", "success")
-            }
-            .addOnFailureListener {
-                Log.d("sendTextMsg", "failure")
-            }
+        sendEncryptedMsg(txtMsg, convo)
     }
 
     // Fully untestable because all this does is hit the server
     private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
-        // TODO
+        val encryptedMessage: EncryptedMessage = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
+
+        when(unencryptedMsg) {
+            is TextMessage -> {
+                val toSend = hashMapOf(
+                    "bucket_url" to "",
+                    "data" to encryptedMessage.message.toString(Charsets.UTF_8),
+                    "message_type" to encryptedMessage.messageType,
+                    "sender_id" to encryptedMessage.senderId,
+                    "recipient_id" to encryptedMessage.recipientId,
+                    "timestamp" to encryptedMessage.timestamp,
+                    "encrypted_aes_key" to encryptedMessage.encryptedAESKey.toString(Charsets.UTF_8)
+                )
+
+                db.collection("conversations")
+                    .document(convo.convoId)
+                    .collection("messages")
+                    .document()
+                    .set(toSend)
+                    .addOnSuccessListener {
+                        Log.d("sendEncryptedMsg", "Success!")
+                    }
+                    .addOnFailureListener {
+                        Log.d("sendTextMsg", "Failure!")
+                    }
+            }
+            is ImageMessage -> {
+                val uuid = UUID.randomUUID()
+                val filename = "${convo.convoId}/${uuid}"
+
+                val newImageRef = storage.reference.child(filename)
+                val uploadTask = newImageRef.putBytes(encryptedMessage.message)
+
+                uploadTask.addOnSuccessListener {
+                    val toSend = hashMapOf(
+                        "bucket_url" to newImageRef.downloadUrl,
+                        "data" to "",
+                        "message_type" to encryptedMessage.messageType,
+                        "sender_id" to encryptedMessage.senderId,
+                        "recipient_id" to encryptedMessage.recipientId,
+                        "timestamp" to encryptedMessage.timestamp,
+                        "encrypted_aes_key" to encryptedMessage.encryptedAESKey.toString(Charsets.UTF_8)
+                    )
+
+                    db.collection("conversations")
+                        .document(convo.convoId)
+                        .collection("messages")
+                        .document()
+                        .set(toSend)
+                        .addOnSuccessListener {
+                            Log.d("sendEncryptedMsg", "Success!")
+                        }
+                        .addOnFailureListener {
+                            Log.d("sendEncryptedMsg", "Failure!")
+                        }
+                }
+
+                uploadTask.addOnFailureListener {
+                    Log.d("sendEncryptedMessage", "Failure!")
+                }
+            }
+        }
     }
 
     // Sends image message to server - For iteration 2
