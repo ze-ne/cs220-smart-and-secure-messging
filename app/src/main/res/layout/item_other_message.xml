@@ -6,20 +6,33 @@
         android:layout_height="wrap_content"
         android:paddingTop="8dp">
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/other_message_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/other_message_bubble"
+        android:maxWidth="240dp"
+        android:padding="15dp"
+        android:elevation="5dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
             android:id="@+id/other_message_text"
-            android:text="Hi, John's message"
-            android:background="@drawable/other_message_bubble"
+            android:text=""
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="240dp"
-            android:padding="15dp"
-            android:elevation="5dp"
             android:textColor="#ffffff"
-            android:layout_marginTop="4dp"
-            android:layout_marginLeft="10dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:maxWidth="240dp"
+        />
+        <ImageView
+            android:id="@+id/other_message_image"
+            android:layout_width="wrap_content"
+            android:maxWidth="240dp"
+            android:adjustViewBounds="true"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
     <TextView
             android:id="@+id/other_message_time"
@@ -28,8 +41,8 @@
             android:layout_height="wrap_content"
             android:textSize="10sp"
             android:textStyle="bold"
-            app:layout_constraintLeft_toRightOf="@+id/other_message_text"
+            app:layout_constraintLeft_toRightOf="@+id/other_message_box"
             android:layout_marginLeft="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/other_message_text" />
+            app:layout_constraintBottom_toBottomOf="@+id/other_message_box" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
