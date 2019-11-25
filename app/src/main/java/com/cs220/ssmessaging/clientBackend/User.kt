@@ -11,6 +11,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import java.nio.charset.Charset
 import java.security.KeyFactory
@@ -239,7 +240,8 @@ class User() {
         this.contacts.removeAt(index)
         return true
     }
-
+/*
+    // Maybe unnecessary?
     // Untestable - relies on database functionality
     fun getUserIdsByFirstName(firstName : String) : List<String> {
         val retList = mutableListOf<String>()
@@ -266,17 +268,34 @@ class User() {
         return retList
     }
 
+
+]
     // Untestable - relies on database functionality
-    fun doesUserExistByUserId(userId : String) : Boolean {
-        var retVal = false
-        val query = db.collection("users").whereEqualTo("canonicalId", userId)
-        query.get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    retVal = true
-                }
+    fun doesUserExistByUserId(userId : String, callBack: (Boolean) -> Unit) : Boolean {
+        db.collection("users").document(userId).get()
+            .addOnSuccessListener{
+                callBack(true)
             }
-        return retVal
+            .addOnFailureListener{
+                callBack(false)
+            }
+
+    }
+
+ */
+
+
+
+    fun updateFirstName(usedId: String, newFirst: String) {
+        val newData = hashMapOf("first_name" to newFirst)
+        val userDoc = db.collection("users").document(userId)
+        userDoc.set(newData, SetOptions.merge())
+    }
+
+    fun updateLasttName(usedId: String, newLast: String) {
+        val newData = hashMapOf("last_name" to newLast)
+        val userDoc = db.collection("users").document(userId)
+        userDoc.set(newData, SetOptions.merge())
     }
 
     fun checkIfBlocked(userId : String) : Boolean {
