@@ -94,7 +94,7 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         val recipientIdPublicKey : PublicKey? = publicKeyRing[unencryptedMsg.recipientId]
 
         if(recipientIdPublicKey == null){
-            throw NullPointerException("senderId public key not found. This means that the keys are unsynced with the server")
+            throw NullPointerException("recipientId public key not found. This means that the keys are unsynced with the server")
         }
 
         // Need to init encryptor cipher with new public key every time (this is how it works for Cipher)
