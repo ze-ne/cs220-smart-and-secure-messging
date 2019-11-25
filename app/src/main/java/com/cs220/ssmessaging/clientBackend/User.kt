@@ -374,40 +374,6 @@ class User() {
         }
     }
 
-    // Sends image message to server - For iteration 2
-    /*fun sendImageMsg(byteArray: ByteArray, convo : Conversation){
-        val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
-        val timestamp = Instant.now().toEpochMilli()
-        val txtMsg = ImageMessage(byteArray, convo.convoId,this.userId, recipient,timestamp)
-        sendEncryptedMsg(txtMsg, convo)
-    }*/
-
-    // For iteration 2 - Encryption
-    /*private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
-        // Encryption has some bugs, we are disabling it for now.
-        val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
-        val toSend = hashMapOf(
-            "bucket_url" to "",
-            "data" to msg.message.toString(Charsets.UTF_8),
-            "message_type" to msg.messageType,
-            "sender_id" to msg.senderId,
-            "recipient_id" to msg.recipientId,
-            "timestamp" to msg.timestamp
-        )
-
-        db.collection("conversations")
-            .document(convo.convoId)
-            .collection("messages")
-            .document()
-            .set(toSend)
-            .addOnSuccessListener {
-                Log.d("sendTextMsg", "success")
-            }
-            .addOnFailureListener {
-                Log.d("sendTextMsg", "failure")
-            }
-    }*/
-
     // Gets and stores public key of user from server
     fun getUserPublicKey(userId : String) : Boolean{
         val keyFactory : KeyFactory = KeyFactory.getInstance("RSA")
