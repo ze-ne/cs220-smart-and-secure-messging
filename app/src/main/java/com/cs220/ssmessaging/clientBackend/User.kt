@@ -1,19 +1,13 @@
 package com.cs220.ssmessaging.clientBackend
 
-import android.graphics.Bitmap
 import android.util.Log
-import android.widget.ImageView
-import com.cs220.ssmessaging.clientBackend.Conversation
-import com.cs220.ssmessaging.clientBackend.Message
 import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.Blob
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
-import java.nio.charset.Charset
 import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
@@ -358,12 +352,13 @@ class User() {
             is TextMessage -> {
                 val toSend = hashMapOf(
                     "bucket_url" to "",
-                    "data" to encryptedMessage.message.toString(Charsets.UTF_8),
+                    "data" to Blob.fromBytes(encryptedMessage.message),
                     "message_type" to encryptedMessage.messageType,
                     "sender_id" to encryptedMessage.senderId,
                     "recipient_id" to encryptedMessage.recipientId,
                     "timestamp" to encryptedMessage.timestamp,
-                    "encrypted_aes_key" to encryptedMessage.encryptedAESKey.toString(Charsets.UTF_8)
+                    "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
+                    "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
                 )
 
                 db.collection("conversations")
@@ -393,7 +388,8 @@ class User() {
                         "sender_id" to encryptedMessage.senderId,
                         "recipient_id" to encryptedMessage.recipientId,
                         "timestamp" to encryptedMessage.timestamp,
-                        "encrypted_aes_key" to encryptedMessage.encryptedAESKey.toString(Charsets.UTF_8)
+                        "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
+                        "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
                     )
 
                     db.collection("conversations")
@@ -422,10 +418,10 @@ class User() {
         val keyTask : Task<DocumentSnapshot> = db.collection("users").document(userId)
             .get()
             .addOnSuccessListener { documentSnapshot ->
-                val keyField = documentSnapshot.getString("publicKey")!!
-                Log.d("We got the key: ", keyField)
+                val keyField = documentSnapshot.getBlob("publicKey")!!
+                Log.d("We got the key: ", keyField.toString())
                 val publicKey: PublicKey =
-                    keyFactory.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(keyField)))
+                    keyFactory.generatePublic(X509EncodedKeySpec(keyField.toBytes()))
 
                 val fileUserId = if (this.userId == userId) "myKey" else userId
 
@@ -500,8 +496,8 @@ class User() {
 
     // Adds the current user to the database
     fun addSelfToDatabase() : Boolean {
-        var base64EncodedPublicKey =
-            Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)
+        var publicKey =
+            Blob.fromBytes(device.cipher.publicKeyRing["myKey"]?.encoded!!)
 
         val toAdd = hashMapOf(
             "name" to this.userId,
@@ -510,7 +506,7 @@ class User() {
             "last_name" to this.lastName,
             "password_hash" to "",
             "phone" to "123",
-            "publicKey" to base64EncodedPublicKey
+            "publicKey" to publicKey
         )
 
         db.collection("users").document(this.userId)

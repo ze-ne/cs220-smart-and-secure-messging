@@ -1,13 +1,7 @@
 package com.cs220.ssmessaging.clientBackend
-import android.content.res.Resources
-import android.media.Image
-import com.cs220.ssmessaging.clientBackend.Message
-import org.bouncycastle.jce.provider.BouncyCastleProvider
-import org.w3c.dom.Text
 import java.security.*
 
 import javax.crypto.Cipher
-import javax.crypto.CipherSpi
 import javax.crypto.KeyGenerator
 import javax.crypto.spec.SecretKeySpec
 
@@ -67,8 +61,16 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         // Need to init decryptor cipher with new private key every time (this is how it works for Cipher)
         // Then decrypt the AES Key
         decryptorCipher.init(Cipher.DECRYPT_MODE, privateKey)
-        val decryptedAESKeyBytes : ByteArray = decryptorCipher.doFinal(encryptedMsg.encryptedAESKey)
-        val aesKey = SecretKeySpec(decryptedAESKeyBytes, "AES")
+        val decryptedRecpientAESKeyBytes : ByteArray = decryptorCipher.doFinal(encryptedMsg.encryptedRecipientAESKey)
+        val decryptedSenderAESKeyBytes : ByteArray = decryptorCipher.doFinal(encryptedMsg.encryptedSenderAESKey)
+
+        val trueDecryptedBytes =
+            if(decryptedRecpientAESKeyBytes.size == 16)
+                decryptedRecpientAESKeyBytes
+            else
+                decryptedSenderAESKeyBytes
+
+        val aesKey = SecretKeySpec(trueDecryptedBytes, "AES")
 
         // Now create the AES Cipher with the key and decrypt the bytes of the message
         // Use ECB (default) padding for now. Might change to CBC later.
@@ -92,13 +94,11 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         }
 
         val recipientIdPublicKey : PublicKey? = publicKeyRing[unencryptedMsg.recipientId]
+        val myKey : PublicKey? = publicKeyRing["myKey"]
 
-        if(recipientIdPublicKey == null){
-            throw NullPointerException("recipientId public key not found. This means that the keys are unsynced with the server")
+        if(recipientIdPublicKey == null || myKey  == null){
+            throw NullPointerException("recipientId or my public key not found. This means that the keys are unsynced with the server")
         }
-
-        // Need to init encryptor cipher with new public key every time (this is how it works for Cipher)
-        encryptorCipher.init(Cipher.ENCRYPT_MODE, recipientIdPublicKey)
 
         // What we now have to do is create a random AES key for encryption and initialize an AES Cipher
         val aesKeyGen = KeyGenerator.getInstance("AES")
@@ -121,9 +121,15 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             encryptedByteArray = aesCipher.doFinal(textByteArray)
             messageType = "text"
         }
-        val encryptedAESKeyBytes = encryptorCipher.doFinal(aesKey.encoded)
+
+        // Need to init encryptor cipher with new public key every time (this is how it works for Cipher)
+        encryptorCipher.init(Cipher.ENCRYPT_MODE, recipientIdPublicKey)
+        val encryptedRecipientAESKeyBytes = encryptorCipher.doFinal(aesKey.encoded)
+
+        encryptorCipher.init(Cipher.ENCRYPT_MODE, myKey)
+        val encryptedSenderAESKeyBytes = encryptorCipher.doFinal(aesKey.encoded)
 
         return EncryptedMessage(encryptedByteArray, unencryptedMsg.conversationId,
-            messageType, unencryptedMsg.senderId, unencryptedMsg.recipientId, unencryptedMsg.timestamp, encryptedAESKeyBytes)
+            messageType, unencryptedMsg.senderId, unencryptedMsg.recipientId, unencryptedMsg.timestamp, encryptedSenderAESKeyBytes, encryptedRecipientAESKeyBytes)
     }
 }
