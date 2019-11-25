@@ -21,6 +21,7 @@ import com.google.firebase.firestore.DocumentChange
 import kotlinx.android.synthetic.main.activity_conversation.*
 import java.lang.Exception
 import java.time.Instant
+import java.util.*
 import kotlin.collections.ArrayList
 
 const val REQUEST_IMAGE_GET = 1
@@ -88,13 +89,13 @@ class ConversationActivity : AppCompatActivity() {
 
                 // Convert server data to message objects
                 val type = dc.document.data.getValue("message_type")
-                val data = dc.document.data.getValue("data")
+                val data = dc.document.data.getValue("data") as String
                 val senderId = dc.document.data.getValue("sender_id") as String
                 val recipientId = dc.document.data.getValue("recipient_id") as String
                 val timestamp = dc.document.data.getValue("timestamp") as Long
                 val decryptedMessage = when(type){
                     "text" -> TextMessage(data as String, convoId, senderId,recipientId, timestamp)
-                    "image" -> ImageMessage(data as ByteArray, convoId, senderId, recipientId, timestamp)
+                    "image" -> ImageMessage(Base64.getDecoder().decode(data) as ByteArray, convoId, senderId, recipientId, timestamp)
                     else -> throw Exception("Unknown message type")
                 }
                 currentUser.receiveMsg(decryptedMessage)
@@ -110,7 +111,6 @@ class ConversationActivity : AppCompatActivity() {
             val fullPhotoUri: Uri = data!!.data!!
             val bitmap = ImageHandler.getImageFromStorage(fullPhotoUri)
             currentUser.sendImageMsg(ImageHandler.getByteArrayFromImage(bitmap), conversation)
-            displayMessages() // TODO: TEMP
         }
     }
 

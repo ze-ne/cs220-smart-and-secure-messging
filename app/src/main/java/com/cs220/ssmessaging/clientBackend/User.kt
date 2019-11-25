@@ -281,6 +281,27 @@ class User() {
         val timestamp = Instant.now().toEpochMilli()
         val msg = ImageMessage(msg, convo.convoId,this.userId, recipient,timestamp)
         convo.addMessage(msg)
+        //TODO: Refactor with sendTextMsg and sendEncryptedMsg
+        val toSend = hashMapOf(
+            "bucket_url" to "",
+            "data" to Base64.getEncoder().encodeToString(msg.message),
+            "message_type" to "image",
+            "sender_id" to msg.senderId,
+            "recipient_id" to msg.recipientId,
+            "timestamp" to msg.timestamp
+        )
+
+        db.collection("conversations")
+            .document(convo.convoId)
+            .collection("messages")
+            .document()
+            .set(toSend)
+            .addOnSuccessListener {
+                Log.d("sendImageMsg", "success")
+            }
+            .addOnFailureListener {
+                Log.d("sendImageMsg", "failure")
+            }
     }
 
     // Sends text message to server
