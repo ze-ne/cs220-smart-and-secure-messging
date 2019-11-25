@@ -266,13 +266,24 @@ class User() {
     }
 
     fun addBlockedContact(userId : String) : Boolean {
-        // TODO
-        return false
+        //block any userid that exists or only those currently in contacts?
+        var user1 = getContactById(userId)
+        if(user1 in this.contacts) {
+            this.blockedContacts.add(userId)
+            return true
+        }
+        else {
+            return false
+        }
     }
 
     fun deleteBlockedContact(userId : String) : Boolean {
-        // TODO
-        return false
+        var index = this.blockedContacts.indexOf(userId)
+        if (index < 0) {
+            return false
+        }
+        this.blockedContacts.removeAt(index)
+        return true
     }
 
     // Sends image message to server - partially testable
