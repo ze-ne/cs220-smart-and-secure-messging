@@ -364,7 +364,7 @@ class User() {
                 uploadTask.addOnSuccessListener {
                     val toSend = hashMapOf(
                         "bucket_url" to newImageRef.downloadUrl,
-                        "data" to "",
+                        "data" to Blob.fromBytes(byteArrayOf(0)),
                         "message_type" to encryptedMessage.messageType,
                         "sender_id" to encryptedMessage.senderId,
                         "recipient_id" to encryptedMessage.recipientId,
