@@ -9,25 +9,23 @@ import com.cs220.ssmessaging.MyApplication.MyApplication
 import java.io.ByteArrayOutputStream
 import java.sql.Timestamp
 
-class ImageHandler {
-    companion object{
-        val uriToImagesDirectory : Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+object ImageHandler {
+    val uriToImagesDirectory : Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-        // helper function that converts bitmap to byte array
-        fun getByteArrayFromImage(image : Bitmap?) : ByteArray {
-            if(image == null)
-                return byteArrayOf()
+    // helper function that converts bitmap to byte array
+    fun getByteArrayFromImage(image : Bitmap?) : ByteArray {
+        if(image == null)
+            return byteArrayOf()
 
-            val imageByteStream = ByteArrayOutputStream()
-            image.compress(Bitmap.CompressFormat.PNG, 100, imageByteStream)
+        val imageByteStream = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.PNG, 100, imageByteStream)
 
-            return imageByteStream.toByteArray()
-        }
+        return imageByteStream.toByteArray()
+    }
 
-        // helperfunction that converts byte array to bitmap
-        fun getImageFromByteArray(image : ByteArray) : Bitmap? {
-            return BitmapFactory.decodeByteArray(image, 0, image.size)
-        }
+    // helperfunction that converts byte array to bitmap
+    fun getImageFromByteArray(image : ByteArray) : Bitmap? {
+        return BitmapFactory.decodeByteArray(image, 0, image.size)
     }
 
     var currentlySelectedImage : Bitmap? = BitmapFactory.decodeByteArray(ByteArray(0), 0, 0)
