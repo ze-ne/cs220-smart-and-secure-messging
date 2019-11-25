@@ -286,7 +286,7 @@ class User() {
         userDoc.set(newData, SetOptions.merge())
     }
 
-    fun updateLasttName(usedId: String, newLast: String) {
+    fun updateLastName(usedId: String, newLast: String) {
         val newData = hashMapOf("last_name" to newLast)
         val userDoc = db.collection("users").document(userId)
         userDoc.set(newData, SetOptions.merge())
