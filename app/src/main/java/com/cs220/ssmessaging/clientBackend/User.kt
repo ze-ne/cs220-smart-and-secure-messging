@@ -235,7 +235,7 @@ class User() {
         return true
     }
 /*
-    // Maybe unnecessary?
+    UNUSED
     // Untestable - relies on database functionality
     fun getUserIdsByFirstName(firstName : String) : List<String> {
         val retList = mutableListOf<String>()
@@ -264,21 +264,14 @@ class User() {
 
 
 ]
+*/
     // Untestable - relies on database functionality
-    fun doesUserExistByUserId(userId : String, callBack: (Boolean) -> Unit) : Boolean {
+    fun doesUserExistByUserId(userId : String, callBack: () -> Unit) {
         db.collection("users").document(userId).get()
             .addOnSuccessListener{
-                callBack(true)
+                callBack()
             }
-            .addOnFailureListener{
-                callBack(false)
-            }
-
     }
-
- */
-
-
 
     fun updateFirstName(usedId: String, newFirst: String) {
         val newData = hashMapOf("first_name" to newFirst)
