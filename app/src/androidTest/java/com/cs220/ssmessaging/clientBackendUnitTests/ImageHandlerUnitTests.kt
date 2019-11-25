@@ -29,7 +29,7 @@ class ImageHandlerUnitTests{
 
     private val sunflowerByteArray : ByteArray
     private val diceByteArray : ByteArray
-
+    // FIX: Removed all initializations of image handler since it is now a singleton object.
     init {
         // Get the images from the resources folder
         val assets = InstrumentationRegistry.getInstrumentation().context.assets
@@ -40,7 +40,8 @@ class ImageHandlerUnitTests{
 
         // In order to get byte array, need to store image bitmap in stream
         var sunflowerStream : ByteArrayOutputStream = ByteArrayOutputStream()
-        sunflowerImage.compress(Bitmap.CompressFormat.JPEG, 100, sunflowerStream)
+        // Fix: We don't want to lose quality on each send. Thus, we compress with PNG (even when the bitmap is from a jpeg)
+        sunflowerImage.compress(Bitmap.CompressFormat.PNG, 100, sunflowerStream)
         sunflowerByteArray = sunflowerStream.toByteArray()
 
         var diceStream : ByteArrayOutputStream = ByteArrayOutputStream()
@@ -51,14 +52,12 @@ class ImageHandlerUnitTests{
     @Test
     fun testImageHandlerConstructor(){
         // Only one thing to test in image handler constructor and that is what the currently selected image is
-        val imageHandler : ImageHandler = ImageHandler()
-        assertNull(imageHandler.currentlySelectedImage)
+        assertNull(ImageHandler.currentlySelectedImage)
     }
 
     @Test
     fun testGetUriToImagesDirectory(){
         var uriToImagesDirectory : Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        val imageHandler : ImageHandler = ImageHandler()
         assertTrue(uriToImagesDirectory.equals(ImageHandler.uriToImagesDirectory))
     }
 
@@ -104,8 +103,7 @@ class ImageHandlerUnitTests{
             values.clear()
 
             // Start Test
-            val imageHandler = ImageHandler()
-            val jpgImage = imageHandler.getImageFromStorage(uri)
+            val jpgImage = ImageHandler.getImageFromStorage(uri)
 
             // Need to delete image from external storage
             val deleteUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendQueryParameter(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages").build()
@@ -113,8 +111,8 @@ class ImageHandlerUnitTests{
 
             // Finally assert equals
             assertTrue(sunflowerImage.sameAs(jpgImage))
-            assertNotNull(imageHandler.currentlySelectedImage)
-            assertTrue(sunflowerImage.sameAs(imageHandler.currentlySelectedImage))
+            assertNotNull(ImageHandler.currentlySelectedImage)
+            assertTrue(sunflowerImage.sameAs(ImageHandler.currentlySelectedImage))
         }
         else {
             fail()
@@ -149,8 +147,7 @@ class ImageHandlerUnitTests{
             values.clear()
 
             // Start Test
-            val imageHandler = ImageHandler()
-            val pngImage = imageHandler.getImageFromStorage(uri)
+            val pngImage = ImageHandler.getImageFromStorage(uri)
 
             // Need to delete image from external storage
             val deleteUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendQueryParameter(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages").build()
@@ -158,8 +155,8 @@ class ImageHandlerUnitTests{
 
             // Finally assert equals
             assertTrue(diceImage.sameAs(pngImage))
-            assertNotNull(imageHandler.currentlySelectedImage)
-            assertTrue(diceImage.sameAs(imageHandler.currentlySelectedImage))
+            assertNotNull(ImageHandler.currentlySelectedImage)
+            assertTrue(diceImage.sameAs(ImageHandler.currentlySelectedImage))
         }
         else {
             fail()
@@ -168,61 +165,66 @@ class ImageHandlerUnitTests{
 
     @Test
     fun testStoreImageToStorage(){
-        val imageHandler = ImageHandler()
 
-        val sunflowerUri = imageHandler.storeImageToStorage("sunflower.jpg", sunflowerImage)
-        val diceUri = imageHandler.storeImageToStorage("dice.png", diceImage)
+        val sunflowerUri = ImageHandler.storeImageToStorage("sunflower.jpg", sunflowerImage)
+        val diceUri = ImageHandler.storeImageToStorage("dice.png", diceImage)
 
-        val expectedSunflowerUri =  MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon()
+        // FIX: We discovered that building a URI for expected not the same is MediaStore generated URIs.
+        /*val expectedSunflowerUri =  MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon()
             .appendQueryParameter(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages")
             .appendQueryParameter(MediaStore.Images.Media.DISPLAY_NAME, "sunflower.jpg")
-            .build()
+            .build()*/
         assertNotNull(sunflowerUri)
-        assertTrue(sunflowerUri!!.equals(expectedSunflowerUri))
+        //assertTrue(sunflowerUri!!.equals(expectedSunflowerUri))
 
-        val expectedDiceUri =  MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon()
+       /* val expectedDiceUri =  MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon()
             .appendQueryParameter(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages")
             .appendQueryParameter(MediaStore.Images.Media.DISPLAY_NAME, "dice.png")
-            .build()
+            .build()*/
         assertNotNull(diceUri)
-        assertTrue(diceUri!!.equals(expectedDiceUri))
+        //assertTrue(diceUri!!.equals(expectedDiceUri))
 
-        val sunflowerSource  = ImageDecoder.createSource(MyApplication.appContext!!.contentResolver, expectedSunflowerUri)
-        val diceSource  = ImageDecoder.createSource(MyApplication.appContext!!.contentResolver, expectedDiceUri)
-        assertTrue(sunflowerImage.sameAs(ImageDecoder.decodeBitmap(sunflowerSource)))
-        assertTrue(diceImage.sameAs(ImageDecoder.decodeBitmap(diceSource)))
+        // FIX: Instead of using expected URI, we are using the returned URI for the same reason above: MediaStore stores images differently
+        // FIX: Used wrong method for retrieving bitmap from URI. Now using the correct code.
+        val sunflowerBitmap  = MediaStore.Images.Media.getBitmap(MyApplication.appContext!!.contentResolver, sunflowerUri)
+        val diceBitmap  = MediaStore.Images.Media.getBitmap(MyApplication.appContext!!.contentResolver, diceUri)
+
+        // FIX: Need to delete images after getting the bitmap
+        val deleteUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendQueryParameter(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MessagingAppImages").build()
+        MyApplication.appContext?.contentResolver?.delete(deleteUri, null, null)
+
+        assertTrue(sunflowerImage.sameAs(sunflowerBitmap))
+        assertTrue(diceImage.sameAs(diceBitmap))
     }
 
     @Test
     fun testConvertImageToImageMessage(){
-        val imageHandler : ImageHandler = ImageHandler()
         val sunflowerImageMessage : ImageMessage = ImageMessage(sunflowerByteArray, "u1-u2", "u1", "u2", 123)
         val diceImageMessage : ImageMessage = ImageMessage(diceByteArray,"u1-u2", "u1", "u2", 123)
 
         // Testing begins
-        val sunflowerActualMessage = imageHandler.convertImageToImageMessage(sunflowerImage,"u1-u2", "u1", "u2", 123)
-        val diceActualMessage = imageHandler.convertImageToImageMessage(diceImage, "u1-u2", "u1", "u2", 123)
+        val sunflowerActualMessage = ImageHandler.convertImageToImageMessage(sunflowerImage,"u1-u2", "u1", "u2", 123)
+        val diceActualMessage = ImageHandler.convertImageToImageMessage(diceImage, "u1-u2", "u1", "u2", 123)
         assertTrue(sunflowerImageMessage.mEquals(sunflowerActualMessage))
         assertTrue(diceImageMessage.mEquals(diceActualMessage))
     }
 
     @Test
     fun testConvertImageMessageToImage(){
-        val imageHandler : ImageHandler = ImageHandler()
         val sunflowerImageMessage : ImageMessage = ImageMessage(sunflowerByteArray, "u1-u2", "u1", "u2", 123)
         val diceImageMessage : ImageMessage = ImageMessage(diceByteArray,"u1-u2", "u1", "u2", 123)
 
         // Testing begins
-        assertTrue(sunflowerImage.sameAs(imageHandler.convertImageMessageToImage(sunflowerImageMessage)))
-        assertTrue(diceImage.sameAs(imageHandler.convertImageMessageToImage(sunflowerImageMessage)))
+        assertTrue(sunflowerImage.sameAs(ImageHandler.convertImageMessageToImage(sunflowerImageMessage)))
+        // FIX: Wrong expected image. Changed to correct image.
+        assertTrue(diceImage.sameAs(ImageHandler.convertImageMessageToImage(diceImageMessage)))
     }
 
     @Test
     fun testConvertImageMessageToImageFailCases(){
         // Only fail cases are if the byte array of the image is nothing or garbled
-        val imageHandler : ImageHandler = ImageHandler()
-        assertNull(imageHandler.convertImageMessageToImage(ImageMessage(ByteArray(0), "u1-u2", "u1", "u2", 123)))
-        assertNull(imageHandler.convertImageMessageToImage(ImageMessage(byteArrayOf(1,2,3), "u1-u2", "u1", "u2", 123)))
+        assertNull(ImageHandler.convertImageMessageToImage(ImageMessage(ByteArray(0), "u1-u2", "u1", "u2", 123)))
+        assertNull(ImageHandler.convertImageMessageToImage(ImageMessage(byteArrayOf(1,2,3), "u1-u2", "u1", "u2", 123)))
     }
 
 }

@@ -49,7 +49,7 @@ class PhoneAuthActivity : AppCompatActivity() {
             val code = authCode.text.toString().trim()
 
             if (code.isEmpty() || code.length < 6) {
-                authCode.error = "Enter code..."
+                authCode.error = "Invalid code"
                 authCode.requestFocus()
                 return@setOnClickListener
             }
