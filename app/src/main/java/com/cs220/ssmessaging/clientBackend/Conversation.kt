@@ -160,12 +160,12 @@ class Conversation() {
 
     // Iteration 2
     fun removeMessage(msg: Message): Boolean {
-        return false
+        return messages.remove(msg)
     }
 
     fun getSubConversation(startTimestamp : Long, endTimestamp : Long) : Conversation {
-        //TODO
-        return Conversation("", "", mutableListOf<Message>())
+        var subMessages = messages.filter {it.timestamp in startTimestamp..endTimestamp} as MutableList<Message>
+        return Conversation(user1Id, user2Id, subMessages)
     }
 
     fun getAnalytics() : UtteranceAnalyses {
