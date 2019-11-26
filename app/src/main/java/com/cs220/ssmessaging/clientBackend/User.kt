@@ -292,17 +292,12 @@ class User() {
 
     fun checkIfBlocked(userId : String) : Boolean {
         var retVar = false
-        val query = db.collection("users").whereEqualTo("canonicalId", userId)
-        query.get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    var blockedlist = document.get("blockedContacts") as MutableList<String>
-                    if (blockedlist == null ){
-                        break
-                    }
-                    else if(blockedlist.contains(userId)){
-                        retVar = true
-                    }
+        val docref = db.collection("users").document(userId)
+        docref.get()
+            .addOnSuccessListener { document ->
+                val blockedlist = document.data?.get("blockedContacts") as MutableList<String>
+                if(blockedlist.contains(userId)){
+                    retVar = true
                 }
             }
         return retVar
@@ -311,36 +306,42 @@ class User() {
     // Untestable - relies on database functionality
     fun getBlockList(userId: String) : MutableList<String>? {
         var temp = mutableListOf<String>()
-        val query = db.collection("users").whereEqualTo("canonicalId", userId)
-        query.get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    var blockedlist = document.get("blockedContacts") as MutableList<String>
-                    temp = blockedlist
-                }
+        val docref = db.collection("users").document(userId)
+        docref.get()
+            .addOnSuccessListener { document ->
+                val blockedlist = document.data?.get("blockedContacts") as MutableList<String>
+                temp = blockedlist
             }
         return temp
     }
 
-    fun addBlockedContact(userId : String) : Boolean {
-        //block any userid that exists or only those currently in contacts?
-        var user1 = getContactById(userId)
-        if(user1 in this.contacts) {
+    fun addBlockedContact(userId : String){
+        //local
+        if (this.blockedContacts.contains(userId)){
+            return
+        }
+        else{
             this.blockedContacts.add(userId)
-            return true
         }
-        else {
-            return false
-        }
+        //database
+        val temp = this.blockedContacts
+        val new = hashMapOf("blockedContacts" to temp)
+        val docref = db.collection("users").document(userId)
+        docref.set(new, SetOptions.merge())
     }
 
-    fun deleteBlockedContact(userId : String) : Boolean {
+    fun deleteBlockedContact(userId : String){
+        //locale
         var index = this.blockedContacts.indexOf(userId)
         if (index < 0) {
-            return false
+            return
         }
         this.blockedContacts.removeAt(index)
-        return true
+        //database
+        val temp = this.blockedContacts
+        val new = hashMapOf("blockedContacts" to temp)
+        val docref = db.collection("users").document(userId)
+        docref.set(new, SetOptions.merge())
     }
 
     // Sends image message to server - partially testable
