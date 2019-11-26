@@ -28,9 +28,9 @@ const val REQUEST_HIDDEN_IMAGE_GET = 2
 
 class ConversationActivity : AppCompatActivity() {
     private lateinit var conversationToolbar: Toolbar
-    private lateinit var sendMessageButton: Button
-    private lateinit var imageButton: Button
-    private lateinit var hiddenImageButton: Button
+    private lateinit var sendMessageButton: ImageButton
+    private lateinit var imageButton: ImageButton
+    private lateinit var hiddenImageButton: ImageButton
     private lateinit var userMessageInput: EditText
     private lateinit var conversationReceiverName: String
     private lateinit var messagesAdapter: MessagesAdapter
@@ -45,7 +45,7 @@ class ConversationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         this.window.setFlags(FLAG_SECURE, FLAG_SECURE)
-        
+
         setContentView(R.layout.activity_conversation)
 
         conversationReceiverName = intent.extras!!.get("receiver_name").toString()
@@ -106,14 +106,26 @@ class ConversationActivity : AppCompatActivity() {
                 val senderId = dc.document.data.getValue("sender_id") as String
                 val recipientId = dc.document.data.getValue("recipient_id") as String
                 val timestamp = dc.document.data.getValue("timestamp") as Long
-                val recipientEncryptedAesKey = (dc.document.data.getValue("recipient_encrypted_aes_key") as Blob).toBytes()
-                val senderEncryptedAesKey = (dc.document.data.getValue("sender_encrypted_aes_key") as Blob).toBytes()
+                val recipientEncryptedAesKey =
+                    (dc.document.data.getValue("recipient_encrypted_aes_key") as Blob).toBytes()
+                val senderEncryptedAesKey =
+                    (dc.document.data.getValue("sender_encrypted_aes_key") as Blob).toBytes()
 
-                when(type) {
+                when (type) {
                     "text" -> {
                         val data = (dc.document.data.getValue("data") as Blob).toBytes()
-                        val encryptedMessage = EncryptedMessage(data, convoId, "text", senderId, recipientId, timestamp, senderEncryptedAesKey, recipientEncryptedAesKey)
-                        val decryptedMessage = currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
+                        val encryptedMessage = EncryptedMessage(
+                            data,
+                            convoId,
+                            "text",
+                            senderId,
+                            recipientId,
+                            timestamp,
+                            senderEncryptedAesKey,
+                            recipientEncryptedAesKey
+                        )
+                        val decryptedMessage =
+                            currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
                         currentUser.receiveMsg(decryptedMessage)
                         displayMessages()
                     }
@@ -122,10 +134,15 @@ class ConversationActivity : AppCompatActivity() {
                         val imgRef = storage.getReferenceFromUrl(bucketUrl)
                         imgRef.getBytes(1000000000) // 100 MB
                             .addOnSuccessListener {
-                                val encryptedMessage = EncryptedMessage(it, convoId,
+                                val encryptedMessage = EncryptedMessage(
+                                    it, convoId,
                                     "image", senderId, recipientId,
-                                    timestamp, senderEncryptedAesKey, recipientEncryptedAesKey)
-                                val decryptedMessage = currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
+                                    timestamp, senderEncryptedAesKey, recipientEncryptedAesKey
+                                )
+                                val decryptedMessage =
+                                    currentUser.device.cipher.decryptEncryptedMessage(
+                                        encryptedMessage
+                                    )
                                 currentUser.receiveMsg(decryptedMessage)
                                 displayMessages()
                                 Log.d("addMessageListener", "Success!")
@@ -140,8 +157,8 @@ class ConversationActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode:Int, resultCode:Int, data:Intent?){
-        super.onActivityResult(requestCode,resultCode,data)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_GET && resultCode == Activity.RESULT_OK) {
             Log.i("TestImage", "2")
             val fullPhotoUri: Uri = data!!.data!!
@@ -152,7 +169,11 @@ class ConversationActivity : AppCompatActivity() {
             Log.i("TestImage", "2")
             val fullPhotoUri: Uri = data!!.data!!
             val bitmap = ImageHandler.getImageFromStorage(fullPhotoUri)
-            currentUser.sendImageMsg(ImageHandler.getByteArrayFromImage(bitmap), conversation, false)
+            currentUser.sendImageMsg(
+                ImageHandler.getByteArrayFromImage(bitmap),
+                conversation,
+                false
+            )
         }
     }
 
@@ -176,7 +197,8 @@ class ConversationActivity : AppCompatActivity() {
 
     // Display the messages onscreen
     private fun displayMessages() {
-        messagesAdapter = MessagesAdapter(this, conversation.messages as ArrayList<UnencryptedMessage>)
+        messagesAdapter =
+            MessagesAdapter(this, conversation.messages as ArrayList<UnencryptedMessage>)
         message_recycler_view.scrollToPosition(conversation.messages.size - 1)
         message_recycler_view.adapter = messagesAdapter
     }
