@@ -318,8 +318,12 @@ class User() {
         db.collection("users").document(userId)
             .set(newBlockedContacts, SetOptions.merge())
             .addOnSuccessListener {
-                // Add the contact locally
+                // Add the contact locally. In addition, we need to delete every single conversation
                 addBlockedContact(userId)
+                for(c in conversations){
+                    if(c.user1Id == userId || c.user2Id == userId)
+                        deleteConversationFromDb(c.convoId)
+                }
             }
             .addOnFailureListener {
                 // Do nothing on failure
