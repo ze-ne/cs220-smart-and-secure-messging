@@ -171,9 +171,7 @@ class ConversationsListFragment : Fragment() {
 
             viewHolder.bind(otherUser)
 
-            val convo = viewHolder.itemView.findViewById<TextView>(R.id.conversation_participant)
-            val blockBtn = viewHolder.itemView.findViewById<TextView>(R.id.block_button)
-            convo.setOnClickListener {
+            viewHolder.itemView.conversation_participant.setOnClickListener {
                 val conversationIntent = Intent(context, ConversationActivity::class.java)
                 conversationIntent.putExtra("receiver_name", getOtherUserId(conversation))
                 startActivity(conversationIntent)
@@ -182,8 +180,8 @@ class ConversationsListFragment : Fragment() {
             viewHolder.itemView.delete_conversation_button.setOnClickListener {
                 currentUser.deleteConversationFromDb(conversation.convoId)
             }
-            blockBtn.setOnClickListener {
-                currentUser.addBlockedContact(otherUser)
+            viewHolder.itemView.block_button.setOnClickListener {
+                currentUser.addBlockedContactToDb(otherUser)
             }
         }
 

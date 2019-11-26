@@ -321,8 +321,8 @@ class User() {
         if (checkIfInBlockList(userId) || !isValidUserId(userId))
             return
         // Add to Db
-        val newBlockedContacts = hashMapOf("block_list" to blockedContacts)
-        db.collection("users").document(userId)
+        val newBlockedContacts = hashMapOf("blockedContacts" to blockedContacts)
+        db.collection("users").document(this.userId)
             .set(newBlockedContacts, SetOptions.merge())
             .addOnSuccessListener {
                 // Add the contact locally. In addition, we need to delete every single conversation
@@ -352,7 +352,7 @@ class User() {
     // This function is untestable since it deletes the blocked contact from Db
     // It also uses the deleteBlockedContact (local deletion) if it successfully deletes from Db.
     // However note that deleteBlockedContact has been unit tested
-    fun deleteBlockedContactFromDb(userId: String) {
+    fun deleteBlockedContactFromDb(userId: String, callback: () -> Unit) {
         // Check if userId exists in blocked contacts
         if (!checkIfInBlockList(userId)) {
             return
@@ -365,12 +365,13 @@ class User() {
         tempBlockedContacts.removeAt(index)
 
         //database deletion.
-        val newBlockedContacts = hashMapOf("block_list" to tempBlockedContacts)
-        db.collection("users").document(userId)
+        val newBlockedContacts = hashMapOf("blockedContacts" to tempBlockedContacts)
+        db.collection("users").document(this.userId)
             .set(newBlockedContacts, SetOptions.merge())
             .addOnSuccessListener {
                 // If successful, we delete locally
                 deleteBlockedContact(userId)
+                callback()
             }
             .addOnFailureListener{
                 // On failure, do nothing
