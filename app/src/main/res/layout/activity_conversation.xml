@@ -47,19 +47,30 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
-            <Button
+            <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent" />
+
+            <ImageButton
                 android:id="@+id/add_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Image" />
+                android:src="@drawable/ic_image_white"
+                android:background="@color/colorPrimary"
+                android:padding="4dp"
+                android:layout_gravity="center"/>
+            <View
+                android:layout_width="10dp"
+                android:layout_height="match_parent" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/add_hidden_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Hidden" />
+                android:src="@drawable/ic_image_dark"
+                android:background="@color/colorPrimary"
+                android:padding="4dp"
+                android:layout_gravity="center"/>
 
             <EditText
                 android:id="@+id/message_input"
@@ -73,15 +84,16 @@
                 android:hint="enter message"
                 android:maxLines="6" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/send_message_button"
-                android:layout_width="64dp"
+                android:src="@drawable/ic_send"
+                android:layout_width="wrap_content"
+                android:paddingStart="10dp"
+                android:paddingEnd="6dp"
+                android:background="@color/colorPrimary"
                 android:layout_height="48dp"
-                android:layout_gravity="bottom"
                 android:clickable="true"
-                android:gravity="center"
-                android:text="send"
-                android:textSize="14dp" />
+                android:gravity="center" />
 
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
