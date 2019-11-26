@@ -81,9 +81,6 @@ class User() {
             this.conversations = conversations
             getBlockList(this.userId)
         }
-
-
-
     }
 
     companion object {
@@ -338,15 +335,15 @@ class User() {
     }
 
     // Untestable - relies on database functionality
-    fun getBlockList(userId: String) : MutableList<String>? {
+    fun getBlockList(userId: String) {
         var temp = mutableListOf<String>()
         val docref = db.collection("users").document(userId)
         docref.get()
             .addOnSuccessListener { document ->
-                val blockedlist = document.data?.get("blockedContacts") as MutableList<String>
-                temp = blockedlist
+                val blockedlist = document.data?.get("block_list") as MutableList<String>?
+                if(blockedlist != null)
+                    blockedContacts = blockedlist
             }
-        return temp
     }
 
     // This function is untestable since it deletes the blocked contact from Db
