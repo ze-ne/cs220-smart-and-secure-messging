@@ -234,10 +234,9 @@ class User() {
         this.contacts.removeAt(index)
         return true
     }
-/*
-    UNUSED
+
     // Untestable - relies on database functionality
-    fun getUserIdsByFirstName(firstName : String) : List<String> {
+    fun getUserIdsByFirstName(firstName : String, callBack: (List<String>) -> Unit){
         val retList = mutableListOf<String>()
         val query = db.collection("users").whereEqualTo("first_name", firstName)
         query.get()
@@ -245,12 +244,12 @@ class User() {
                 for (document in documents) {
                     retList.add(document.data.getValue("canonicalId") as String)
                 }
+                callBack(retList)
             }
-        return retList
     }
 
     // Untestable - relies on database functionality
-    fun getUserIdsByLastName(lastName : String) : List<String> {
+    fun getUserIdsByLastName(lastName : String, callBack: (List<String>) -> Unit) {
         val retList = mutableListOf<String>()
         val query = db.collection("users").whereEqualTo("last_name", lastName)
         query.get()
@@ -258,13 +257,10 @@ class User() {
                 for (document in documents) {
                     retList.add(document.data.getValue("canonicalId") as String)
                 }
+                callBack(retList)
             }
-        return retList
     }
 
-
-]
-*/
     // Untestable - relies on database functionality
     fun doesUserExistByUserId(userId : String, callBack: () -> Unit) {
         db.collection("users").document(userId).get()
