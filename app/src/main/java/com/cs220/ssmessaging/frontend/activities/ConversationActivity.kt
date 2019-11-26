@@ -147,6 +147,7 @@ class ConversationActivity : AppCompatActivity() {
         val senderId = dc.document.data.getValue("sender_id") as String
         val recipientId = dc.document.data.getValue("recipient_id") as String
         val timestamp = dc.document.data.getValue("timestamp") as Long
+        val fillerText = "filler_text"
 
         when (type) {
             "text" -> {
@@ -158,7 +159,7 @@ class ConversationActivity : AppCompatActivity() {
             }
             "image" -> {
                 val imageMessage =
-                    ImageMessage(null as ByteArray, convoId, senderId, recipientId, timestamp)
+                    ImageMessage(fillerText.toByteArray(), convoId, senderId, recipientId, timestamp)
                 currentUser.deleteSentMessage(imageMessage)
             }
             else -> throw Exception("Unknown message type")
