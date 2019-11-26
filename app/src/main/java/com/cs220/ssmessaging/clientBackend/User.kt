@@ -141,8 +141,9 @@ class User() {
 
     // Add conversation locally to conversation list
     fun addConversation(convo: Conversation): Boolean {
-        if (convo in this.conversations) {
-            return false
+        for (c in this.conversations){
+            if(c.convoId == convo.convoId)
+                return false
         }
         this.conversations.add(convo)
         return true
@@ -153,8 +154,7 @@ class User() {
     // Note: using conversationId instead of conversation now
     fun deleteConversation(convoId: String): Boolean {
 
-        val conversationsLen = conversations.size
-        for (index in 0 until conversationsLen) {
+        for (index in conversations.indices) {
             if (conversations[index].convoId == convoId) {
                 conversations.removeAt(index)
                 return true
@@ -548,8 +548,7 @@ class User() {
                 println("============ found convo ============")
 
                 val messages = c.messages
-                val numMessages = messages.size
-                for (index in 0..numMessages) {
+                for (index in messages.indices) {
                     println("============ searching list ============")
 
                     if (message.mEquals(messages[index])) {
