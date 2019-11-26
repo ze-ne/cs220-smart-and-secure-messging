@@ -57,6 +57,12 @@ class AddConversationDialog : DialogFragment() {
                                     Intent(activity, ConversationActivity::class.java)
                                 conversationIntent.putExtra("receiver_name", participantUsername)
                                 startActivity(conversationIntent)
+                            } else {
+                                Toast.makeText(
+                                    activity,
+                                    "Unable to start conversation. You have been blocked by " + participantUsername,
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
 
                         } else {
