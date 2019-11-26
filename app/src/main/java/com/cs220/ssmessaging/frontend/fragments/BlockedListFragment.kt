@@ -95,8 +95,7 @@ class BlockedListFragment : Fragment() {
 
             val btn = viewHolder.itemView.findViewById<Button>(R.id.unblock_button)
             btn.setOnClickListener{
-                currentUser.deleteBlockedContact(user)
-                displayBlockList()
+                currentUser.deleteBlockedContactFromDb(user, { displayBlockList()})
             }
         }
 
