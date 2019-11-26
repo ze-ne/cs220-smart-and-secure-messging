@@ -379,28 +379,31 @@ class User() {
                 val uploadTask = newImageRef.putBytes(encryptedMessage.message)
 
                 uploadTask.addOnSuccessListener {
-                    val toSend = hashMapOf(
-                        "bucket_url" to newImageRef.downloadUrl,
-                        "data" to Blob.fromBytes(byteArrayOf(0)),
-                        "message_type" to encryptedMessage.messageType,
-                        "sender_id" to encryptedMessage.senderId,
-                        "recipient_id" to encryptedMessage.recipientId,
-                        "timestamp" to encryptedMessage.timestamp,
-                        "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
-                        "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
-                    )
+                    newImageRef.getDownloadUrl().addOnSuccessListener { bucket_uri ->
+                        Log.d("URI of bucket", bucket_uri.toString())
+                        val toSend = hashMapOf(
+                            "bucket_url" to bucket_uri.toString(),
+                            "data" to Blob.fromBytes(byteArrayOf(0)),
+                            "message_type" to encryptedMessage.messageType,
+                            "sender_id" to encryptedMessage.senderId,
+                            "recipient_id" to encryptedMessage.recipientId,
+                            "timestamp" to encryptedMessage.timestamp,
+                            "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
+                            "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
+                        )
 
-                    db.collection("conversations")
-                        .document(convo.convoId)
-                        .collection("messages")
-                        .document()
-                        .set(toSend)
-                        .addOnSuccessListener {
-                            Log.d("sendEncryptedMsg", "Success!")
-                        }
-                        .addOnFailureListener {
-                            Log.d("sendEncryptedMsg", "Failure!")
-                        }
+                        db.collection("conversations")
+                            .document(convo.convoId)
+                            .collection("messages")
+                            .document()
+                            .set(toSend)
+                            .addOnSuccessListener {
+                                Log.d("sendEncryptedMsg", "Success!")
+                            }
+                            .addOnFailureListener {
+                                Log.d("sendEncryptedMsg", "Failure!")
+                            }
+                    }
                 }
 
                 uploadTask.addOnFailureListener {

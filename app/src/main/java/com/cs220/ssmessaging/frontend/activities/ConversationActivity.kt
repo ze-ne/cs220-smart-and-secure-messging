@@ -107,7 +107,6 @@ class ConversationActivity : AppCompatActivity() {
                     "image" -> {
                         val bucketUrl = dc.document.data.getValue("bucket_url") as String
                         val imgRef = storage.getReferenceFromUrl(bucketUrl)
-
                         imgRef.getBytes(1000000000) // 100 MB
                             .addOnSuccessListener {
                                 val encryptedMessage = EncryptedMessage(it, convoId,
