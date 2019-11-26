@@ -34,7 +34,7 @@ class AddConversationDialog : DialogFragment() {
         val conversationsView =
             inflater.inflate(R.layout.dialog_add_conversation, container, false)
 
-        newConversationInput = conversationsView.findViewById((R.id.dialog_add_conversation_field))
+        newConversationInput = conversationsView.findViewById(R.id.dialog_add_conversation_field)
         newConversationButton = conversationsView.findViewById(R.id.dialog_new_conversation_button)
 
         newConversationButton.setOnClickListener {

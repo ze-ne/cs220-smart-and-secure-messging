@@ -27,7 +27,6 @@
         <activity android:name=".frontend.activities.SettingsActivity"></activity>
         <activity android:name=".frontend.activities.HomeActivity"></activity>
         <activity android:name=".frontend.activities.RegisterActivity" />
-        <activity android:name=".frontend.activities.MainActivity"></activity>
     </application>
 
 </manifest>
