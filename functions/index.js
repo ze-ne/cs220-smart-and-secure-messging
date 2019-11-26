@@ -14,19 +14,19 @@ exports.deleteConversationImages = functions.firestore
             .then(snapshot => {
                 const bucket = firebase.storage().bucket();
                 let errorPaths = []
-                snapshot.filter(msg => {
-                    return msg.data().message_type === "image";
-                }).map(imgMsg => {
-                    return imgMsg.data().bucket_path;
-                }).forEach(bucketImgPath => {
-                    bucket.child(bucketImgPath).then(() => {
-                        console.log("File: " + bucketImgPath + " deleted successfully");
-                        return;
-                    }).catch(err => {
-                        console.log("Error deleting: " + bucketImgPath + " " + err);
-                        errorPaths.push(bucketImgPath);
-                        return;
-                    });
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.message_type === "image") {
+                        const path = data.bucket_path;
+                        bucket.child(path).delete().then(() => {
+                            console.log("File: " + bucketImgPath + " deleted successfully");
+                            return;
+                        }).catch(err => {
+                            console.log("Error deleting: " + bucketImgPath + ". " + err);
+                            errorPaths.push(bucketImgPath);
+                            return;
+                        });
+                    }
                 });
                 return errorPaths;
             });
