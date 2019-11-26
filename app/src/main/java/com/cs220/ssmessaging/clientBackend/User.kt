@@ -81,9 +81,6 @@ class User() {
             this.conversations = conversations
             getBlockList(this.userId)
         }
-
-
-
     }
 
     companion object {
