@@ -280,14 +280,35 @@ class User() {
     }
 
     fun checkIfBlocked(userId : String) : Boolean {
-        // TODO
-        return false
+        var retVar = false
+        val query = db.collection("users").whereEqualTo("canonicalId", userId)
+        query.get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    var blockedlist = document.get("blockedContacts") as MutableList<String>
+                    if (blockedlist == null ){
+                        break
+                    }
+                    else if(blockedlist.contains(userId)){
+                        retVar = true
+                    }
+                }
+            }
+        return retVar
     }
 
     // Untestable - relies on database functionality
     fun getBlockList(userId: String) : MutableList<String>? {
-        // TODO
-        return null
+        var temp = mutableListOf<String>()
+        val query = db.collection("users").whereEqualTo("canonicalId", userId)
+        query.get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    var blockedlist = document.get("blockedContacts") as MutableList<String>
+                    temp = blockedlist
+                }
+            }
+        return temp
     }
 
     fun addBlockedContact(userId : String) : Boolean {
