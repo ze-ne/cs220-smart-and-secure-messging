@@ -1,13 +1,14 @@
 package com.cs220.ssmessaging.clientBackend
-import android.media.Image
-import com.cs220.ssmessaging.clientBackend.User
-import com.cs220.ssmessaging.clientBackend.Message
+import android.util.Log
+import com.ibm.cloud.sdk.core.http.Response
+import com.ibm.cloud.sdk.core.http.ServiceCallback
 import com.ibm.cloud.sdk.core.security.IamAuthenticator
 import com.ibm.watson.tone_analyzer.v3.ToneAnalyzer
 import com.ibm.watson.tone_analyzer.v3.model.ToneChatOptions
 import com.ibm.watson.tone_analyzer.v3.model.Utterance
 import com.ibm.watson.tone_analyzer.v3.model.UtteranceAnalyses
-import org.json.JSONObject
+import com.ibm.watson.tone_analyzer.v3.model.UtteranceAnalysis
+import java.lang.Exception
 
 class Conversation() {
     /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
@@ -21,7 +22,7 @@ class Conversation() {
      */
 
     private val authenticator = IamAuthenticator("niLJk0JS8fRbqrqFmPoRgqQMt9PnWMC7EKOfCZHty9no")
-    private val toneAnalyzer = ToneAnalyzer("8.0.1", authenticator)
+    private val toneAnalyzer = ToneAnalyzer("2017-09-21", authenticator)
     private val WATSON_URL = "https://gateway.watsonplatform.net/tone-analyzer/api"
 
     constructor(firstUser : String, secondUser : String, msgs : MutableList<Message>) : this(){
@@ -61,9 +62,9 @@ class Conversation() {
     companion object{
         fun isValidConversation(conversation: Conversation) =
             User.isValidUserId(conversation.user1Id) &&
-            User.isValidUserId(conversation.user2Id) &&
-            isValidConversationId(conversation.convoId) &&
-            isValidLastTimeSynched(conversation.lastTimeSynced)
+                    User.isValidUserId(conversation.user2Id) &&
+                    isValidConversationId(conversation.convoId) &&
+                    isValidLastTimeSynched(conversation.lastTimeSynced)
 
         fun isValidConversationId(conversationId : String) : Boolean =
             conversationId.matches(Regex("^[a-zA-Z0-9_.,/-]*$")) && conversationId.isNotEmpty()
@@ -168,7 +169,7 @@ class Conversation() {
         return Conversation(user1Id, user2Id, subMessages)
     }
 
-    fun getAnalytics() : UtteranceAnalyses {
+    fun getAnalytics() {
         //TODO
         /* might exclude from unit testing on account of having a
            relatively low monthly limit on api calls before we have to pay */
@@ -187,8 +188,19 @@ class Conversation() {
         val toneChatOptions = ToneChatOptions.Builder()
             .utterances(utterances)
             .build()
-        val utteranceAnalyses = toneAnalyzer.toneChat(toneChatOptions).execute().result
-
-        return utteranceAnalyses
+        toneAnalyzer.toneChat(toneChatOptions).enqueue(ToneChatCallback())
     }
+}
+
+class ToneChatCallback: ServiceCallback<UtteranceAnalyses> {
+
+    override fun onResponse(response: Response<UtteranceAnalyses>?) {
+        Log.d("ToneChatCallback", "ToneChatCallback succeeded")
+        val analyses: List<UtteranceAnalysis> = response?.result?.utterancesTone!!
+    }
+
+    override fun onFailure(e: Exception?) {
+        Log.d("ToneChatCallback", e.toString())
+    }
+
 }
