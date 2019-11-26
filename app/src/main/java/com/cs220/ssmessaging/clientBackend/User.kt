@@ -151,6 +151,7 @@ class User() {
     // Removes conversation from conversation list
     // Note: using conversationId instead of conversation now
     fun deleteConversation(convoId : String): Boolean {
+
         val conversationsLen = conversations.size
         for(index in 0..conversationsLen){
             if(conversations[index].convoId == convoId){
@@ -159,6 +160,14 @@ class User() {
             }
         }
         return false
+    }
+
+    fun deleteConversationFromDb(convoId : String, callback: (() -> Unit)? = null) {
+        val convo = db.collection("conversations").document(convoId)
+        convo.delete()
+            .addOnFailureListener {
+                callback?.invoke()
+            }
     }
 
     // start conversation with another user by sending conversation to database
@@ -468,6 +477,24 @@ class User() {
             }
         }
         return false
+    }
+
+    fun deleteSentMessageFromDb(convoId: String, message: Message) {
+        val senderId = message.senderId
+        val timestamp = message.timestamp
+
+        val convo = db.collection("conversation").document(convoId)
+        val query = convo.collection("messages")
+            .whereEqualTo("timestamp", timestamp)
+            .whereEqualTo("sender_id", senderId)
+            .limit(1)
+        val doc = query.get()
+            .addOnSuccessListener {documents ->
+                for (document in documents) {
+                    document.reference.delete()
+                }
+            }
+
     }
 
     // Add your own public key to server - Untestable because it deals with server
