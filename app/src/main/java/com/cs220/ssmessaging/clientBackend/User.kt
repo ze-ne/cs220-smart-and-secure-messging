@@ -1,14 +1,13 @@
 package com.cs220.ssmessaging.clientBackend
 
-import android.graphics.Bitmap
 import android.util.Log
-import android.widget.ImageView
-import com.cs220.ssmessaging.clientBackend.Conversation
-import com.cs220.ssmessaging.clientBackend.Message
+import com.google.android.gms.tasks.Task
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.Blob
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import java.nio.charset.Charset
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.storage.FirebaseStorage
 import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
@@ -30,6 +29,7 @@ class User() {
      */
 
     val db = FirebaseFirestore.getInstance()
+    val storage = FirebaseStorage.getInstance()
 
     constructor(userId: String, firstName: String, lastName: String) : this() {
         if (!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId)) {
@@ -151,6 +151,7 @@ class User() {
     // Removes conversation from conversation list
     // Note: using conversationId instead of conversation now
     fun deleteConversation(convoId : String): Boolean {
+
         val conversationsLen = conversations.size
         for(index in 0..conversationsLen){
             if(conversations[index].convoId == convoId){
@@ -161,6 +162,14 @@ class User() {
         return false
     }
 
+    fun deleteConversationFromDb(convoId : String, callback: (() -> Unit)? = null) {
+        val convo = db.collection("conversations").document(convoId)
+        convo.delete()
+            .addOnFailureListener {
+                callback?.invoke()
+            }
+    }
+
     // start conversation with another user by sending conversation to database
     fun startConversation(convo : Conversation) : Boolean {
         val toAdd = hashMapOf(
@@ -168,13 +177,12 @@ class User() {
             "created" to Timestamp.now(),
             "users" to listOf<String>(convo.user1Id, convo.user2Id)
         )
+        // IMPORTANT: Implement somewhere the function to delete this added conversation IF key exchange or adding conversation fails!!!
         addConversation(convo)
         db.collection("conversations").document(convo.convoId)
             .set(toAdd)
             .addOnSuccessListener {
                 Log.d("startConversation", "success")
-                getUserPublicKey(convo.user1Id)
-                getUserPublicKey(convo.user2Id)
             }
             .addOnFailureListener {
                 Log.d("startConversation", "failure")
@@ -237,21 +245,49 @@ class User() {
     }
 
     // Untestable - relies on database functionality
-    fun getUserIdsByFirstName(firstName : String) : User? {
-        // TODO
-        return null
+    fun getUserIdsByFirstName(firstName : String, callBack: (List<String>) -> Unit){
+        val retList = mutableListOf<String>()
+        val query = db.collection("users").whereEqualTo("first_name", firstName)
+        query.get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    retList.add(document.data.getValue("canonicalId") as String)
+                }
+                callBack(retList)
+            }
     }
 
     // Untestable - relies on database functionality
-    fun getUserIdsByLastName(lastName : String) : User? {
-        // TODO
-        return null
+    fun getUserIdsByLastName(lastName : String, callBack: (List<String>) -> Unit) {
+        val retList = mutableListOf<String>()
+        val query = db.collection("users").whereEqualTo("last_name", lastName)
+        query.get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    retList.add(document.data.getValue("canonicalId") as String)
+                }
+                callBack(retList)
+            }
     }
 
     // Untestable - relies on database functionality
-    fun doesUserExistByUserId(userId : String) : Boolean {
-        // TODO
-        return false
+    fun doesUserExistByUserId(userId : String, callBack: () -> Unit) {
+        db.collection("users").document(userId).get()
+            .addOnSuccessListener{
+                callBack()
+            }
+    }
+
+    fun updateFirstName(usedId: String, newFirst: String) {
+        val newData = hashMapOf("first_name" to newFirst)
+        val userDoc = db.collection("users").document(userId)
+        userDoc.set(newData, SetOptions.merge())
+    }
+
+    fun updateLastName(usedId: String, newLast: String) {
+        val newData = hashMapOf("last_name" to newLast)
+        val userDoc = db.collection("users").document(userId)
+        userDoc.set(newData, SetOptions.merge())
     }
 
     fun checkIfBlocked(userId : String) : Boolean {
@@ -266,13 +302,24 @@ class User() {
     }
 
     fun addBlockedContact(userId : String) : Boolean {
-        // TODO
-        return false
+        //block any userid that exists or only those currently in contacts?
+        var user1 = getContactById(userId)
+        if(user1 in this.contacts) {
+            this.blockedContacts.add(userId)
+            return true
+        }
+        else {
+            return false
+        }
     }
 
     fun deleteBlockedContact(userId : String) : Boolean {
-        // TODO
-        return false
+        var index = this.blockedContacts.indexOf(userId)
+        if (index < 0) {
+            return false
+        }
+        this.blockedContacts.removeAt(index)
+        return true
     }
 
     // Sends image message to server - partially testable
@@ -281,111 +328,110 @@ class User() {
         val timestamp = Instant.now().toEpochMilli()
         val msg = ImageMessage(msg, convo.convoId,this.userId, recipient,timestamp)
         convo.addMessage(msg)
-        //TODO: Refactor with sendTextMsg and sendEncryptedMsg
-        val toSend = hashMapOf(
-            "bucket_url" to "",
-            "data" to Base64.getEncoder().encodeToString(msg.message),
-            "message_type" to "image",
-            "sender_id" to msg.senderId,
-            "recipient_id" to msg.recipientId,
-            "timestamp" to msg.timestamp
-        )
 
-        db.collection("conversations")
-            .document(convo.convoId)
-            .collection("messages")
-            .document()
-            .set(toSend)
-            .addOnSuccessListener {
-                Log.d("sendImageMsg", "success")
-            }
-            .addOnFailureListener {
-                Log.d("sendImageMsg", "failure")
-            }
+        sendEncryptedMsg(msg, convo)
     }
 
     // Sends text message to server
     fun sendTextMsg(msg : String, convo : Conversation){
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
-        val txtMsg = TextMessage(msg, convo.convoId,this.userId, recipient,timestamp)
+        val txtMsg = TextMessage(msg, convo.convoId, this.userId, recipient, timestamp)
         convo.addMessage(txtMsg)
-        val toSend = hashMapOf(
-            "bucket_url" to "",
-            "data" to txtMsg.message,
-            "message_type" to "text",
-            "sender_id" to txtMsg.senderId,
-            "recipient_id" to txtMsg.recipientId,
-            "timestamp" to txtMsg.timestamp
-        )
 
-        db.collection("conversations")
-            .document(convo.convoId)
-            .collection("messages")
-            .document()
-            .set(toSend)
-            .addOnSuccessListener {
-                Log.d("sendTextMsg", "success")
-            }
-            .addOnFailureListener {
-                Log.d("sendTextMsg", "failure")
-            }
+        sendEncryptedMsg(txtMsg, convo)
     }
 
     // Fully untestable because all this does is hit the server
     private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
-        // TODO
+        val encryptedMessage: EncryptedMessage = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
+
+        when(unencryptedMsg) {
+            is TextMessage -> {
+                val toSend = hashMapOf(
+                    "bucket_url" to "",
+                    "data" to Blob.fromBytes(encryptedMessage.message),
+                    "message_type" to encryptedMessage.messageType,
+                    "sender_id" to encryptedMessage.senderId,
+                    "recipient_id" to encryptedMessage.recipientId,
+                    "timestamp" to encryptedMessage.timestamp,
+                    "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
+                    "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
+                )
+
+                db.collection("conversations")
+                    .document(convo.convoId)
+                    .collection("messages")
+                    .document()
+                    .set(toSend)
+                    .addOnSuccessListener {
+                        Log.d("sendEncryptedMsg", "Success!")
+                    }
+                    .addOnFailureListener {
+                        Log.d("sendTextMsg", "Failure!")
+                    }
+            }
+            is ImageMessage -> {
+                val uuid = UUID.randomUUID()
+                val filename = "${convo.convoId}/${uuid}"
+
+                val newImageRef = storage.reference.child(filename)
+                val uploadTask = newImageRef.putBytes(encryptedMessage.message)
+
+                uploadTask.addOnSuccessListener {
+                    newImageRef.getDownloadUrl().addOnSuccessListener { bucket_uri ->
+                        Log.d("URI of bucket", bucket_uri.toString())
+                        val toSend = hashMapOf(
+                            "bucket_url" to bucket_uri.toString(),
+                            "data" to Blob.fromBytes(byteArrayOf(0)),
+                            "message_type" to encryptedMessage.messageType,
+                            "sender_id" to encryptedMessage.senderId,
+                            "recipient_id" to encryptedMessage.recipientId,
+                            "timestamp" to encryptedMessage.timestamp,
+                            "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
+                            "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
+                        )
+
+                        db.collection("conversations")
+                            .document(convo.convoId)
+                            .collection("messages")
+                            .document()
+                            .set(toSend)
+                            .addOnSuccessListener {
+                                Log.d("sendEncryptedMsg", "Success!")
+                            }
+                            .addOnFailureListener {
+                                Log.d("sendEncryptedMsg", "Failure!")
+                            }
+                    }
+                }
+
+                uploadTask.addOnFailureListener {
+                    Log.d("sendEncryptedMessage", "Failure!")
+                }
+            }
+        }
     }
 
-    // Sends image message to server - For iteration 2
-    /*fun sendImageMsg(byteArray: ByteArray, convo : Conversation){
-        val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
-        val timestamp = Instant.now().toEpochMilli()
-        val txtMsg = ImageMessage(byteArray, convo.convoId,this.userId, recipient,timestamp)
-        sendEncryptedMsg(txtMsg, convo)
-    }*/
-
-    // For iteration 2 - Encryption
-    /*private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
-        // Encryption has some bugs, we are disabling it for now.
-        val msg = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
-        val toSend = hashMapOf(
-            "bucket_url" to "",
-            "data" to msg.message.toString(Charsets.UTF_8),
-            "message_type" to msg.messageType,
-            "sender_id" to msg.senderId,
-            "recipient_id" to msg.recipientId,
-            "timestamp" to msg.timestamp
-        )
-
-        db.collection("conversations")
-            .document(convo.convoId)
-            .collection("messages")
-            .document()
-            .set(toSend)
-            .addOnSuccessListener {
-                Log.d("sendTextMsg", "success")
-            }
-            .addOnFailureListener {
-                Log.d("sendTextMsg", "failure")
-            }
-    }*/
-
     // Gets and stores public key of user from server
-    fun getUserPublicKey(userId : String) : Boolean{
+    fun getUserPublicKey(userId : String) : Task<DocumentSnapshot> {
         val keyFactory : KeyFactory = KeyFactory.getInstance("RSA")
-        db.collection("users").document(userId)
+        val keyTask : Task<DocumentSnapshot> = db.collection("users").document(userId)
             .get()
             .addOnSuccessListener { documentSnapshot ->
-                val keyField = documentSnapshot.getString("publicKey")!!
-                Log.d("hello",keyField)
-                val publicKey: PublicKey = keyFactory.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(keyField)))
+                val keyField = documentSnapshot.getBlob("publicKey")!!
+                Log.d("We got the key: ", keyField.toString())
+                val publicKey: PublicKey =
+                    keyFactory.generatePublic(X509EncodedKeySpec(keyField.toBytes()))
 
                 val fileUserId = if (this.userId == userId) "myKey" else userId
 
                 device.addUserPublicKey(fileUserId, publicKey)
+            }.addOnFailureListener {
+                e -> throw e
             }
-        return false
+
+        return keyTask
     }
 
     // gets the other user in a message given yourself.
@@ -395,7 +441,6 @@ class User() {
         }
         return msg.senderId
     }
-
 
     // Handle incoming message from server
     fun receiveMsg(decryptedMsg: UnencryptedMessage) : Boolean {
@@ -437,6 +482,26 @@ class User() {
         return false
     }
 
+    fun deleteSentMessageFromDb(convoId: String, message: Message, callback: (() -> Unit)? = null) {
+        val senderId = message.senderId
+        val timestamp = message.timestamp
+
+        val convo = db.collection("conversation").document(convoId)
+        val query = convo.collection("messages")
+            .whereEqualTo("timestamp", timestamp)
+            .whereEqualTo("sender_id", senderId)
+            .limit(1)
+        query.get()
+            .addOnSuccessListener {documents ->
+                for (document in documents) {
+                    document.reference.delete()
+                        .addOnFailureListener{
+                            callback?.invoke()
+                        }
+                }
+            }
+    }
+
     // Add your own public key to server - Untestable because it deals with server
     fun addPublicKeyToServer(key : String, user : User) : Boolean {
         db.collection("users").document(user.userId)
@@ -452,8 +517,8 @@ class User() {
 
     // Adds the current user to the database
     fun addSelfToDatabase() : Boolean {
-        var base64EncodedPublicKey =
-            Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)
+        var publicKey =
+            Blob.fromBytes(device.cipher.publicKeyRing["myKey"]?.encoded!!)
 
         val toAdd = hashMapOf(
             "name" to this.userId,
@@ -462,7 +527,7 @@ class User() {
             "last_name" to this.lastName,
             "password_hash" to "",
             "phone" to "123",
-            "publicKey" to base64EncodedPublicKey
+            "publicKey" to publicKey
         )
 
         db.collection("users").document(this.userId)

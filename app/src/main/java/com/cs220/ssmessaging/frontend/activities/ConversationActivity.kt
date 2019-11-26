@@ -3,7 +3,6 @@ package com.cs220.ssmessaging.frontend.activities
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -18,13 +17,12 @@ import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.*
 import com.cs220.ssmessaging.frontend.adapters.MessagesAdapter
+import com.google.firebase.firestore.Blob
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.storage.FirebaseStorage
 
 import kotlinx.android.synthetic.main.activity_conversation.*
 import java.lang.Exception
-import java.time.Instant
-import java.util.*
 import kotlin.collections.ArrayList
 
 const val REQUEST_IMAGE_GET = 1
@@ -40,6 +38,7 @@ class ConversationActivity : AppCompatActivity() {
     private lateinit var conversation: Conversation
 
     private val db = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
 
     // Refreshes conversation
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,20 +92,44 @@ class ConversationActivity : AppCompatActivity() {
             // Add messages to local backend objects
             for (dc in snapshot!!.documentChanges) {
 
+                // TODO("Assume all messages are encrypted!")
+
                 // Convert server data to message objects
                 val type = dc.document.data.getValue("message_type")
-                val data = dc.document.data.getValue("data") as String
                 val senderId = dc.document.data.getValue("sender_id") as String
                 val recipientId = dc.document.data.getValue("recipient_id") as String
                 val timestamp = dc.document.data.getValue("timestamp") as Long
-                val decryptedMessage = when(type){
-                    "text" -> TextMessage(data as String, convoId, senderId,recipientId, timestamp)
-                    "image" -> ImageMessage(Base64.getDecoder().decode(data) as ByteArray, convoId, senderId, recipientId, timestamp)
+                val recipientEncryptedAesKey = (dc.document.data.getValue("recipient_encrypted_aes_key") as Blob).toBytes()
+                val senderEncryptedAesKey = (dc.document.data.getValue("sender_encrypted_aes_key") as Blob).toBytes()
+
+                when(type) {
+                    "text" -> {
+                        val data = (dc.document.data.getValue("data") as Blob).toBytes()
+                        val encryptedMessage = EncryptedMessage(data, convoId, "text", senderId, recipientId, timestamp, senderEncryptedAesKey, recipientEncryptedAesKey)
+                        val decryptedMessage = currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
+                        currentUser.receiveMsg(decryptedMessage)
+                        displayMessages()
+                    }
+                    "image" -> {
+                        val bucketUrl = dc.document.data.getValue("bucket_url") as String
+                        val imgRef = storage.getReferenceFromUrl(bucketUrl)
+                        imgRef.getBytes(1000000000) // 100 MB
+                            .addOnSuccessListener {
+                                val encryptedMessage = EncryptedMessage(it, convoId,
+                                    "image", senderId, recipientId,
+                                    timestamp, senderEncryptedAesKey, recipientEncryptedAesKey)
+                                val decryptedMessage = currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
+                                currentUser.receiveMsg(decryptedMessage)
+                                displayMessages()
+                                Log.d("addMessageListener", "Success!")
+                            }
+                            .addOnFailureListener {
+                                Log.d("addMessageListener", "Failed to retrieve bucket img")
+                            }
+                    }
                     else -> throw Exception("Unknown message type")
                 }
-                currentUser.receiveMsg(decryptedMessage)
             }
-            displayMessages()
         }
     }
 
