@@ -2,7 +2,6 @@ package com.cs220.ssmessaging.frontend.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -54,7 +53,7 @@ class PhoneAuthActivity : AppCompatActivity() {
                 authCode.requestFocus()
                 return@setOnClickListener
             }
-            //verifyCode(code)
+            verifyCode(code)
         }
 
 
@@ -68,7 +67,6 @@ class PhoneAuthActivity : AppCompatActivity() {
     }
 
     private fun verifyCode(code: String) {
-        Log.d("CODE", code)
         val credential = PhoneAuthProvider.getCredential(verificationId, code)
         signInWithCredential(credential)
     }
@@ -84,7 +82,7 @@ class PhoneAuthActivity : AppCompatActivity() {
                     }
                     startActivity(homeIntent)
                 } else {
-                    Toast.makeText(applicationContext, task.exception!!.message, Toast.LENGTH_LONG)
+                    Toast.makeText(applicationContext, "The code you have entered is incorrect. Please make sure to enter the code you received.", Toast.LENGTH_LONG)
                         .show()
                 }
             }

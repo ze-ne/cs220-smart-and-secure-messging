@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -40,6 +41,9 @@ class ConversationActivity : AppCompatActivity() {
     // Refreshes conversation
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        this.window.setFlags(FLAG_SECURE, FLAG_SECURE)
+        
         setContentView(R.layout.activity_conversation)
 
         conversationReceiverName = intent.extras!!.get("receiver_name").toString()
