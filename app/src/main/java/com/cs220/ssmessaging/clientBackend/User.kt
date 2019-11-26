@@ -306,15 +306,18 @@ class User() {
         if (checkIfInBlockList(userId) || !isValidUserId(userId))
             return
         // Add to Db
-        val newBlockedContacts = hashMapOf("block_list" to blockedContacts)
+        val newBlockedContacts = mapOf("block_list" to blockedContacts)
         db.collection("users").document(userId)
-            .set(newBlockedContacts, SetOptions.merge())
+            .update(newBlockedContacts)
             .addOnSuccessListener {
                 // Add the contact locally. In addition, we need to delete every single conversation
                 addBlockedContact(userId)
                 for(c in conversations){
-                    if(c.user1Id == userId || c.user2Id == userId)
+                    if(c.user1Id == userId || c.user2Id == userId){
                         deleteConversationFromDb(c.convoId)
+                        break
+                    }
+
                 }
             }
             .addOnFailureListener {
@@ -362,9 +365,9 @@ class User() {
         tempBlockedContacts.removeAt(index)
 
         //database deletion.
-        val newBlockedContacts = hashMapOf("block_list" to tempBlockedContacts)
+        val newBlockedContacts = mapOf("block_list" to tempBlockedContacts)
         db.collection("users").document(userId)
-            .set(newBlockedContacts, SetOptions.merge())
+            .update(newBlockedContacts)
             .addOnSuccessListener {
                 // If successful, we delete locally
                 deleteBlockedContact(userId)
