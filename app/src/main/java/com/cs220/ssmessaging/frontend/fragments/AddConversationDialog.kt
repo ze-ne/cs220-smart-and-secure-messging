@@ -46,12 +46,19 @@ class AddConversationDialog : DialogFragment() {
                     .addOnSuccessListener { documentReference ->
                         if (documentReference.size() == 1) {
                             val newConvo = Conversation(currentUser.userId, participantUsername)
-                            currentUser.startConversation(newConvo)
-                            newConversationInput.text.clear()
-                            val conversationIntent =
-                                Intent(activity, ConversationActivity::class.java)
-                            conversationIntent.putExtra("receiver_name", participantUsername)
-                            startActivity(conversationIntent)
+                            // Check if you're in the other user's block list
+                            val blockList : MutableList<String>? = documentReference.documents[0].get("block_list") as MutableList<String>?
+
+                            // Only start new conversation if the other person's blockList does not exist or you are not in it
+                            if(blockList == null || !blockList.contains(currentUser.userId)){
+                                currentUser.startConversation(newConvo)
+                                newConversationInput.text.clear()
+                                val conversationIntent =
+                                    Intent(activity, ConversationActivity::class.java)
+                                conversationIntent.putExtra("receiver_name", participantUsername)
+                                startActivity(conversationIntent)
+                            }
+
                         } else {
                             Toast.makeText(
                                 activity,

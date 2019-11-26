@@ -93,6 +93,7 @@ class ConversationActivity : AppCompatActivity() {
                 val data = (dc.document.data.getValue("data") as Blob).toBytes()
                 val encryptedMessage = EncryptedMessage(data, convoId, "text", senderId, recipientId, timestamp, senderEncryptedAesKey, recipientEncryptedAesKey)
                 val decryptedMessage = currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
+                //decryptedMessage.isVisible = dc.document.data.getValue("is_visible") as Boolean
                 currentUser.receiveMsg(decryptedMessage)
                 displayMessages()
             }
@@ -105,6 +106,7 @@ class ConversationActivity : AppCompatActivity() {
                             "image", senderId, recipientId,
                             timestamp, senderEncryptedAesKey, recipientEncryptedAesKey)
                         val decryptedMessage = currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
+                        //decryptedMessage.isVisible = dc.document.data.getValue("is_visible") as Boolean
                         currentUser.receiveMsg(decryptedMessage)
                         displayMessages()
                         Log.d("addMessageListener", "Success!")

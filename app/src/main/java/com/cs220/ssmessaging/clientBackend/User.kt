@@ -278,16 +278,20 @@ class User() {
             }
     }
 
-    fun updateFirstName(usedId: String, newFirst: String) {
+    fun updateFirstName(newFirst: String) {
         val newData = hashMapOf("first_name" to newFirst)
         val userDoc = db.collection("users").document(userId)
-        userDoc.set(newData, SetOptions.merge())
+        userDoc.set(newData, SetOptions.merge()).addOnSuccessListener {
+            firstName = newFirst
+        }
     }
 
-    fun updateLastName(usedId: String, newLast: String) {
+    fun updateLastName(newLast: String) {
         val newData = hashMapOf("last_name" to newLast)
         val userDoc = db.collection("users").document(userId)
-        userDoc.set(newData, SetOptions.merge())
+        userDoc.set(newData, SetOptions.merge()).addOnSuccessListener {
+            lastName = newLast
+        }
     }
 
     // Check if the current user has blocked the input userId
@@ -301,7 +305,7 @@ class User() {
         val docref = db.collection("users").document(userId)
         docref.get()
             .addOnSuccessListener { document ->
-                val blockedlist = document.data?.get("blockedContacts") as MutableList<String>
+                val blockedlist = document.data?.get("block_list") as MutableList<String>
                 temp = blockedlist
             }
         return temp
@@ -314,7 +318,7 @@ class User() {
         if (checkIfInBlockList(userId) || !isValidUserId(userId))
             return
         // Add to Db
-        val newBlockedContacts = hashMapOf("blockedContacts" to blockedContacts)
+        val newBlockedContacts = hashMapOf("block_list" to blockedContacts)
         db.collection("users").document(userId)
             .set(newBlockedContacts, SetOptions.merge())
             .addOnSuccessListener {
@@ -358,7 +362,7 @@ class User() {
         tempBlockedContacts.removeAt(index)
 
         //database deletion.
-        val newBlockedContacts = hashMapOf("blockedContacts" to tempBlockedContacts)
+        val newBlockedContacts = hashMapOf("block_list" to tempBlockedContacts)
         db.collection("users").document(userId)
             .set(newBlockedContacts, SetOptions.merge())
             .addOnSuccessListener {
@@ -415,6 +419,7 @@ class User() {
                     "sender_id" to encryptedMessage.senderId,
                     "recipient_id" to encryptedMessage.recipientId,
                     "timestamp" to encryptedMessage.timestamp,
+                    //"is_visible" to unencryptedMsg.isVisible,
                     "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
                     "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
                 )
@@ -449,6 +454,7 @@ class User() {
                             "sender_id" to encryptedMessage.senderId,
                             "recipient_id" to encryptedMessage.recipientId,
                             "timestamp" to encryptedMessage.timestamp,
+                            //"is_visible" to unencryptedMsg.isVisible,
                             "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
                             "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
                         )
@@ -597,6 +603,7 @@ class User() {
             "last_name" to this.lastName,
             "password_hash" to "",
             "phone" to "123",
+            "block_list" to blockedContacts,
             "publicKey" to publicKey
         )
 
