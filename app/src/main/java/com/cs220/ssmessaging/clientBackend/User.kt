@@ -1,18 +1,13 @@
 package com.cs220.ssmessaging.clientBackend
 
-import android.graphics.Bitmap
 import android.util.Log
-import android.widget.ImageView
-import com.cs220.ssmessaging.clientBackend.Conversation
-import com.cs220.ssmessaging.clientBackend.Message
 import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.Blob
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
-import java.nio.charset.Charset
 import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
@@ -156,6 +151,7 @@ class User() {
     // Removes conversation from conversation list
     // Note: using conversationId instead of conversation now
     fun deleteConversation(convoId : String): Boolean {
+
         val conversationsLen = conversations.size
         for(index in 0..conversationsLen){
             if(conversations[index].convoId == convoId){
@@ -164,6 +160,14 @@ class User() {
             }
         }
         return false
+    }
+
+    fun deleteConversationFromDb(convoId : String, callback: (() -> Unit)? = null) {
+        val convo = db.collection("conversations").document(convoId)
+        convo.delete()
+            .addOnFailureListener {
+                callback?.invoke()
+            }
     }
 
     // start conversation with another user by sending conversation to database
@@ -241,7 +245,7 @@ class User() {
     }
 
     // Untestable - relies on database functionality
-    fun getUserIdsByFirstName(firstName : String) : List<String> {
+    fun getUserIdsByFirstName(firstName : String, callBack: (List<String>) -> Unit){
         val retList = mutableListOf<String>()
         val query = db.collection("users").whereEqualTo("first_name", firstName)
         query.get()
@@ -249,12 +253,12 @@ class User() {
                 for (document in documents) {
                     retList.add(document.data.getValue("canonicalId") as String)
                 }
+                callBack(retList)
             }
-        return retList
     }
 
     // Untestable - relies on database functionality
-    fun getUserIdsByLastName(lastName : String) : List<String> {
+    fun getUserIdsByLastName(lastName : String, callBack: (List<String>) -> Unit) {
         val retList = mutableListOf<String>()
         val query = db.collection("users").whereEqualTo("last_name", lastName)
         query.get()
@@ -262,21 +266,28 @@ class User() {
                 for (document in documents) {
                     retList.add(document.data.getValue("canonicalId") as String)
                 }
+                callBack(retList)
             }
-        return retList
     }
 
     // Untestable - relies on database functionality
-    fun doesUserExistByUserId(userId : String) : Boolean {
-        var retVal = false
-        val query = db.collection("users").whereEqualTo("canonicalId", userId)
-        query.get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    retVal = true
-                }
+    fun doesUserExistByUserId(userId : String, callBack: () -> Unit) {
+        db.collection("users").document(userId).get()
+            .addOnSuccessListener{
+                callBack()
             }
-        return retVal
+    }
+
+    fun updateFirstName(usedId: String, newFirst: String) {
+        val newData = hashMapOf("first_name" to newFirst)
+        val userDoc = db.collection("users").document(userId)
+        userDoc.set(newData, SetOptions.merge())
+    }
+
+    fun updateLastName(usedId: String, newLast: String) {
+        val newData = hashMapOf("last_name" to newLast)
+        val userDoc = db.collection("users").document(userId)
+        userDoc.set(newData, SetOptions.merge())
     }
 
     fun checkIfBlocked(userId : String) : Boolean {
@@ -360,12 +371,13 @@ class User() {
             is TextMessage -> {
                 val toSend = hashMapOf(
                     "bucket_url" to "",
-                    "data" to encryptedMessage.message.toString(Charsets.UTF_8),
+                    "data" to Blob.fromBytes(encryptedMessage.message),
                     "message_type" to encryptedMessage.messageType,
                     "sender_id" to encryptedMessage.senderId,
                     "recipient_id" to encryptedMessage.recipientId,
                     "timestamp" to encryptedMessage.timestamp,
-                    "encrypted_aes_key" to encryptedMessage.encryptedAESKey.toString(Charsets.UTF_8)
+                    "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
+                    "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
                 )
 
                 db.collection("conversations")
@@ -388,27 +400,31 @@ class User() {
                 val uploadTask = newImageRef.putBytes(encryptedMessage.message)
 
                 uploadTask.addOnSuccessListener {
-                    val toSend = hashMapOf(
-                        "bucket_url" to newImageRef.downloadUrl,
-                        "data" to "",
-                        "message_type" to encryptedMessage.messageType,
-                        "sender_id" to encryptedMessage.senderId,
-                        "recipient_id" to encryptedMessage.recipientId,
-                        "timestamp" to encryptedMessage.timestamp,
-                        "encrypted_aes_key" to encryptedMessage.encryptedAESKey.toString(Charsets.UTF_8)
-                    )
+                    newImageRef.getDownloadUrl().addOnSuccessListener { bucket_uri ->
+                        Log.d("URI of bucket", bucket_uri.toString())
+                        val toSend = hashMapOf(
+                            "bucket_url" to bucket_uri.toString(),
+                            "data" to Blob.fromBytes(byteArrayOf(0)),
+                            "message_type" to encryptedMessage.messageType,
+                            "sender_id" to encryptedMessage.senderId,
+                            "recipient_id" to encryptedMessage.recipientId,
+                            "timestamp" to encryptedMessage.timestamp,
+                            "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
+                            "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
+                        )
 
-                    db.collection("conversations")
-                        .document(convo.convoId)
-                        .collection("messages")
-                        .document()
-                        .set(toSend)
-                        .addOnSuccessListener {
-                            Log.d("sendEncryptedMsg", "Success!")
-                        }
-                        .addOnFailureListener {
-                            Log.d("sendEncryptedMsg", "Failure!")
-                        }
+                        db.collection("conversations")
+                            .document(convo.convoId)
+                            .collection("messages")
+                            .document()
+                            .set(toSend)
+                            .addOnSuccessListener {
+                                Log.d("sendEncryptedMsg", "Success!")
+                            }
+                            .addOnFailureListener {
+                                Log.d("sendEncryptedMsg", "Failure!")
+                            }
+                    }
                 }
 
                 uploadTask.addOnFailureListener {
@@ -424,10 +440,10 @@ class User() {
         val keyTask : Task<DocumentSnapshot> = db.collection("users").document(userId)
             .get()
             .addOnSuccessListener { documentSnapshot ->
-                val keyField = documentSnapshot.getString("publicKey")!!
-                Log.d("We got the key: ", keyField)
+                val keyField = documentSnapshot.getBlob("publicKey")!!
+                Log.d("We got the key: ", keyField.toString())
                 val publicKey: PublicKey =
-                    keyFactory.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(keyField)))
+                    keyFactory.generatePublic(X509EncodedKeySpec(keyField.toBytes()))
 
                 val fileUserId = if (this.userId == userId) "myKey" else userId
 
@@ -487,6 +503,24 @@ class User() {
         return false
     }
 
+    fun deleteSentMessageFromDb(convoId: String, message: Message) {
+        val senderId = message.senderId
+        val timestamp = message.timestamp
+
+        val convo = db.collection("conversation").document(convoId)
+        val query = convo.collection("messages")
+            .whereEqualTo("timestamp", timestamp)
+            .whereEqualTo("sender_id", senderId)
+            .limit(1)
+        val doc = query.get()
+            .addOnSuccessListener {documents ->
+                for (document in documents) {
+                    document.reference.delete()
+                }
+            }
+
+    }
+
     // Add your own public key to server - Untestable because it deals with server
     fun addPublicKeyToServer(key : String, user : User) : Boolean {
         db.collection("users").document(user.userId)
@@ -502,8 +536,8 @@ class User() {
 
     // Adds the current user to the database
     fun addSelfToDatabase() : Boolean {
-        var base64EncodedPublicKey =
-            Base64.getEncoder().encodeToString(device.cipher.publicKeyRing["myKey"]?.encoded)
+        var publicKey =
+            Blob.fromBytes(device.cipher.publicKeyRing["myKey"]?.encoded!!)
 
         val toAdd = hashMapOf(
             "name" to this.userId,
@@ -512,7 +546,7 @@ class User() {
             "last_name" to this.lastName,
             "password_hash" to "",
             "phone" to "123",
-            "publicKey" to base64EncodedPublicKey
+            "publicKey" to publicKey
         )
 
         db.collection("users").document(this.userId)

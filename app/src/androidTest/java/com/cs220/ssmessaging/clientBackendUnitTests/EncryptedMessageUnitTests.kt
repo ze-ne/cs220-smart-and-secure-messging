@@ -15,7 +15,7 @@ class EncryptedMessageUnitTests{
     // Changed the byte array to something substantial (Not all zeros). Also message type was wrong.
     // FIX: Added example aesKey
     private var encryptedmessage = EncryptedMessage(byteArrayOf(1,3,4), "123213",
-        "image", user1Id, user2Id, 12, byteArrayOf(1,2,3))
+        "image", user1Id, user2Id, 12, byteArrayOf(1,2,3), byteArrayOf(1,2,4))
 
     // Note that this constructor test also tests the getters (No setters since all properties are val)
     @Test
@@ -30,14 +30,15 @@ class EncryptedMessageUnitTests{
         Assert.assertEquals(user2Id, encryptedmessage.recipientId)
         Assert.assertEquals(12, encryptedmessage.timestamp)
         // Fix: need to assert equality of additional aesKey array
-        assertArrayEquals(byteArrayOf(1,2,3), encryptedmessage.encryptedAESKey)
+        assertArrayEquals(byteArrayOf(1,2,3), encryptedmessage.encryptedSenderAESKey)
+        assertArrayEquals(byteArrayOf(1,2,4), encryptedmessage.encryptedRecipientAESKey)
     }
 
     // FIX: Added new assertions and test cases to check for the new AES key bytes
     @Test
     fun testConstructorFailCases(){
         // Test bad messages (No bytes)
-        var badMessage = EncryptedMessage(ByteArray(0), "123213", "image", user1Id, user2Id, 12, byteArrayOf(1,2,3))
+        var badMessage = EncryptedMessage(ByteArray(0), "123213", "image", user1Id, user2Id, 12, byteArrayOf(1,2,3), byteArrayOf(1,2,4))
         //Fix: Change from assertEquals to assertArrayEquals
         Assert.assertArrayEquals(ByteArray(0), badMessage.message)
         Assert.assertEquals("", badMessage.conversationId)
@@ -45,10 +46,11 @@ class EncryptedMessageUnitTests{
         Assert.assertEquals("", badMessage.senderId)
         Assert.assertEquals("", badMessage.messageType)
         Assert.assertEquals(0, badMessage.timestamp)
-        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedSenderAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedRecipientAESKey)
 
         // Test bad convo id (No id)
-        badMessage = EncryptedMessage(ByteArray(25), "", "image", user1Id, user2Id, 12, byteArrayOf(1,2,3))
+        badMessage = EncryptedMessage(ByteArray(25), "", "image", user1Id, user2Id, 12, byteArrayOf(1,2,3), byteArrayOf(1,2,4))
         //Fix: Change from assertEquals to assertArrayEquals
         Assert.assertArrayEquals(ByteArray(0), badMessage.message)
         Assert.assertEquals("", badMessage.conversationId)
@@ -56,10 +58,11 @@ class EncryptedMessageUnitTests{
         Assert.assertEquals("", badMessage.senderId)
         Assert.assertEquals("", badMessage.messageType)
         Assert.assertEquals(0, badMessage.timestamp)
-        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedSenderAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedRecipientAESKey)
 
         // Test bad messageType
-        badMessage = EncryptedMessage(ByteArray(25), "", "54", user1Id, user2Id, 12, byteArrayOf(1,2,3))
+        badMessage = EncryptedMessage(ByteArray(25), "", "54", user1Id, user2Id, 12, byteArrayOf(1,2,3), byteArrayOf(1,2,4))
         //Fix: Change from assertEquals to assertArrayEquals
         Assert.assertArrayEquals(ByteArray(0), badMessage.message)
         Assert.assertEquals("", badMessage.conversationId)
@@ -67,10 +70,11 @@ class EncryptedMessageUnitTests{
         Assert.assertEquals("", badMessage.senderId)
         Assert.assertEquals("", badMessage.messageType)
         Assert.assertEquals(0, badMessage.timestamp)
-        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedSenderAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedRecipientAESKey)
 
         // Test bad user (No user)
-        badMessage = EncryptedMessage(ByteArray(25), "525", "image", "", user2Id, 12, byteArrayOf(1,2,3))
+        badMessage = EncryptedMessage(ByteArray(25), "525", "image", "", user2Id, 12, byteArrayOf(1,2,3), byteArrayOf(1,2,4))
         //Fix: Change from assertEquals to assertArrayEquals
         Assert.assertArrayEquals(ByteArray(0), badMessage.message)
         Assert.assertEquals("", badMessage.conversationId)
@@ -78,10 +82,11 @@ class EncryptedMessageUnitTests{
         Assert.assertEquals("", badMessage.senderId)
         Assert.assertEquals("", badMessage.messageType)
         Assert.assertEquals(0, badMessage.timestamp)
-        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedSenderAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedRecipientAESKey)
 
         // Test bad timestamp
-        badMessage = EncryptedMessage(ByteArray(25), "525", "image", user1Id, user2Id, -1,  byteArrayOf(1,2,3))
+        badMessage = EncryptedMessage(ByteArray(25), "525", "image", user1Id, user2Id, -1,  byteArrayOf(1,2,3), byteArrayOf(1,2,4))
         //Fix: Change from assertEquals to assertArrayEquals
         Assert.assertArrayEquals(ByteArray(0), badMessage.message)
         Assert.assertEquals("", badMessage.conversationId)
@@ -89,10 +94,11 @@ class EncryptedMessageUnitTests{
         Assert.assertEquals("", badMessage.senderId)
         Assert.assertEquals("", badMessage.messageType)
         Assert.assertEquals(0, badMessage.timestamp)
-        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedSenderAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedRecipientAESKey)
 
         // Test bad AES key
-        badMessage = EncryptedMessage(ByteArray(25), "525", "image", user1Id, user2Id, 123,  byteArrayOf())
+        badMessage = EncryptedMessage(ByteArray(25), "525", "image", user1Id, user2Id, 123,  byteArrayOf(), byteArrayOf(1,2,4))
         //Fix: Change from assertEquals to assertArrayEquals
         Assert.assertArrayEquals(ByteArray(0), badMessage.message)
         Assert.assertEquals("", badMessage.conversationId)
@@ -100,7 +106,8 @@ class EncryptedMessageUnitTests{
         Assert.assertEquals("", badMessage.senderId)
         Assert.assertEquals("", badMessage.messageType)
         Assert.assertEquals(0, badMessage.timestamp)
-        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedSenderAESKey)
+        Assert.assertArrayEquals(ByteArray(0), badMessage.encryptedRecipientAESKey)
     }
 
     // FIX: The following tests test the added static helper functions for property checking
@@ -120,6 +127,7 @@ class EncryptedMessageUnitTests{
                     "",
                     "",
                     -1,
+                    ByteArray(0),
                     ByteArray(0)
                 )
             )
@@ -144,11 +152,11 @@ class EncryptedMessageUnitTests{
 
     @Test
     fun testMEquals(){
-        var msg1 = EncryptedMessage(byteArrayOf(1,2,3), "123213", "image", user1Id, user2Id, 12, byteArrayOf(1,2,3))
-        var msg2 = EncryptedMessage(byteArrayOf(1,2,3), "123213","image", user1Id, user2Id, 13, byteArrayOf(1,2,3))
-        var msg3 = EncryptedMessage(byteArrayOf(1,2), "1233", "image", user1Id, user2Id, 12, byteArrayOf(1,2,3))
-        var msg4 = EncryptedMessage(byteArrayOf(1,2,3), "123213", "text", user1Id, user2Id, 12, byteArrayOf(1,2,3))
-        var msg5 = EncryptedMessage(byteArrayOf(1,2,3), "123213", "image", user1Id, user2Id, 12, byteArrayOf(1,2))
+        var msg1 = EncryptedMessage(byteArrayOf(1,2,3), "123213", "image", user1Id, user2Id, 12, byteArrayOf(1,2,3), byteArrayOf(1,2,4))
+        var msg2 = EncryptedMessage(byteArrayOf(1,2,3), "123213","image", user1Id, user2Id, 13, byteArrayOf(1,2,3), byteArrayOf(1,2,4))
+        var msg3 = EncryptedMessage(byteArrayOf(1,2), "1233", "image", user1Id, user2Id, 12, byteArrayOf(1,2,3), byteArrayOf(1,2,4))
+        var msg4 = EncryptedMessage(byteArrayOf(1,2,3), "123213", "text", user1Id, user2Id, 12, byteArrayOf(1,2,3), byteArrayOf(1,2,4))
+        var msg5 = EncryptedMessage(byteArrayOf(1,2,3), "123213", "image", user1Id, user2Id, 12, byteArrayOf(1,2), byteArrayOf(1,2,4))
 
         assertTrue(msg1.mEquals(msg1))
         assertFalse(msg1.mEquals(msg2))
