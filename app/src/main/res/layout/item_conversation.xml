@@ -6,7 +6,7 @@
 
     <TextView
         android:id="@+id/conversation_participant"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:lineSpacingExtra="12sp"
         android:padding="10dp"
@@ -21,5 +21,12 @@
         android:background="#FFFFFFFF"
         android:padding="10dp"
         android:src="@drawable/ic_delete" />
+
+    <Button
+        android:id="@+id/block_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="BLOCK" />
 
 </RelativeLayout>
