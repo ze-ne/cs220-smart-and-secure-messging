@@ -26,14 +26,15 @@ class BlockListUnitTests{
         //User(id,first,last,contacts,conversations,blocklist)
         val user1 = User("id1","Ronald", "McDonald", mutableListOf<String>(), mutableListOf<Conversation>())
 
+        // FIX: Changed the name of the second blocked contact (messed up)
         assertEquals(0, user1.blockedContacts.size)
-        assertTrue(user1.addBlockedContact("id2"))
+        user1.addBlockedContact("id2")
         assertEquals(1, user1.blockedContacts.size)
-        assertTrue(user1.addBlockedContact("id11"))
+        user1.addBlockedContact("id11")
         assertEquals(2, user1.blockedContacts.size)
 
         // Error case, malformed userid or same userid
-        assertFalse(user1.addBlockedContact("id1"))
+        assertFalse(user1.addBlockedContact("id11"))
         assertEquals(2, user1.blockedContacts.size)
 
         assertFalse(user1.addBlockedContact(""))
@@ -50,7 +51,8 @@ class BlockListUnitTests{
             mutableListOf<Conversation>()
         )
 
-        user1.blockedContacts = mutableListOf("hey", "hey2", "hey3")
+        // FIX: Changed the name of the first blocked contact (messed up)
+        user1.blockedContacts = mutableListOf("hey1", "hey2", "hey3")
         assertEquals(3, user1.blockedContacts.size)
 
         assertTrue(user1.deleteBlockedContact("hey2"))
@@ -76,6 +78,7 @@ class BlockListUnitTests{
         assertEquals(0, user1.blockedContacts.size)
     }
 
+    // Change function name to checkIfInBlockList
     @Test
     fun testFindBlockedContactById() {
         val blockedUserId = "blocked_id"
@@ -85,13 +88,13 @@ class BlockListUnitTests{
 
         // Success case
         user1.addBlockedContact(blockedUserId)
-        assertTrue(user1.checkIfBlocked(blockedUserId))
+        assertTrue(user1.checkIfInBlockList(blockedUserId))
 
         // Fail case: non-blocked ID
-        assertFalse(user1.checkIfBlocked(randomId))
+        assertFalse(user1.checkIfInBlockList(randomId))
 
         // Fail case: empty ID string
-        assertFalse(user1.checkIfBlocked(emptyId))
+        assertFalse(user1.checkIfInBlockList(emptyId))
     }
 
     @Test
