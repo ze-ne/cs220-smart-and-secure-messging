@@ -101,8 +101,9 @@ class CipherExtensionUnitTests{
     @Test
     fun testEncryptAndDecryptMessageText(){
         // Tests the case when only one message encrypted and multiple messages encrypted.
+        // FIX: added myKey
         var testCipherExtension =
-            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "myKey" to testPublicKey, "person2" to testPublicKey2))
 
         // Create new unencrypted text messages
         var textMessage : TextMessage = TextMessage("ABC", "testId", sendUserId, receiveUserId, 0)
@@ -143,8 +144,9 @@ class CipherExtensionUnitTests{
     @Test
     fun testEncryptAndDecryptMessageImage(){
         // Tests the case when only one message encrypted and multiple messages encrypted.
+        // FIX: added myKey
         var testCipherExtension =
-            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
+            CipherExtension(testPrivateKey2, mutableMapOf("person1" to testPublicKey, "myKey" to testPublicKey, "person2" to testPublicKey2))
 
         // Create new unencrypted text messages
         // FIX: The original byte array was a bunch of zeros which meant nothing. We made the array have actual values now.
