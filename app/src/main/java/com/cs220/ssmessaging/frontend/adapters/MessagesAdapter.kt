@@ -146,27 +146,38 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                 messageText.visibility = View.GONE
                 messageImage.visibility = View.VISIBLE
 
-                for (box in overlayBoxes) {
-                    box.visibility = View.VISIBLE
 
-                    val imageHeight = messageImage.drawable.intrinsicHeight
-                    val imageWidth = messageImage.drawable.intrinsicWidth
-                    val params = box.layoutParams
 
-                    if (imageHeight > imageWidth) {
-                        params.height =
-                            min(messageImage.drawable.intrinsicHeight, messageImage.maxHeight) / 5
-                        params.width = (params.height * imageWidth) / imageHeight
-                    } else {
-                        params.width =
-                            min(messageImage.drawable.intrinsicWidth, messageImage.maxWidth) / 5
-                        params.height = (imageHeight * params.width) / imageWidth
+                if (!message.isVisible) {
+                    for (box in overlayBoxes) {
+                        box.visibility = View.VISIBLE
+
+                        val imageHeight = messageImage.drawable.intrinsicHeight
+                        val imageWidth = messageImage.drawable.intrinsicWidth
+                        val params = box.layoutParams
+
+                        if (imageHeight > imageWidth) {
+                            params.height =
+                                min(
+                                    messageImage.drawable.intrinsicHeight,
+                                    messageImage.maxHeight
+                                ) / 5
+                            params.width = (params.height * imageWidth) / imageHeight
+                        } else {
+                            params.width =
+                                min(messageImage.drawable.intrinsicWidth, messageImage.maxWidth) / 5
+                            params.height = (imageHeight * params.width) / imageWidth
+                        }
+
+                        box.layoutParams = params
+                        box.setOnClickListener {
+                            box.visibility = View.INVISIBLE
+                            box.postDelayed({ box.visibility = View.VISIBLE }, 4000)
+                        }
                     }
-
-                    box.layoutParams = params
-                    box.setOnClickListener {
-                        box.visibility = View.INVISIBLE
-                        box.postDelayed({ box.visibility = View.VISIBLE }, 4000)
+                } else {
+                    for (box in overlayBoxes) {
+                        box.visibility = View.GONE
                     }
                 }
             }
@@ -247,27 +258,36 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                 messageText.visibility = View.GONE
                 messageImage.visibility = View.VISIBLE
 
-                for (box in overlayBoxes) {
-                    box.visibility = View.VISIBLE
+                if (!message.isVisible) {
+                    for (box in overlayBoxes) {
+                        box.visibility = View.VISIBLE
 
-                    val imageHeight = messageImage.drawable.intrinsicHeight
-                    val imageWidth = messageImage.drawable.intrinsicWidth
-                    val params = box.layoutParams
+                        val imageHeight = messageImage.drawable.intrinsicHeight
+                        val imageWidth = messageImage.drawable.intrinsicWidth
+                        val params = box.layoutParams
 
-                    if (imageHeight > imageWidth) {
-                        params.height =
-                            min(messageImage.drawable.intrinsicHeight, messageImage.maxHeight) / 5
-                        params.width = (params.height * imageWidth) / imageHeight
-                    } else {
-                        params.width =
-                            min(messageImage.drawable.intrinsicWidth, messageImage.maxWidth) / 5
-                        params.height = (imageHeight * params.width) / imageWidth
+                        if (imageHeight > imageWidth) {
+                            params.height =
+                                min(
+                                    messageImage.drawable.intrinsicHeight,
+                                    messageImage.maxHeight
+                                ) / 5
+                            params.width = (params.height * imageWidth) / imageHeight
+                        } else {
+                            params.width =
+                                min(messageImage.drawable.intrinsicWidth, messageImage.maxWidth) / 5
+                            params.height = (imageHeight * params.width) / imageWidth
+                        }
+
+                        box.layoutParams = params
+                        box.setOnClickListener {
+                            box.visibility = View.INVISIBLE
+                            box.postDelayed({ box.visibility = View.VISIBLE }, 4000)
+                        }
                     }
-
-                    box.layoutParams = params
-                    box.setOnClickListener {
-                        box.visibility = View.INVISIBLE
-                        box.postDelayed({ box.visibility = View.VISIBLE }, 4000)
+                } else {
+                    for (box in overlayBoxes) {
+                        box.visibility = View.GONE
                     }
                 }
             }

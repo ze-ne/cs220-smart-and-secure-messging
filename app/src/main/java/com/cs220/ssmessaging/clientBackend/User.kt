@@ -291,42 +291,65 @@ class User() {
     }
 
     fun checkIfBlocked(userId : String) : Boolean {
-        // TODO
-        return false
+        var retVar = false
+        val docref = db.collection("users").document(userId)
+        docref.get()
+            .addOnSuccessListener { document ->
+                val blockedlist = document.data?.get("blockedContacts") as MutableList<String>
+                if(blockedlist.contains(userId)){
+                    retVar = true
+                }
+            }
+        return retVar
     }
 
     // Untestable - relies on database functionality
     fun getBlockList(userId: String) : MutableList<String>? {
-        // TODO
-        return null
+        var temp = mutableListOf<String>()
+        val docref = db.collection("users").document(userId)
+        docref.get()
+            .addOnSuccessListener { document ->
+                val blockedlist = document.data?.get("blockedContacts") as MutableList<String>
+                temp = blockedlist
+            }
+        return temp
     }
 
-    fun addBlockedContact(userId : String) : Boolean {
-        //block any userid that exists or only those currently in contacts?
-        var user1 = getContactById(userId)
-        if(user1 in this.contacts) {
+    fun addBlockedContact(userId : String){
+        //local
+        if (this.blockedContacts.contains(userId)){
+            return
+        }
+        else{
             this.blockedContacts.add(userId)
-            return true
         }
-        else {
-            return false
-        }
+        //database
+        val temp = this.blockedContacts
+        val new = hashMapOf("blockedContacts" to temp)
+        val docref = db.collection("users").document(userId)
+        docref.set(new, SetOptions.merge())
     }
 
-    fun deleteBlockedContact(userId : String) : Boolean {
+    fun deleteBlockedContact(userId : String){
+        //locale
         var index = this.blockedContacts.indexOf(userId)
         if (index < 0) {
-            return false
+            return
         }
         this.blockedContacts.removeAt(index)
-        return true
+        //database
+        val temp = this.blockedContacts
+        val new = hashMapOf("blockedContacts" to temp)
+        val docref = db.collection("users").document(userId)
+        docref.set(new, SetOptions.merge())
     }
 
     // Sends image message to server - partially testable
-    fun sendImageMsg(msg : ByteArray, convo: Conversation){
+    fun sendImageMsg(msg : ByteArray, convo: Conversation, isVisible: Boolean = true){
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
         val msg = ImageMessage(msg, convo.convoId,this.userId, recipient,timestamp)
+        msg.isVisible = isVisible
         convo.addMessage(msg)
 
         sendEncryptedMsg(msg, convo)
@@ -383,6 +406,7 @@ class User() {
                         Log.d("URI of bucket", bucket_uri.toString())
                         val toSend = hashMapOf(
                             "bucket_url" to bucket_uri.toString(),
+                            "bucket_path" to filename,
                             "data" to Blob.fromBytes(byteArrayOf(0)),
                             "message_type" to encryptedMessage.messageType,
                             "sender_id" to encryptedMessage.senderId,
@@ -455,6 +479,8 @@ class User() {
     // Iteration 2
     // Remove a message from a conversation in conversations list
     fun deleteSentMessage(message: Message): Boolean {
+        println("============ deleting ============")
+
         /* We delete a message based on a few criteria:
          * timestamps are the same (this should be unique since you can't send two messages at the same exact millisecond)
          * sender and receiver ids are the same
@@ -465,11 +491,18 @@ class User() {
         val timestamp = message.timestamp
         val possibleConvoId1 = senderId + "-" + recipientId
         val possibleConvoId2 = recipientId + "-" + senderId
+        println("==" + possibleConvoId1 + " or " + possibleConvoId2 + "==")
         for(c in conversations){
+            println("==" + c.convoId + "==")
+
             if(c.convoId == possibleConvoId1 || c.convoId == possibleConvoId2){
+                println("============ found convo ============")
+
                 val messages = c.messages
                 val numMessages = messages.size
                 for(index in 0..numMessages){
+                    println("============ searching list ============")
+
                     if(message.mEquals(messages[index])){
                         messages.removeAt(index)
                         return true

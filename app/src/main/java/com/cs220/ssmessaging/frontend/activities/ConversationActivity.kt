@@ -16,6 +16,7 @@ import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.*
 import com.cs220.ssmessaging.frontend.adapters.MessagesAdapter
 import com.google.firebase.firestore.Blob
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
@@ -24,11 +25,13 @@ import java.lang.Exception
 import kotlin.collections.ArrayList
 
 const val REQUEST_IMAGE_GET = 1
+const val REQUEST_HIDDEN_IMAGE_GET = 2
 
 class ConversationActivity : AppCompatActivity() {
     private lateinit var conversationToolbar: Toolbar
-    private lateinit var sendMessageButton: Button
-    private lateinit var imageButton: Button
+    private lateinit var sendMessageButton: ImageButton
+    private lateinit var imageButton: ImageButton
+    private lateinit var hiddenImageButton: ImageButton
     private lateinit var userMessageInput: EditText
     private lateinit var conversationReceiverName: String
     private lateinit var messagesAdapter: MessagesAdapter
@@ -43,7 +46,7 @@ class ConversationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         this.window.setFlags(FLAG_SECURE, FLAG_SECURE)
-        
+
         setContentView(R.layout.activity_conversation)
 
         conversationReceiverName = intent.extras!!.get("receiver_name").toString()
@@ -62,6 +65,7 @@ class ConversationActivity : AppCompatActivity() {
         sendMessageButton = findViewById(R.id.send_message_button)
         userMessageInput = findViewById(R.id.message_input)
         imageButton = findViewById(R.id.add_image_button)
+        hiddenImageButton = findViewById(R.id.add_hidden_image_button)
 
         sendMessageButton.setOnClickListener {
             val message = userMessageInput.text
@@ -73,6 +77,91 @@ class ConversationActivity : AppCompatActivity() {
 
         imageButton.setOnClickListener {
             selectImage()
+        }
+
+        hiddenImageButton.setOnClickListener {
+            selectHiddenImage()
+        }
+
+
+    }
+
+    private fun addMessage(dc: DocumentChange, convoId: String) {
+        // TODO("Assume all messages are encrypted!")
+
+        // Convert server data to message objects
+        val type = dc.document.data.getValue("message_type")
+        val senderId = dc.document.data.getValue("sender_id") as String
+        val recipientId = dc.document.data.getValue("recipient_id") as String
+        val timestamp = dc.document.data.getValue("timestamp") as Long
+        val recipientEncryptedAesKey =
+            (dc.document.data.getValue("recipient_encrypted_aes_key") as Blob).toBytes()
+        val senderEncryptedAesKey =
+            (dc.document.data.getValue("sender_encrypted_aes_key") as Blob).toBytes()
+
+        when (type) {
+            "text" -> {
+                val data = (dc.document.data.getValue("data") as Blob).toBytes()
+                val encryptedMessage = EncryptedMessage(
+                    data,
+                    convoId,
+                    "text",
+                    senderId,
+                    recipientId,
+                    timestamp,
+                    senderEncryptedAesKey,
+                    recipientEncryptedAesKey
+                )
+                val decryptedMessage =
+                    currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
+                currentUser.receiveMsg(decryptedMessage)
+                displayMessages()
+            }
+            "image" -> {
+                val bucketUrl = dc.document.data.getValue("bucket_url") as String
+                val imgRef = storage.getReferenceFromUrl(bucketUrl)
+                imgRef.getBytes(1000000000) // 100 MB
+                    .addOnSuccessListener {
+                        val encryptedMessage = EncryptedMessage(
+                            it, convoId,
+                            "image", senderId, recipientId,
+                            timestamp, senderEncryptedAesKey, recipientEncryptedAesKey
+                        )
+                        val decryptedMessage =
+                            currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
+                        currentUser.receiveMsg(decryptedMessage)
+                        displayMessages()
+                        Log.d("addMessageListener", "Success!")
+                    }
+                    .addOnFailureListener {
+                        Log.d("addMessageListener", "Failed to retrieve bucket img")
+                    }
+            }
+            else -> throw Exception("Unknown message type")
+        }
+    }
+
+    private fun deleteMessage(dc: DocumentChange, convoId: String) {
+
+        val type = dc.document.data.getValue("message_type")
+        val senderId = dc.document.data.getValue("sender_id") as String
+        val recipientId = dc.document.data.getValue("recipient_id") as String
+        val timestamp = dc.document.data.getValue("timestamp") as Long
+
+        when (type) {
+            "text" -> {
+                val textMessage =
+                    TextMessage("filler_text", convoId, senderId, recipientId, timestamp)
+                currentUser.deleteSentMessage(textMessage)
+
+
+            }
+            "image" -> {
+                val imageMessage =
+                    ImageMessage(null as ByteArray, convoId, senderId, recipientId, timestamp)
+                currentUser.deleteSentMessage(imageMessage)
+            }
+            else -> throw Exception("Unknown message type")
         }
     }
 
@@ -90,54 +179,35 @@ class ConversationActivity : AppCompatActivity() {
             // Add messages to local backend objects
             for (dc in snapshot!!.documentChanges) {
 
-                // TODO("Assume all messages are encrypted!")
+                when (dc.type) {
 
-                // Convert server data to message objects
-                val type = dc.document.data.getValue("message_type")
-                val senderId = dc.document.data.getValue("sender_id") as String
-                val recipientId = dc.document.data.getValue("recipient_id") as String
-                val timestamp = dc.document.data.getValue("timestamp") as Long
-                val recipientEncryptedAesKey = (dc.document.data.getValue("recipient_encrypted_aes_key") as Blob).toBytes()
-                val senderEncryptedAesKey = (dc.document.data.getValue("sender_encrypted_aes_key") as Blob).toBytes()
+                    DocumentChange.Type.ADDED -> addMessage(dc, convoId)
+                    DocumentChange.Type.REMOVED -> deleteMessage(dc, convoId)
+                    else -> println("====== neither added nor removed =======")
 
-                when(type) {
-                    "text" -> {
-                        val data = (dc.document.data.getValue("data") as Blob).toBytes()
-                        val encryptedMessage = EncryptedMessage(data, convoId, "text", senderId, recipientId, timestamp, senderEncryptedAesKey, recipientEncryptedAesKey)
-                        val decryptedMessage = currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
-                        currentUser.receiveMsg(decryptedMessage)
-                        displayMessages()
-                    }
-                    "image" -> {
-                        val bucketUrl = dc.document.data.getValue("bucket_url") as String
-                        val imgRef = storage.getReferenceFromUrl(bucketUrl)
-                        imgRef.getBytes(1000000000) // 100 MB
-                            .addOnSuccessListener {
-                                val encryptedMessage = EncryptedMessage(it, convoId,
-                                    "image", senderId, recipientId,
-                                    timestamp, senderEncryptedAesKey, recipientEncryptedAesKey)
-                                val decryptedMessage = currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
-                                currentUser.receiveMsg(decryptedMessage)
-                                displayMessages()
-                                Log.d("addMessageListener", "Success!")
-                            }
-                            .addOnFailureListener {
-                                Log.d("addMessageListener", "Failed to retrieve bucket img")
-                            }
-                    }
-                    else -> throw Exception("Unknown message type")
                 }
             }
+            displayMessages()
         }
     }
 
-    override fun onActivityResult(requestCode:Int, resultCode:Int, data:Intent?){
-        super.onActivityResult(requestCode,resultCode,data)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_GET && resultCode == Activity.RESULT_OK) {
             Log.i("TestImage", "2")
             val fullPhotoUri: Uri = data!!.data!!
             val bitmap = ImageHandler.getImageFromStorage(fullPhotoUri)
             currentUser.sendImageMsg(ImageHandler.getByteArrayFromImage(bitmap), conversation)
+        }
+        if (requestCode == REQUEST_HIDDEN_IMAGE_GET && resultCode == Activity.RESULT_OK) {
+            Log.i("TestImage", "2")
+            val fullPhotoUri: Uri = data!!.data!!
+            val bitmap = ImageHandler.getImageFromStorage(fullPhotoUri)
+            currentUser.sendImageMsg(
+                ImageHandler.getByteArrayFromImage(bitmap),
+                conversation,
+                false
+            )
         }
     }
 
@@ -150,9 +220,19 @@ class ConversationActivity : AppCompatActivity() {
         }
     }
 
+    private fun selectHiddenImage() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+        }
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent, REQUEST_HIDDEN_IMAGE_GET)
+        }
+    }
+
     // Display the messages onscreen
     private fun displayMessages() {
-        messagesAdapter = MessagesAdapter(this, conversation.messages as ArrayList<UnencryptedMessage>)
+        messagesAdapter =
+            MessagesAdapter(this, conversation.messages as ArrayList<UnencryptedMessage>)
         message_recycler_view.scrollToPosition(conversation.messages.size - 1)
         message_recycler_view.adapter = messagesAdapter
     }
