@@ -40,6 +40,7 @@ class User() {
             this.userId = userId
             this.firstName = firstName
             this.lastName = lastName
+            getBlockList(this.userId)
         }
     }
 
@@ -78,7 +79,10 @@ class User() {
             this.lastName = lastName
             this.contacts = contacts
             this.conversations = conversations
+            getBlockList(this.userId)
         }
+
+
 
     }
 
@@ -127,20 +131,20 @@ class User() {
 
     var blockedContacts: MutableList<String> = mutableListOf()
 
-    var conversations : MutableList<Conversation> = mutableListOf()
+    var conversations: MutableList<Conversation> = mutableListOf()
         private set
 
-    var device : Device = Device()
-        get(){
+    var device: Device = Device()
+        get() {
             return field
         }
-        set(dvice : Device){
+        set(dvice: Device) {
             field = dvice
         }
 
     // Add conversation locally to conversation list
-    fun addConversation(convo : Conversation) : Boolean {
-        if(convo in this.conversations) {
+    fun addConversation(convo: Conversation): Boolean {
+        if (convo in this.conversations) {
             return false
         }
         this.conversations.add(convo)
@@ -150,11 +154,11 @@ class User() {
     // Iteration 2
     // Removes conversation from conversation list
     // Note: using conversationId instead of conversation now
-    fun deleteConversation(convoId : String): Boolean {
+    fun deleteConversation(convoId: String): Boolean {
 
         val conversationsLen = conversations.size
-        for(index in 0..conversationsLen){
-            if(conversations[index].convoId == convoId){
+        for (index in 0 until (conversationsLen - 1)) {
+            if (conversations[index].convoId == convoId) {
                 conversations.removeAt(index)
                 return true
             }
@@ -162,7 +166,7 @@ class User() {
         return false
     }
 
-    fun deleteConversationFromDb(convoId : String, callback: (() -> Unit)? = null) {
+    fun deleteConversationFromDb(convoId: String, callback: (() -> Unit)? = null) {
         val convo = db.collection("conversations").document(convoId)
         convo.delete()
             .addOnFailureListener {
@@ -171,7 +175,7 @@ class User() {
     }
 
     // start conversation with another user by sending conversation to database
-    fun startConversation(convo : Conversation) : Boolean {
+    fun startConversation(convo: Conversation): Boolean {
         val toAdd = hashMapOf(
             "canonicalId" to convo.convoId,
             "created" to Timestamp.now(),
@@ -192,25 +196,25 @@ class User() {
     }
 
     // Gets conversation and public keys from the database - Untestable because server
-    fun receiveConversation(convo : Conversation) : Boolean {
+    fun receiveConversation(convo: Conversation): Boolean {
         getUserPublicKey(convo.user1Id)
         getUserPublicKey(convo.user2Id)
         addConversation(convo)
         return false
     }
 
-    fun getConversationByUserId(recipientId : String) : Conversation? {
+    fun getConversationByUserId(recipientId: String): Conversation? {
         var retConvoList: List<Conversation> = this.conversations
-            .filter { x -> (x.user1Id == recipientId || x.user2Id == recipientId)}
+            .filter { x -> (x.user1Id == recipientId || x.user2Id == recipientId) }
         if (retConvoList.isEmpty()) {
             return null
         }
         return retConvoList[0]
     }
 
-    fun getConversationByConversationId(convoId: String) : Conversation? {
+    fun getConversationByConversationId(convoId: String): Conversation? {
         var retConvoList: List<Conversation> = this.conversations
-            .filter { x -> x.convoId == convoId}
+            .filter { x -> x.convoId == convoId }
         if (retConvoList.isEmpty()) {
             return null
         }
@@ -218,24 +222,23 @@ class User() {
     }
 
 
-
-    fun addContact(user : String) : Boolean {
-        if(user in this.contacts) {
+    fun addContact(user: String): Boolean {
+        if (user in this.contacts) {
             return false
         }
         this.contacts.add(user)
         return true
     }
 
-    fun getContactById(userId : String) : String? {
-        var retUserList: List<String> = this.contacts.filter {x -> x == userId}
+    fun getContactById(userId: String): String? {
+        var retUserList: List<String> = this.contacts.filter { x -> x == userId }
         if (retUserList.isEmpty()) {
             return null
         }
         return retUserList[0]
     }
 
-    fun deleteContact(user : String) : Boolean {
+    fun deleteContact(user: String): Boolean {
         var index = this.contacts.indexOf(user)
         if (index < 0) {
             return false
@@ -245,7 +248,7 @@ class User() {
     }
 
     // Untestable - relies on database functionality
-    fun getUserIdsByFirstName(firstName : String, callBack: (List<String>) -> Unit){
+    fun getUserIdsByFirstName(firstName: String, callBack: (List<String>) -> Unit) {
         val retList = mutableListOf<String>()
         val query = db.collection("users").whereEqualTo("first_name", firstName)
         query.get()
@@ -258,7 +261,7 @@ class User() {
     }
 
     // Untestable - relies on database functionality
-    fun getUserIdsByLastName(lastName : String, callBack: (List<String>) -> Unit) {
+    fun getUserIdsByLastName(lastName: String, callBack: (List<String>) -> Unit) {
         val retList = mutableListOf<String>()
         val query = db.collection("users").whereEqualTo("last_name", lastName)
         query.get()
@@ -271,9 +274,9 @@ class User() {
     }
 
     // Untestable - relies on database functionality
-    fun doesUserExistByUserId(userId : String, callBack: () -> Unit) {
+    fun doesUserExistByUserId(userId: String, callBack: () -> Unit) {
         db.collection("users").document(userId).get()
-            .addOnSuccessListener{
+            .addOnSuccessListener {
                 callBack()
             }
     }
@@ -297,18 +300,6 @@ class User() {
     // Check if the current user has blocked the input userId
     fun checkIfInBlockList(userId : String) : Boolean {
         return blockedContacts.contains(userId)
-    }
-
-    // Untestable - relies on database functionality
-    fun getBlockList(userId: String) : MutableList<String>? {
-        var temp = mutableListOf<String>()
-        val docref = db.collection("users").document(userId)
-        docref.get()
-            .addOnSuccessListener { document ->
-                val blockedlist = document.data?.get("block_list") as MutableList<String>
-                temp = blockedlist
-            }
-        return temp
     }
 
     // This function is untestable since it adds the blocked contact to Db
@@ -346,10 +337,22 @@ class User() {
         }
     }
 
+    // Untestable - relies on database functionality
+    fun getBlockList(userId: String) : MutableList<String>? {
+        var temp = mutableListOf<String>()
+        val docref = db.collection("users").document(userId)
+        docref.get()
+            .addOnSuccessListener { document ->
+                val blockedlist = document.data?.get("blockedContacts") as MutableList<String>
+                temp = blockedlist
+            }
+        return temp
+    }
+
     // This function is untestable since it deletes the blocked contact from Db
     // It also uses the deleteBlockedContact (local deletion) if it successfully deletes from Db.
     // However note that deleteBlockedContact has been unit tested
-    fun deleteBlockedContactFromDb(userId: String) {
+    fun deleteBlockedContactFromDb(userId: String, callback: () -> Unit) {
         // Check if userId exists in blocked contacts
         if (!checkIfInBlockList(userId)) {
             return
@@ -368,6 +371,7 @@ class User() {
             .addOnSuccessListener {
                 // If successful, we delete locally
                 deleteBlockedContact(userId)
+                callback()
             }
             .addOnFailureListener{
                 // On failure, do nothing
@@ -387,17 +391,18 @@ class User() {
     }
 
     // Sends image message to server - partially testable
-    fun sendImageMsg(msg : ByteArray, convo: Conversation){
+    fun sendImageMsg(msg: ByteArray, convo: Conversation, isVisible: Boolean = true) {
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
-        val msg = ImageMessage(msg, convo.convoId,this.userId, recipient,timestamp)
+        val msg = ImageMessage(msg, convo.convoId, this.userId, recipient, timestamp)
+        msg.isVisible = isVisible
         convo.addMessage(msg)
 
         sendEncryptedMsg(msg, convo)
     }
 
     // Sends text message to server
-    fun sendTextMsg(msg : String, convo : Conversation){
+    fun sendTextMsg(msg: String, convo: Conversation) {
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
         val txtMsg = TextMessage(msg, convo.convoId, this.userId, recipient, timestamp)
@@ -408,9 +413,10 @@ class User() {
 
     // Fully untestable because all this does is hit the server
     private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
-        val encryptedMessage: EncryptedMessage = device.cipher.encryptUnencryptedMessage(unencryptedMsg)
+        val encryptedMessage: EncryptedMessage =
+            device.cipher.encryptUnencryptedMessage(unencryptedMsg)
 
-        when(unencryptedMsg) {
+        when (unencryptedMsg) {
             is TextMessage -> {
                 val toSend = hashMapOf(
                     "bucket_url" to "",
@@ -481,9 +487,9 @@ class User() {
     }
 
     // Gets and stores public key of user from server
-    fun getUserPublicKey(userId : String) : Task<DocumentSnapshot> {
-        val keyFactory : KeyFactory = KeyFactory.getInstance("RSA")
-        val keyTask : Task<DocumentSnapshot> = db.collection("users").document(userId)
+    fun getUserPublicKey(userId: String): Task<DocumentSnapshot> {
+        val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
+        val keyTask: Task<DocumentSnapshot> = db.collection("users").document(userId)
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 val keyField = documentSnapshot.getBlob("publicKey")!!
@@ -494,28 +500,28 @@ class User() {
                 val fileUserId = if (this.userId == userId) "myKey" else userId
 
                 device.addUserPublicKey(fileUserId, publicKey)
-            }.addOnFailureListener {
-                e -> throw e
+            }.addOnFailureListener { e ->
+                throw e
             }
 
         return keyTask
     }
 
     // gets the other user in a message given yourself.
-    fun getOtherUser(msg : Message) : String {
-        if(msg.senderId == this.userId) {
+    fun getOtherUser(msg: Message): String {
+        if (msg.senderId == this.userId) {
             return msg.recipientId
         }
         return msg.senderId
     }
 
     // Handle incoming message from server
-    fun receiveMsg(decryptedMsg: UnencryptedMessage) : Boolean {
+    fun receiveMsg(decryptedMsg: UnencryptedMessage): Boolean {
         // var decryptedMessage = device.cipher.decryptEncryptedMessage(encryptedMsg)
 
         var localConvoObject = getConversationByUserId(getOtherUser(decryptedMsg))
         localConvoObject ?: return false
-        localConvoObject ?. addMessage(decryptedMsg)
+        localConvoObject?.addMessage(decryptedMsg)
         return true
     }
 
@@ -535,18 +541,18 @@ class User() {
         val possibleConvoId1 = senderId + "-" + recipientId
         val possibleConvoId2 = recipientId + "-" + senderId
         println("==" + possibleConvoId1 + " or " + possibleConvoId2 + "==")
-        for(c in conversations){
+        for (c in conversations) {
             println("==" + c.convoId + "==")
 
-            if(c.convoId == possibleConvoId1 || c.convoId == possibleConvoId2){
+            if (c.convoId == possibleConvoId1 || c.convoId == possibleConvoId2) {
                 println("============ found convo ============")
 
                 val messages = c.messages
                 val numMessages = messages.size
-                for(index in 0..numMessages){
+                for (index in 0..numMessages) {
                     println("============ searching list ============")
 
-                    if(message.mEquals(messages[index])){
+                    if (message.mEquals(messages[index])) {
                         messages.removeAt(index)
                         return true
                     }
@@ -559,27 +565,46 @@ class User() {
     }
 
     fun deleteSentMessageFromDb(convoId: String, message: Message, callback: (() -> Unit)? = null) {
+        // TODO: remove prints
+        println("=============DELETE SENT MESSAGE=================")
         val senderId = message.senderId
         val timestamp = message.timestamp
+        println("=============TIMESTAMP=================" + timestamp)
+        println("=============senderID=================" + senderId)
 
-        val convo = db.collection("conversation").document(convoId)
+
+
+        val convo = db.collection("conversations").document(convoId)
+        //val query = db.collection("conversation").document(convoId).collection("messages")
         val query = convo.collection("messages")
             .whereEqualTo("timestamp", timestamp)
             .whereEqualTo("sender_id", senderId)
             .limit(1)
         query.get()
-            .addOnSuccessListener {documents ->
+            .addOnSuccessListener { documents ->
+                println("== dsmfb SUCCESS ====")
+                println("size::: " + documents.size())
+                println("docs:::" + documents)
+
                 for (document in documents) {
                     document.reference.delete()
-                        .addOnFailureListener{
+                        .addOnFailureListener {
                             callback?.invoke()
+                            println("FAILURE")
                         }
+                    println("DELETED")
                 }
+
+
+            }
+            .addOnFailureListener() {
+                println("== dsmfb FAIL ====")
+
             }
     }
 
     // Add your own public key to server - Untestable because it deals with server
-    fun addPublicKeyToServer(key : String, user : User) : Boolean {
+    fun addPublicKeyToServer(key: String, user: User): Boolean {
         db.collection("users").document(user.userId)
             .update("publicKey", key)
             .addOnSuccessListener {
@@ -592,7 +617,7 @@ class User() {
     }
 
     // Adds the current user to the database
-    fun addSelfToDatabase() : Boolean {
+    fun addSelfToDatabase(): Boolean {
         var publicKey =
             Blob.fromBytes(device.cipher.publicKeyRing["myKey"]?.encoded!!)
 

@@ -12,8 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.cs220.ssmessaging.R
 
 class SettingsActivity : AppCompatActivity() {
-    private lateinit var firstName: String
-    private lateinit var lastName: String
+    private lateinit var firstNameField: EditText
+    private lateinit var lastNameField: EditText
     private lateinit var changeFirstNameButton: Button
     private lateinit var changeLastNameButton: Button
     private lateinit var logoutButton: Button
@@ -23,8 +23,8 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        firstName = findViewById<EditText>(R.id.settings_firstName).text.toString()
-        lastName = findViewById<EditText>(R.id.settings_lastName).text.toString()
+        firstNameField = findViewById(R.id.settings_firstName)
+        lastNameField = findViewById(R.id.settings_lastName)
 
         changeFirstNameButton = findViewById(R.id.changeFirstNameButton)
         changeLastNameButton = findViewById(R.id.changeLastNameButton)
@@ -36,21 +36,30 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(registerIntent)
         }
 
-        // TODO: Update database in interation 2
         changeFirstNameButton.setOnClickListener {
-            if (isNullOrEmpty(firstName))
+            val firstName = firstNameField.text.toString()
+            val username = MyApplication.currentUser?.userId!!
+            if (isNullOrEmpty(firstName)) {
                 Toast.makeText(this, "First Name Change Failed", Toast.LENGTH_SHORT).show()
-            else
+            }
+            else {
+                MyApplication.currentUser?.updateFirstName(username, firstName)
                 MyApplication.currentUser?.firstName = firstName
-            Toast.makeText(this, "First Name Change Successful", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "First Name Change Successful", Toast.LENGTH_SHORT).show()
+            }
         }
 
         changeLastNameButton.setOnClickListener {
-            if (isNullOrEmpty(lastName))
+            val lastName = lastNameField.text.toString()
+            val username = MyApplication.currentUser?.userId!!
+            if (isNullOrEmpty(lastName)) {
                 Toast.makeText(this, "Last Name Change Failed", Toast.LENGTH_SHORT).show()
-            else
+            }
+            else {
+                MyApplication.currentUser?.updateLastName (username, lastName)
                 MyApplication.currentUser?.lastName = lastName
-            Toast.makeText(this, "Last Name Change Successful", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Last Name Change Successful", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.cs220.ssmessaging.MyApplication.MyApplication
@@ -22,8 +23,9 @@ import kotlin.collections.ArrayList
 private const val MY_MESSAGE = 1
 private const val OTHER_MESSAGE = 2
 
-class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedMessage>) :
+class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedMessage>, val convoId: String) :
     RecyclerView.Adapter<MessageViewHolder>() {
+    val currentUser = MyApplication.currentUser!!
 
     override fun getItemCount(): Int {
         return messages.size
@@ -62,6 +64,11 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val message = messages[position]
         holder.bind(message)
+        if (holder is MyMessageViewHolder) {
+            holder.itemView.setOnClickListener {
+                holder.deleteMessage.visibility = View.VISIBLE
+            }
+        }
     }
 
     fun getDate(milliSeconds: Long, dateFormat: String): String {
@@ -76,6 +83,10 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
         private var messageText: TextView = view.findViewById(R.id.my_message_text)
         private var messageImage: ImageView = view.findViewById(R.id.my_message_image)
         private var timeText: TextView = view.findViewById(R.id.my_message_time)
+        private var confirmDeleteMessage: TextView = view.findViewById(R.id.message_deletion_confirm)
+        private var cancelDeleteMessage: TextView = view.findViewById(R.id.message_deletion_cancel)
+        var deleteMessage: RelativeLayout = view.findViewById(R.id.message_deletion)
+
         private var box1 = view.findViewById<View>(R.id.box1)
         private var box2 = view.findViewById<View>(R.id.box2)
         private var box3 = view.findViewById<View>(R.id.box3)
@@ -139,38 +150,61 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                     box.visibility = View.GONE
                 }
             } else {
-                // TODO: Check if isVisible is true or not
                 messageImage.setImageBitmap(
                     ImageHandler.convertImageMessageToImage(message as ImageMessage)
                 )
                 messageText.visibility = View.GONE
                 messageImage.visibility = View.VISIBLE
 
-                for (box in overlayBoxes) {
-                    box.visibility = View.VISIBLE
 
-                    val imageHeight = messageImage.drawable.intrinsicHeight
-                    val imageWidth = messageImage.drawable.intrinsicWidth
-                    val params = box.layoutParams
 
-                    if (imageHeight > imageWidth) {
-                        params.height =
-                            min(messageImage.drawable.intrinsicHeight, messageImage.maxHeight) / 5
-                        params.width = (params.height * imageWidth) / imageHeight
-                    } else {
-                        params.width =
-                            min(messageImage.drawable.intrinsicWidth, messageImage.maxWidth) / 5
-                        params.height = (imageHeight * params.width) / imageWidth
+                if (!message.isVisible) {
+                    for (box in overlayBoxes) {
+                        box.visibility = View.VISIBLE
+
+                        val imageHeight = messageImage.drawable.intrinsicHeight
+                        val imageWidth = messageImage.drawable.intrinsicWidth
+                        val params = box.layoutParams
+
+                        if (imageHeight > imageWidth) {
+                            params.height =
+                                min(
+                                    messageImage.drawable.intrinsicHeight,
+                                    messageImage.maxHeight
+                                ) / 5
+                            params.width = (params.height * imageWidth) / imageHeight
+                        } else {
+                            params.width =
+                                min(messageImage.drawable.intrinsicWidth, messageImage.maxWidth) / 5
+                            params.height = (imageHeight * params.width) / imageWidth
+                        }
+
+                        box.layoutParams = params
+                        box.setOnClickListener {
+                            box.visibility = View.INVISIBLE
+                            box.postDelayed({ box.visibility = View.VISIBLE }, 4000)
+                        }
                     }
-
-                    box.layoutParams = params
-                    box.setOnClickListener {
-                        box.visibility = View.INVISIBLE
-                        box.postDelayed({ box.visibility = View.VISIBLE }, 4000)
+                } else {
+                    for (box in overlayBoxes) {
+                        box.visibility = View.GONE
                     }
                 }
             }
             timeText.text = getDate(message.timestamp, "MMM dd, hh:mma")
+            deleteMessage.visibility = View.GONE
+
+            cancelDeleteMessage.setOnClickListener {
+                deleteMessage.visibility = View.GONE
+            }
+
+            // TODO: fix
+            confirmDeleteMessage.setOnClickListener {
+                println("CLICK")
+                currentUser.deleteSentMessageFromDb(convoId, message)
+                //currentUser.deleteSentMessage(message)
+                //deleteMessage.visibility = View.GONE
+            }
         }
     }
 
@@ -247,27 +281,36 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                 messageText.visibility = View.GONE
                 messageImage.visibility = View.VISIBLE
 
-                for (box in overlayBoxes) {
-                    box.visibility = View.VISIBLE
+                if (!message.isVisible) {
+                    for (box in overlayBoxes) {
+                        box.visibility = View.VISIBLE
 
-                    val imageHeight = messageImage.drawable.intrinsicHeight
-                    val imageWidth = messageImage.drawable.intrinsicWidth
-                    val params = box.layoutParams
+                        val imageHeight = messageImage.drawable.intrinsicHeight
+                        val imageWidth = messageImage.drawable.intrinsicWidth
+                        val params = box.layoutParams
 
-                    if (imageHeight > imageWidth) {
-                        params.height =
-                            min(messageImage.drawable.intrinsicHeight, messageImage.maxHeight) / 5
-                        params.width = (params.height * imageWidth) / imageHeight
-                    } else {
-                        params.width =
-                            min(messageImage.drawable.intrinsicWidth, messageImage.maxWidth) / 5
-                        params.height = (imageHeight * params.width) / imageWidth
+                        if (imageHeight > imageWidth) {
+                            params.height =
+                                min(
+                                    messageImage.drawable.intrinsicHeight,
+                                    messageImage.maxHeight
+                                ) / 5
+                            params.width = (params.height * imageWidth) / imageHeight
+                        } else {
+                            params.width =
+                                min(messageImage.drawable.intrinsicWidth, messageImage.maxWidth) / 5
+                            params.height = (imageHeight * params.width) / imageWidth
+                        }
+
+                        box.layoutParams = params
+                        box.setOnClickListener {
+                            box.visibility = View.INVISIBLE
+                            box.postDelayed({ box.visibility = View.VISIBLE }, 4000)
+                        }
                     }
-
-                    box.layoutParams = params
-                    box.setOnClickListener {
-                        box.visibility = View.INVISIBLE
-                        box.postDelayed({ box.visibility = View.VISIBLE }, 4000)
+                } else {
+                    for (box in overlayBoxes) {
+                        box.visibility = View.GONE
                     }
                 }
             }

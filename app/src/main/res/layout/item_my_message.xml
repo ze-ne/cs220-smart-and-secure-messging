@@ -15,6 +15,7 @@
         android:elevation="5dp"
         android:maxWidth="240dp"
         android:padding="15dp"
+        android:clickable="true"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -135,7 +136,7 @@
                 <View
                     android:id="@+id/box11"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -143,7 +144,7 @@
                 <View
                     android:id="@+id/box12"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -151,7 +152,7 @@
                 <View
                     android:id="@+id/box13"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -159,7 +160,7 @@
                 <View
                     android:id="@+id/box14"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -167,7 +168,7 @@
                 <View
                     android:id="@+id/box15"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -175,7 +176,7 @@
                 <View
                     android:id="@+id/box16"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -183,7 +184,7 @@
                 <View
                     android:id="@+id/box17"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -191,7 +192,7 @@
                 <View
                     android:id="@+id/box18"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -199,7 +200,7 @@
                 <View
                     android:id="@+id/box19"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -207,7 +208,7 @@
                 <View
                     android:id="@+id/box20"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -215,7 +216,7 @@
                 <View
                     android:id="@+id/box21"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -223,7 +224,7 @@
                 <View
                     android:id="@+id/box22"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -231,7 +232,7 @@
                 <View
                     android:id="@+id/box23"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -239,7 +240,7 @@
                 <View
                     android:id="@+id/box24"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -247,7 +248,7 @@
                 <View
                     android:id="@+id/box25"
                     android:layout_width="30dp"
-                    android:layout_height="150dp"
+                    android:layout_height="15dp"
                     android:background="@drawable/my_image_cover"
                     android:clickable="true"
                     android:visibility="visible" />
@@ -266,4 +267,44 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/my_message_box"
         app:layout_constraintRight_toLeftOf="@+id/my_message_box" />
+
+    <RelativeLayout
+        android:visibility="visible"
+        android:id="@+id/message_deletion"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/my_message_box">
+        <TextView
+            android:id="@+id/message_deletion_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete message?"
+            android:layout_alignParentEnd="true"
+            android:paddingTop="6dp"
+            android:paddingEnd="8dp"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/message_deletion_text">
+            <TextView
+                android:id="@+id/message_deletion_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CONFIRM"
+                android:clickable="true"
+                android:textColor="@color/colorPrimary"
+                android:layout_alignEnd="@+id/message_deletion_text"
+                android:padding="6dp"/>
+            <TextView
+                android:id="@+id/message_deletion_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CANCEL"
+                android:clickable="true"
+                android:textColor="@color/colorPrimary"
+                android:padding="6dp"/>
+        </LinearLayout>
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
