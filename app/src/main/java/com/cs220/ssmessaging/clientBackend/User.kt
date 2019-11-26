@@ -565,17 +565,26 @@ class User() {
 
     fun deleteSentMessageFromDb(convoId: String, message: Message, callback: (() -> Unit)? = null) {
         // TODO: remove prints
-        println("DELETE SENT MESSAGE")
+        println("=============DELETE SENT MESSAGE=================")
         val senderId = message.senderId
         val timestamp = message.timestamp
+        println("=============TIMESTAMP=================" + timestamp)
+        println("=============senderID=================" + senderId)
 
-        val convo = db.collection("conversation").document(convoId)
+
+
+        val convo = db.collection("conversations").document(convoId)
+        //val query = db.collection("conversation").document(convoId).collection("messages")
         val query = convo.collection("messages")
             .whereEqualTo("timestamp", timestamp)
             .whereEqualTo("sender_id", senderId)
             .limit(1)
         query.get()
             .addOnSuccessListener { documents ->
+                println("== dsmfb SUCCESS ====")
+                println("size::: " + documents.size())
+                println("docs:::" + documents)
+
                 for (document in documents) {
                     document.reference.delete()
                         .addOnFailureListener {
@@ -584,6 +593,12 @@ class User() {
                         }
                     println("DELETED")
                 }
+
+
+            }
+            .addOnFailureListener() {
+                println("== dsmfb FAIL ====")
+
             }
     }
 
