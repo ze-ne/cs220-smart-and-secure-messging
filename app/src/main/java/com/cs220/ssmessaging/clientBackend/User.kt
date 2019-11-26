@@ -383,6 +383,7 @@ class User() {
                         Log.d("URI of bucket", bucket_uri.toString())
                         val toSend = hashMapOf(
                             "bucket_url" to bucket_uri.toString(),
+                            "bucket_path" to filename,
                             "data" to Blob.fromBytes(byteArrayOf(0)),
                             "message_type" to encryptedMessage.messageType,
                             "sender_id" to encryptedMessage.senderId,
