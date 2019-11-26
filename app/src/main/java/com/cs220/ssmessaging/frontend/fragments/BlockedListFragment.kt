@@ -3,6 +3,7 @@ package com.cs220.ssmessaging.frontend.fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -37,12 +38,14 @@ class BlockedListFragment : Fragment() {
             inflater.inflate(R.layout.fragment_blocked_list, container, false)
         blockListRecyclerView = blockListView.findViewById(R.id.block_recycler_list)
         blockListRecyclerView.layoutManager = LinearLayoutManager(context)
+        displayBlockList()
+        return blockListView
+    }
 
+    private fun displayBlockList(){
         val activity = activity as Context
         blockListAdapter = BlockListAdapter(activity, currentUser.blockedContacts)
         blockListRecyclerView.adapter = blockListAdapter
-
-        return blockListView
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -92,7 +95,7 @@ class BlockedListFragment : Fragment() {
 
             val btn = viewHolder.itemView.findViewById<Button>(R.id.unblock_button)
             btn.setOnClickListener{
-                currentUser.deleteBlockedContact(user)
+                currentUser.deleteBlockedContactFromDb(user, { displayBlockList()})
             }
         }
 
