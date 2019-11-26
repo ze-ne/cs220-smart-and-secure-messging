@@ -40,6 +40,7 @@ class User() {
             this.userId = userId
             this.firstName = firstName
             this.lastName = lastName
+            getBlockList(this.userId)
         }
     }
 
@@ -78,7 +79,10 @@ class User() {
             this.lastName = lastName
             this.contacts = contacts
             this.conversations = conversations
+            getBlockList(this.userId)
         }
+
+
 
     }
 

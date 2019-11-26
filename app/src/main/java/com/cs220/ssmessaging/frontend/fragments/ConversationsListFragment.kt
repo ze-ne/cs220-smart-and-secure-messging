@@ -167,11 +167,13 @@ class ConversationsListFragment : Fragment() {
 
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
             val conversation = conversationsList[position]
-            val fullname = conversation.user1Id + "-" + conversation.user2Id
+            val otherUser = getOtherUserId(conversation)
 
-            viewHolder.bind(fullname)
+            viewHolder.bind(otherUser)
 
-            viewHolder.itemView.setOnClickListener {
+            val convo = viewHolder.itemView.findViewById<TextView>(R.id.conversation_participant)
+            val blockBtn = viewHolder.itemView.findViewById<TextView>(R.id.block_button)
+            convo.setOnClickListener {
                 val conversationIntent = Intent(context, ConversationActivity::class.java)
                 conversationIntent.putExtra("receiver_name", getOtherUserId(conversation))
                 startActivity(conversationIntent)
@@ -179,6 +181,9 @@ class ConversationsListFragment : Fragment() {
 
             viewHolder.itemView.delete_conversation_button.setOnClickListener {
                 currentUser.deleteConversationFromDb(conversation.convoId)
+            }
+            blockBtn.setOnClickListener {
+                currentUser.addBlockedContact(otherUser)
             }
         }
 
