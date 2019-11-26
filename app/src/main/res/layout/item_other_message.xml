@@ -1,48 +1,269 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="8dp">
 
     <LinearLayout
         android:id="@+id/other_message_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/other_message_bubble"
+        android:elevation="5dp"
         android:maxWidth="240dp"
         android:padding="15dp"
-        android:elevation="5dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginLeft="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <TextView
             android:id="@+id/other_message_text"
-            android:text=""
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#ffffff"
             android:maxWidth="240dp"
-        />
-        <ImageView
-            android:id="@+id/other_message_image"
-            android:layout_width="wrap_content"
-            android:maxWidth="240dp"
-            android:adjustViewBounds="true"
-            android:layout_height="wrap_content"/>
+            android:text=""
+            android:textColor="#ffffff" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/other_message_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/other_message_image_overlay"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:adjustViewBounds="true"
+                android:maxWidth="240dp"
+                android:maxHeight="320dp" />
+
+            <GridLayout
+                android:id="@+id/other_message_image_overlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:adjustViewBounds="true"
+                android:columnCount="5"
+                android:rowCount="5">
+
+                <View
+                    android:id="@+id/box1"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box2"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box3"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box4"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box5"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box6"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box7"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box8"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box9"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box10"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box11"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box12"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box13"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box14"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box15"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box16"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box17"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box18"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box19"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box20"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box21"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box22"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box23"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box24"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+                <View
+                    android:id="@+id/box25"
+                    android:layout_width="30dp"
+                    android:layout_height="150dp"
+                    android:background="@drawable/other_image_cover"
+                    android:clickable="true"
+                    android:visibility="visible" />
+
+            </GridLayout>
+        </RelativeLayout>
     </LinearLayout>
 
     <TextView
-            android:id="@+id/other_message_time"
-            android:text="12:00 PM"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            app:layout_constraintLeft_toRightOf="@+id/other_message_box"
-            android:layout_marginLeft="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/other_message_box" />
+        android:id="@+id/other_message_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="12:00 PM"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/other_message_box"
+        app:layout_constraintLeft_toRightOf="@+id/other_message_box" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
