@@ -152,14 +152,14 @@ class UserUnitTests{
         val unusedConvo = Conversation("id2", "id3")
 
         // Remove from empty conversations list
-        assertFalse(user1.deleteConversation("1d1-id2"))
+        assertFalse(user1.deleteConversation("id1-id2"))
         assertEquals(user1.conversations.size, 0)
 
         // Add and remove a conversation
         assertTrue(user1.addConversation(convo1))
         assertTrue(convo1 in user1.conversations)
 
-        assertTrue(user1.deleteConversation("1d1-id2"))
+        assertTrue(user1.deleteConversation("id1-id2"))
         assertEquals(user1.conversations.size, 0)
         assertFalse(convo1 in user1.conversations)
 
