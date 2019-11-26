@@ -57,6 +57,41 @@ class ConversationsListFragment : Fragment() {
         return conversationsView
     }
 
+    private fun addConversation(dc: DocumentChange) {
+        val document = dc.document
+        val users = document.get("users") as List<String>
+        val conversation = Conversation(users[0], users[1], ArrayList())
+
+        try{
+            val otherUser =
+                if(users[0] == currentUser.userId)
+                    users[1]
+                else
+                    users[0]
+            // From Task documentation: If multiple listeners are added, they will be called in the order in which they were added.
+            currentUser.getUserPublicKey(otherUser).addOnSuccessListener {
+                Log.i("Key Exchange", "Key Exchange passed and now adding conversation")
+                currentUser.addConversation(conversation)
+                displayConversations()
+            }
+        }
+        catch (e : Exception){
+            Log.e("Key Exchange", e.toString())
+        }
+    }
+
+    private fun deleteConversation(dc: DocumentChange) {
+        println("================== DELET CNVO")
+        val document = dc.document
+        val convoId = document.get("canonicalId") as String
+        val bool = currentUser.deleteConversation(convoId)
+        println("BOOL == " + bool)
+        println("== CONVO LENGTH " + currentUser.conversations.size)
+        println("== CONVO LIST " + currentUser.conversations)
+        displayConversations()
+
+    }
+
     private fun addConversationListener() {
         db.collection("conversations").whereArrayContains("users", currentUser.userId)
             .addSnapshotListener { snapshot, e ->
@@ -64,36 +99,16 @@ class ConversationsListFragment : Fragment() {
                     return@addSnapshotListener
                 }
 
-                if (snapshot != null && !snapshot.isEmpty()) {
-                    for (dc: DocumentChange in snapshot.documentChanges) {
-                        val document = dc.document
-                        val users = document.get("users") as List<String>
-                        val conversation = Conversation(users[0], users[1], ArrayList())
+                //if (snapshot != null) { //&& !snapshot.isEmpty()) {
+                    for (dc: DocumentChange in snapshot!!.documentChanges) {
 
-                        when (dc.type) {
-                            DocumentChange.Type.ADDED -> {
-                                try{
-                                    val otherUser =
-                                        if(users[0] == currentUser.userId)
-                                            users[1]
-                                        else
-                                            users[0]
-                                    // From Task documentation: If multiple listeners are added, they will be called in the order in which they were added.
-                                    currentUser.getUserPublicKey(otherUser).addOnSuccessListener {
-                                        Log.i("Key Exchange", "Key Exchange passed and now adding conversation")
-                                        currentUser.addConversation(conversation)
-                                        displayConversations()
-                                    }
-                                }
-                                catch (e : Exception){
-                                    Log.e("Key Exchange", e.toString())
-                                }
-                            }
-                            DocumentChange.Type.MODIFIED -> println("TODO")
-                            DocumentChange.Type.REMOVED -> println("TODO")
+                        when(dc.type) {
+                            DocumentChange.Type.ADDED -> addConversation(dc)
+                            DocumentChange.Type.REMOVED -> deleteConversation(dc)
+                            else -> println("====== conversation neither added nor removed =======")
                         }
                     }
-                }
+                //}
             }
     }
 
