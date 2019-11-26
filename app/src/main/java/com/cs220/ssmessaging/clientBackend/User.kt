@@ -387,10 +387,11 @@ class User() {
     }
 
     // Sends image message to server - partially testable
-    fun sendImageMsg(msg : ByteArray, convo: Conversation){
+    fun sendImageMsg(msg : ByteArray, convo: Conversation, isVisible: Boolean = true){
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
         val msg = ImageMessage(msg, convo.convoId,this.userId, recipient,timestamp)
+        msg.isVisible = isVisible
         convo.addMessage(msg)
 
         sendEncryptedMsg(msg, convo)

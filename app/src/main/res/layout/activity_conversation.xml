@@ -54,6 +54,13 @@
                 android:layout_weight="1"
                 android:text="Image" />
 
+            <Button
+                android:id="@+id/add_hidden_image_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Hidden" />
+
             <EditText
                 android:id="@+id/message_input"
                 android:layout_width="wrap_content"
@@ -73,7 +80,7 @@
                 android:layout_gravity="bottom"
                 android:clickable="true"
                 android:gravity="center"
-                android:text="SEND"
+                android:text="send"
                 android:textSize="14dp" />
 
         </LinearLayout>
