@@ -94,15 +94,26 @@ class ConversationActivity : AppCompatActivity() {
         val senderId = dc.document.data.getValue("sender_id") as String
         val recipientId = dc.document.data.getValue("recipient_id") as String
         val timestamp = dc.document.data.getValue("timestamp") as Long
-        val recipientEncryptedAesKey = (dc.document.data.getValue("recipient_encrypted_aes_key") as Blob).toBytes()
-        val senderEncryptedAesKey = (dc.document.data.getValue("sender_encrypted_aes_key") as Blob).toBytes()
+        val recipientEncryptedAesKey =
+            (dc.document.data.getValue("recipient_encrypted_aes_key") as Blob).toBytes()
+        val senderEncryptedAesKey =
+            (dc.document.data.getValue("sender_encrypted_aes_key") as Blob).toBytes()
 
-        when(type) {
+        when (type) {
             "text" -> {
                 val data = (dc.document.data.getValue("data") as Blob).toBytes()
-                val encryptedMessage = EncryptedMessage(data, convoId, "text", senderId, recipientId, timestamp, senderEncryptedAesKey, recipientEncryptedAesKey)
-                val decryptedMessage = currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
-                //decryptedMessage.isVisible = dc.document.data.getValue("is_visible") as Boolean
+                val encryptedMessage = EncryptedMessage(
+                    data,
+                    convoId,
+                    "text",
+                    senderId,
+                    recipientId,
+                    timestamp,
+                    senderEncryptedAesKey,
+                    recipientEncryptedAesKey
+                )
+                val decryptedMessage =
+                    currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
                 currentUser.receiveMsg(decryptedMessage)
                 displayMessages()
             }
@@ -111,11 +122,13 @@ class ConversationActivity : AppCompatActivity() {
                 val imgRef = storage.getReferenceFromUrl(bucketUrl)
                 imgRef.getBytes(1000000000) // 100 MB
                     .addOnSuccessListener {
-                        val encryptedMessage = EncryptedMessage(it, convoId,
+                        val encryptedMessage = EncryptedMessage(
+                            it, convoId,
                             "image", senderId, recipientId,
-                            timestamp, senderEncryptedAesKey, recipientEncryptedAesKey)
-                        val decryptedMessage = currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
-                        //decryptedMessage.isVisible = dc.document.data.getValue("is_visible") as Boolean
+                            timestamp, senderEncryptedAesKey, recipientEncryptedAesKey
+                        )
+                        val decryptedMessage =
+                            currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
                         currentUser.receiveMsg(decryptedMessage)
                         displayMessages()
                         Log.d("addMessageListener", "Success!")
@@ -135,15 +148,17 @@ class ConversationActivity : AppCompatActivity() {
         val recipientId = dc.document.data.getValue("recipient_id") as String
         val timestamp = dc.document.data.getValue("timestamp") as Long
 
-        when(type) {
+        when (type) {
             "text" -> {
-                val textMessage = TextMessage("filler_text", convoId, senderId, recipientId, timestamp)
+                val textMessage =
+                    TextMessage("filler_text", convoId, senderId, recipientId, timestamp)
                 currentUser.deleteSentMessage(textMessage)
 
 
             }
             "image" -> {
-                val imageMessage = ImageMessage(null as ByteArray, convoId, senderId, recipientId, timestamp)
+                val imageMessage =
+                    ImageMessage(null as ByteArray, convoId, senderId, recipientId, timestamp)
                 currentUser.deleteSentMessage(imageMessage)
             }
             else -> throw Exception("Unknown message type")
