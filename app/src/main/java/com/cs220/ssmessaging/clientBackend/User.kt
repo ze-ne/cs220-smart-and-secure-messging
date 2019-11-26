@@ -290,17 +290,9 @@ class User() {
         userDoc.set(newData, SetOptions.merge())
     }
 
-    fun checkIfBlocked(userId : String) : Boolean {
-        var retVar = false
-        val docref = db.collection("users").document(userId)
-        docref.get()
-            .addOnSuccessListener { document ->
-                val blockedlist = document.data?.get("blockedContacts") as MutableList<String>
-                if(blockedlist.contains(userId)){
-                    retVar = true
-                }
-            }
-        return retVar
+    // Check if the current user has blocked the input userId
+    fun checkIfInBlockList(userId : String) : Boolean {
+        return blockedContacts.contains(userId)
     }
 
     // Untestable - relies on database functionality
@@ -315,33 +307,75 @@ class User() {
         return temp
     }
 
-    fun addBlockedContact(userId : String){
-        //local
-        if (this.blockedContacts.contains(userId)){
+    // This function is untestable since it adds the blocked contact to Db
+    // It also uses the addBlockedContact (local addition) if it successfully adds to Db.
+    // However note that addBlockedContact has been unit tested
+    fun addBlockedContactToDb(userId : String) {
+        if (checkIfInBlockList(userId) || !isValidUserId(userId))
             return
+        // Add to Db
+        val newBlockedContacts = hashMapOf("blockedContacts" to blockedContacts)
+        db.collection("users").document(userId)
+            .set(newBlockedContacts, SetOptions.merge())
+            .addOnSuccessListener {
+                // Add the contact locally
+                addBlockedContact(userId)
+            }
+            .addOnFailureListener {
+                // Do nothing on failure
+            }
+    }
+
+    // This function adds blocked contacts locally
+    fun addBlockedContact(userId : String) : Boolean{
+        //local
+        if (checkIfInBlockList(userId) || !isValidUserId(userId)){
+            return false
         }
         else{
             this.blockedContacts.add(userId)
+            return true
         }
-        //database
-        val temp = this.blockedContacts
-        val new = hashMapOf("blockedContacts" to temp)
-        val docref = db.collection("users").document(userId)
-        docref.set(new, SetOptions.merge())
     }
 
-    fun deleteBlockedContact(userId : String){
-        //locale
-        var index = this.blockedContacts.indexOf(userId)
-        if (index < 0) {
+    // This function is untestable since it deletes the blocked contact from Db
+    // It also uses the deleteBlockedContact (local deletion) if it successfully deletes from Db.
+    // However note that deleteBlockedContact has been unit tested
+    fun deleteBlockedContactFromDb(userId: String) {
+        // Check if userId exists in blocked contacts
+        if (!checkIfInBlockList(userId)) {
             return
         }
-        this.blockedContacts.removeAt(index)
-        //database
-        val temp = this.blockedContacts
-        val new = hashMapOf("blockedContacts" to temp)
-        val docref = db.collection("users").document(userId)
-        docref.set(new, SetOptions.merge())
+        var index = blockedContacts.indexOf(userId)
+
+
+        // Get a copy of the blocked contacts
+        val tempBlockedContacts = blockedContacts.toMutableList()
+        tempBlockedContacts.removeAt(index)
+
+        //database deletion.
+        val newBlockedContacts = hashMapOf("blockedContacts" to tempBlockedContacts)
+        db.collection("users").document(userId)
+            .set(newBlockedContacts, SetOptions.merge())
+            .addOnSuccessListener {
+                // If successful, we delete locally
+                deleteBlockedContact(userId)
+            }
+            .addOnFailureListener{
+                // On failure, do nothing
+            }
+    }
+
+    // This function deletes blocked contacts locally
+    fun deleteBlockedContact(userId : String) : Boolean {
+        // Check if userId exists in blocked contacts
+        if (!checkIfInBlockList(userId)) {
+            return false
+        }
+        var index = blockedContacts.indexOf(userId)
+
+        blockedContacts.removeAt(index)
+        return true
     }
 
     // Sends image message to server - partially testable
