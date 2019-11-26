@@ -261,7 +261,7 @@ class ConversationActivity : AppCompatActivity() {
     // Display the messages onscreen
     private fun displayMessages() {
         messagesAdapter =
-            MessagesAdapter(this, conversation.messages as ArrayList<UnencryptedMessage>)
+            MessagesAdapter(this, conversation.messages as ArrayList<UnencryptedMessage>, conversation.convoId)
         message_recycler_view.scrollToPosition(conversation.messages.size - 1)
         message_recycler_view.adapter = messagesAdapter
     }

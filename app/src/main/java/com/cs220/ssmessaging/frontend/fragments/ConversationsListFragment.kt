@@ -20,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_conversations_list.*
+import kotlinx.android.synthetic.main.item_conversation.view.*
 import java.lang.Exception
 
 class ConversationsListFragment : Fragment() {
@@ -62,9 +63,9 @@ class ConversationsListFragment : Fragment() {
         val users = document.get("users") as List<String>
         val conversation = Conversation(users[0], users[1], ArrayList())
 
-        try{
+        try {
             val otherUser =
-                if(users[0] == currentUser.userId)
+                if (users[0] == currentUser.userId)
                     users[1]
                 else
                     users[0]
@@ -74,8 +75,7 @@ class ConversationsListFragment : Fragment() {
                 currentUser.addConversation(conversation)
                 displayConversations()
             }
-        }
-        catch (e : Exception){
+        } catch (e: Exception) {
             Log.e("Key Exchange", e.toString())
         }
     }
@@ -100,14 +100,14 @@ class ConversationsListFragment : Fragment() {
                 }
 
                 //if (snapshot != null) { //&& !snapshot.isEmpty()) {
-                    for (dc: DocumentChange in snapshot!!.documentChanges) {
+                for (dc: DocumentChange in snapshot!!.documentChanges) {
 
-                        when(dc.type) {
-                            DocumentChange.Type.ADDED -> addConversation(dc)
-                            DocumentChange.Type.REMOVED -> deleteConversation(dc)
-                            else -> println("====== conversation neither added nor removed =======")
-                        }
+                    when (dc.type) {
+                        DocumentChange.Type.ADDED -> addConversation(dc)
+                        DocumentChange.Type.REMOVED -> deleteConversation(dc)
+                        else -> println("====== conversation neither added nor removed =======")
                     }
+                }
                 //}
             }
     }
@@ -175,6 +175,10 @@ class ConversationsListFragment : Fragment() {
                 val conversationIntent = Intent(context, ConversationActivity::class.java)
                 conversationIntent.putExtra("receiver_name", getOtherUserId(conversation))
                 startActivity(conversationIntent)
+            }
+
+            viewHolder.itemView.delete_conversation_button.setOnClickListener {
+                currentUser.deleteConversationFromDb(conversation.convoId)
             }
         }
 

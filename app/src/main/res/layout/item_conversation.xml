@@ -9,7 +9,17 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:lineSpacingExtra="12sp"
+        android:padding="10dp"
         android:text="Full name"
         android:textSize="18sp" />
+
+    <ImageButton
+        android:id="@+id/delete_conversation_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:background="#FFFFFFFF"
+        android:padding="10dp"
+        android:src="@drawable/ic_delete" />
 
 </RelativeLayout>
