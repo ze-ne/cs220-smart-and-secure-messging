@@ -82,7 +82,7 @@ class PhoneAuthActivity : AppCompatActivity() {
                     }
                     startActivity(homeIntent)
                 } else {
-                    Toast.makeText(applicationContext, task.exception!!.message, Toast.LENGTH_LONG)
+                    Toast.makeText(applicationContext, "The code you have entered is incorrect. Please make sure to enter the code you received.", Toast.LENGTH_LONG)
                         .show()
                 }
             }
