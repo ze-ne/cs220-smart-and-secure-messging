@@ -213,8 +213,7 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
             ((m as ImageMessage).conversationId == conversationId) &&
             (m.senderId == senderId) &&
             (m.recipientId == recipientId) &&
-            (m.timestamp == timestamp) &&
-            (m.message.contentEquals(message))
+            (m.timestamp == timestamp)
         }
     }
 
