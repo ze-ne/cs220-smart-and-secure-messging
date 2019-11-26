@@ -1,4 +1,6 @@
 package com.cs220.ssmessaging.clientBackend
+import android.util.Log
+import java.lang.Exception
 import java.security.*
 
 import javax.crypto.Cipher
@@ -61,8 +63,23 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         // Need to init decryptor cipher with new private key every time (this is how it works for Cipher)
         // Then decrypt the AES Key
         decryptorCipher.init(Cipher.DECRYPT_MODE, privateKey)
-        val decryptedRecpientAESKeyBytes : ByteArray = decryptorCipher.doFinal(encryptedMsg.encryptedRecipientAESKey)
-        val decryptedSenderAESKeyBytes : ByteArray = decryptorCipher.doFinal(encryptedMsg.encryptedSenderAESKey)
+        var decryptedRecpientAESKeyBytes : ByteArray
+        var decryptedSenderAESKeyBytes : ByteArray
+
+        // Need these try catches since decryption could error out for the wrong key
+        try{
+            decryptedRecpientAESKeyBytes = decryptorCipher.doFinal(encryptedMsg.encryptedRecipientAESKey)
+        }
+        catch(e : Exception){
+            decryptedRecpientAESKeyBytes = byteArrayOf()
+        }
+
+        try{
+            decryptedSenderAESKeyBytes = decryptorCipher.doFinal(encryptedMsg.encryptedSenderAESKey)
+        }
+        catch(e: Exception){
+            decryptedSenderAESKeyBytes = byteArrayOf()
+        }
 
         val trueDecryptedBytes =
             if(decryptedRecpientAESKeyBytes.size == 16)
