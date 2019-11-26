@@ -154,7 +154,7 @@ class User() {
     fun deleteConversation(convoId: String): Boolean {
 
         val conversationsLen = conversations.size
-        for (index in 0 until (conversationsLen - 1)) {
+        for (index in 0 until conversationsLen) {
             if (conversations[index].convoId == convoId) {
                 conversations.removeAt(index)
                 return true
