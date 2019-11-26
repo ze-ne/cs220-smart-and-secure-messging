@@ -24,11 +24,13 @@ import java.lang.Exception
 import kotlin.collections.ArrayList
 
 const val REQUEST_IMAGE_GET = 1
+const val REQUEST_HIDDEN_IMAGE_GET = 2
 
 class ConversationActivity : AppCompatActivity() {
     private lateinit var conversationToolbar: Toolbar
     private lateinit var sendMessageButton: Button
     private lateinit var imageButton: Button
+    private lateinit var hiddenImageButton: Button
     private lateinit var userMessageInput: EditText
     private lateinit var conversationReceiverName: String
     private lateinit var messagesAdapter: MessagesAdapter
@@ -62,6 +64,7 @@ class ConversationActivity : AppCompatActivity() {
         sendMessageButton = findViewById(R.id.send_message_button)
         userMessageInput = findViewById(R.id.message_input)
         imageButton = findViewById(R.id.add_image_button)
+        hiddenImageButton = findViewById(R.id.add_hidden_image_button)
 
         sendMessageButton.setOnClickListener {
             val message = userMessageInput.text
@@ -74,6 +77,12 @@ class ConversationActivity : AppCompatActivity() {
         imageButton.setOnClickListener {
             selectImage()
         }
+
+        hiddenImageButton.setOnClickListener {
+            selectHiddenImage()
+        }
+
+
     }
 
     // Adds listeners to check for new messages within a given conversation
@@ -139,6 +148,12 @@ class ConversationActivity : AppCompatActivity() {
             val bitmap = ImageHandler.getImageFromStorage(fullPhotoUri)
             currentUser.sendImageMsg(ImageHandler.getByteArrayFromImage(bitmap), conversation)
         }
+        if (requestCode == REQUEST_HIDDEN_IMAGE_GET && resultCode == Activity.RESULT_OK) {
+            Log.i("TestImage", "2")
+            val fullPhotoUri: Uri = data!!.data!!
+            val bitmap = ImageHandler.getImageFromStorage(fullPhotoUri)
+            currentUser.sendImageMsg(ImageHandler.getByteArrayFromImage(bitmap), conversation, false)
+        }
     }
 
     private fun selectImage() {
@@ -147,6 +162,15 @@ class ConversationActivity : AppCompatActivity() {
         }
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, REQUEST_IMAGE_GET)
+        }
+    }
+
+    private fun selectHiddenImage() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+        }
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent, REQUEST_HIDDEN_IMAGE_GET)
         }
     }
 
