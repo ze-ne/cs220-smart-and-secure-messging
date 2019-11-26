@@ -455,6 +455,8 @@ class User() {
     // Iteration 2
     // Remove a message from a conversation in conversations list
     fun deleteSentMessage(message: Message): Boolean {
+        println("============ deleting ============")
+
         /* We delete a message based on a few criteria:
          * timestamps are the same (this should be unique since you can't send two messages at the same exact millisecond)
          * sender and receiver ids are the same
@@ -465,11 +467,18 @@ class User() {
         val timestamp = message.timestamp
         val possibleConvoId1 = senderId + "-" + recipientId
         val possibleConvoId2 = recipientId + "-" + senderId
+        println("==" + possibleConvoId1 + " or " + possibleConvoId2 + "==")
         for(c in conversations){
+            println("==" + c.convoId + "==")
+
             if(c.convoId == possibleConvoId1 || c.convoId == possibleConvoId2){
+                println("============ found convo ============")
+
                 val messages = c.messages
                 val numMessages = messages.size
                 for(index in 0..numMessages){
+                    println("============ searching list ============")
+
                     if(message.mEquals(messages[index])){
                         messages.removeAt(index)
                         return true
