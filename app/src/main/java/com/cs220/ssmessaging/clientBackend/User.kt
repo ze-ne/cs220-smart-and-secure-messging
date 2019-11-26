@@ -482,7 +482,7 @@ class User() {
         return false
     }
 
-    fun deleteSentMessageFromDb(convoId: String, message: Message) {
+    fun deleteSentMessageFromDb(convoId: String, message: Message, callback: (() -> Unit)? = null) {
         val senderId = message.senderId
         val timestamp = message.timestamp
 
@@ -491,13 +491,15 @@ class User() {
             .whereEqualTo("timestamp", timestamp)
             .whereEqualTo("sender_id", senderId)
             .limit(1)
-        val doc = query.get()
+        query.get()
             .addOnSuccessListener {documents ->
                 for (document in documents) {
                     document.reference.delete()
+                        .addOnFailureListener{
+                            callback?.invoke()
+                        }
                 }
             }
-
     }
 
     // Add your own public key to server - Untestable because it deals with server
