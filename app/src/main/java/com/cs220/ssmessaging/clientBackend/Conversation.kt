@@ -8,6 +8,7 @@ import com.ibm.watson.tone_analyzer.v3.model.ToneChatOptions
 import com.ibm.watson.tone_analyzer.v3.model.Utterance
 import com.ibm.watson.tone_analyzer.v3.model.UtteranceAnalyses
 import com.ibm.watson.tone_analyzer.v3.model.UtteranceAnalysis
+import org.w3c.dom.Text
 import java.lang.Exception
 
 class Conversation() {
@@ -188,15 +189,26 @@ class Conversation() {
         val toneChatOptions = ToneChatOptions.Builder()
             .utterances(utterances)
             .build()
-        toneAnalyzer.toneChat(toneChatOptions).enqueue(ToneChatCallback())
+        toneAnalyzer.toneChat(toneChatOptions).enqueue(ToneChatCallback(this))
     }
 }
 
-class ToneChatCallback: ServiceCallback<UtteranceAnalyses> {
+class ToneChatCallback(var conversation : Conversation) : ServiceCallback<UtteranceAnalyses> {
+
+
+    /*constructor(conv: Conversation) {
+        var conversation = conv
+    }*/
 
     override fun onResponse(response: Response<UtteranceAnalyses>?) {
         Log.d("ToneChatCallback", "ToneChatCallback succeeded")
         val analyses: List<UtteranceAnalysis> = response?.result?.utterancesTone!!
+        var i = 0
+        for (msg in conversation.messages.filterIsInstance<TextMessage>()) {
+            msg.sentiment = analyses[i].tones[0].toneName
+            i = i + 1
+        }
+
     }
 
     override fun onFailure(e: Exception?) {
