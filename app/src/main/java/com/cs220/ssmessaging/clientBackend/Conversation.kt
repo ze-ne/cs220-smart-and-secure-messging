@@ -227,12 +227,6 @@ class Conversation() {
 }
 
 class ToneChatCallback(var conversation : Conversation, private val indexes: List<Int>) : ServiceCallback<UtteranceAnalyses> {
-
-
-    /*constructor(conv: Conversation) {
-        var conversation = conv
-    }*/
-
     override fun onResponse(response: Response<UtteranceAnalyses>?) {
         Log.d("ToneChatCallback", "ToneChatCallback succeeded")
         val analyses: List<UtteranceAnalysis> = response?.result?.utterancesTone!!
@@ -245,5 +239,4 @@ class ToneChatCallback(var conversation : Conversation, private val indexes: Lis
     override fun onFailure(e: Exception?) {
         Log.d("ToneChatCallback", e.toString())
     }
-
 }

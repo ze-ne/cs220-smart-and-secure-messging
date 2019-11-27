@@ -288,18 +288,6 @@ class User() {
         return blockedContacts.contains(userId)
     }
 
-    // Untestable - relies on database functionality
-    fun getBlockList(userId: String): MutableList<String>? {
-        var temp = mutableListOf<String>()
-        val docref = db.collection("users").document(userId)
-        docref.get()
-            .addOnSuccessListener { document ->
-                val blockedlist = document.data?.get("block_list") as MutableList<String>
-                temp = blockedlist
-            }
-        return temp
-    }
-
     // This function is untestable since it adds the blocked contact to Db
     // It also uses the addBlockedContact (local addition) if it successfully adds to Db.
     // However note that addBlockedContact has been unit tested
@@ -315,14 +303,14 @@ class User() {
             .update(newBlockedContactsMap)
             .addOnSuccessListener {
                 // Add the contact locally. In addition, we need to delete every single conversation
+                addBlockedContact(userId)
+                callback?.invoke()
                 for(c in conversations){
                     if(c.user1Id == userId || c.user2Id == userId){
                         deleteConversationFromDb(c.convoId)
                         break
                     }
                 }
-                callback?.invoke()
-
             }
             .addOnFailureListener {
                 // Else do nothing : Remove the line below
