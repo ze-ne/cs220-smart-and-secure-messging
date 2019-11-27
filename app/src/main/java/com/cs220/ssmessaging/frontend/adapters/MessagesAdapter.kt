@@ -23,7 +23,7 @@ import kotlin.collections.ArrayList
 private const val MY_MESSAGE = 1
 private const val OTHER_MESSAGE = 2
 
-class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedMessage>, val convoId: String) :
+class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedMessage>, val convoId: String, var display: Int) :
     RecyclerView.Adapter<MessageViewHolder>() {
     val currentUser = MyApplication.currentUser!!
 
@@ -62,6 +62,7 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
+        println("SHOW: " + display)
         val message = messages[position]
         holder.bind(message)
         if (holder is MyMessageViewHolder) {
@@ -83,6 +84,7 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
         private var messageText: TextView = view.findViewById(R.id.my_message_text)
         private var messageImage: ImageView = view.findViewById(R.id.my_message_image)
         private var timeText: TextView = view.findViewById(R.id.my_message_time)
+        private var analyticsText: TextView = view.findViewById(R.id.my_message_analytics)
         private var confirmDeleteMessage: TextView = view.findViewById(R.id.message_deletion_confirm)
         private var cancelDeleteMessage: TextView = view.findViewById(R.id.message_deletion_cancel)
         var deleteMessage: RelativeLayout = view.findViewById(R.id.message_deletion)
@@ -145,11 +147,21 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                 messageText.text = message.message
                 messageText.visibility = View.VISIBLE
                 messageImage.visibility = View.GONE
+                analyticsText.text = message.sentiment
+
+                println("SENTIMENT: " + message.sentiment)
+
+                if (display == 0) {
+                    analyticsText.visibility = View.GONE
+                } else {
+                    analyticsText.visibility = View.VISIBLE
+                }
 
                 for (box in overlayBoxes) {
                     box.visibility = View.GONE
                 }
             } else {
+                analyticsText.visibility = View.GONE
                 messageImage.setImageBitmap(
                     ImageHandler.convertImageMessageToImage(message as ImageMessage)
                 )
@@ -206,6 +218,7 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
 
     inner class OtherMessageViewHolder(view: View) : MessageViewHolder(view) {
         private var messageText: TextView = view.findViewById(R.id.other_message_text)
+        private var analyticsText: TextView = view.findViewById(R.id.other_message_analytics)
         private var messageImage: ImageView = view.findViewById(R.id.other_message_image)
         private var timeText: TextView = view.findViewById(R.id.other_message_time)
         private var box1 = view.findViewById<View>(R.id.box1)
@@ -266,11 +279,21 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                 messageText.text = message.message
                 messageText.visibility = View.VISIBLE
                 messageImage.visibility = View.GONE
+                analyticsText.text = message.sentiment
+
+                if (display == 0) {
+                    analyticsText.visibility = View.GONE
+                } else {
+                    analyticsText.visibility = View.VISIBLE
+                }
 
                 for (box in overlayBoxes) {
                     box.visibility = View.GONE
                 }
             } else {
+
+                analyticsText.visibility = View.GONE
+
                 messageImage.setImageBitmap(
                     ImageHandler.convertImageMessageToImage(message as ImageMessage)
                 )

@@ -25,6 +25,9 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_conversation.*
 import java.lang.Exception
 import kotlin.collections.ArrayList
+import android.widget.CompoundButton
+import kotlinx.android.synthetic.main.switch_item.view.*
+
 
 const val REQUEST_IMAGE_GET = 1
 const val REQUEST_HIDDEN_IMAGE_GET = 2
@@ -89,6 +92,27 @@ class ConversationActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.conversation_options_menu, menu)
+
+        val sentimentsSwitch: Switch = menu!!.findItem(R.id.analytics_switch).actionView.switchForActionBar
+        sentimentsSwitch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+            override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
+                if (isChecked) {
+                    println("TOGGLE ON: ")
+                    conversation.getAnalytics()
+                    messagesAdapter.display = 1
+                    for (message in conversation.messages) {
+                        if (message is TextMessage) {
+                            println("ANALYTICS: " + message.sentiment)
+                        }
+                    }
+                } else {
+                    println("TOGGLE OFF")
+                    messagesAdapter.display = 0
+                }
+                messagesAdapter.notifyDataSetChanged()
+            }
+        })
+
         return true
     }
 
@@ -255,7 +279,7 @@ class ConversationActivity : AppCompatActivity() {
     // Display the messages onscreen
     private fun displayMessages() {
         messagesAdapter =
-            MessagesAdapter(this, conversation.messages as ArrayList<UnencryptedMessage>, conversation.convoId)
+            MessagesAdapter(this, conversation.messages as ArrayList<UnencryptedMessage>, conversation.convoId, 0)
         message_recycler_view.scrollToPosition(conversation.messages.size - 1)
         message_recycler_view.adapter = messagesAdapter
     }
