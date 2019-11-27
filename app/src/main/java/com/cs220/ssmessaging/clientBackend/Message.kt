@@ -125,6 +125,7 @@ class TextMessage(_message : String, _conversationId : String,
     override var isVisible : Boolean = true
 
     val message : String
+    var sentiment : String = ""
 
     override fun mEquals(m : Message) : Boolean{
         return if(m is ImageMessage|| m is EncryptedMessage)
