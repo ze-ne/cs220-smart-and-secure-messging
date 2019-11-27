@@ -8,6 +8,8 @@ import org.junit.runner.RunWith
 
 import com.cs220.ssmessaging.clientBackend.User
 import com.cs220.ssmessaging.clientBackend.Conversation
+import java.security.KeyPairGenerator
+import javax.crypto.KeyGenerator
 
 class UserUnitTests{
 
@@ -261,6 +263,9 @@ class UserUnitTests{
         val user2 = User("userId2", "User", "Two")
         val conversation = Conversation(user1.userId, user2.userId)
 
+        val user2PublicKey = KeyPairGenerator.getInstance("RSA").generateKeyPair().public
+        user1.device.cipher.publicKeyRing.put("userId2", user2PublicKey)
+
         val oldLength: Int = conversation.messages.size
         assertEquals(conversation.messages.size, 0)
 
@@ -275,13 +280,17 @@ class UserUnitTests{
         val user2 = User("userId2", "User", "Two")
         val conversation = Conversation(user1.userId, user2.userId)
 
+        val user2PublicKey = KeyPairGenerator.getInstance("RSA").generateKeyPair().public
+        user1.device.cipher.publicKeyRing.put("userId2", user2PublicKey)
+
         val oldLength: Int = conversation.messages.size
         assertEquals(conversation.messages.size, 0)
 
         user1.sendImageMsg(byteArrayOf(1,2,3), conversation)
 
         assertEquals(conversation.messages.size, oldLength + 1)
-        assertEquals((conversation.messages[0] as ImageMessage).message, null)
+        // Fix: Changed the expected to a boolean check
+        assertTrue((conversation.messages[0] is ImageMessage))
     }
 
     @Test
