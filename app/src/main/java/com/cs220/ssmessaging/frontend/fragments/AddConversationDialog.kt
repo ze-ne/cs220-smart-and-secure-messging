@@ -39,7 +39,13 @@ class AddConversationDialog : DialogFragment() {
 
         newConversationButton.setOnClickListener {
             val participantUsername = newConversationInput.text.toString()
-            if (participantUsername.isNotEmpty()) {
+            if (currentUser.checkIfInBlockList(participantUsername)){
+                Toast.makeText(
+                    activity,
+                    "Unable to start conversation. " + participantUsername + " has been blocked",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else if (participantUsername.isNotEmpty()) {
                 FirebaseFirestore.getInstance().collection("users")
                     .whereEqualTo("canonicalId", participantUsername)
                     .get()

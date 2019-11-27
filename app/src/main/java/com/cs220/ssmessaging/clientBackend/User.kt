@@ -40,7 +40,7 @@ class User() {
             this.userId = userId
             this.firstName = firstName
             this.lastName = lastName
-            getBlockList(this.userId)
+            getBlockList()
         }
     }
 
@@ -79,7 +79,7 @@ class User() {
             this.lastName = lastName
             this.contacts = contacts
             this.conversations = conversations
-            getBlockList(this.userId)
+            getBlockList()
         }
     }
 
@@ -306,12 +306,12 @@ class User() {
         if (checkIfInBlockList(userId) || !isValidUserId(userId))
             return
         // Add to Db
+        addBlockedContact(userId)
         val newBlockedContacts = mapOf("block_list" to blockedContacts)
-        db.collection("users").document(userId)
+        db.collection("users").document(this.userId)
             .update(newBlockedContacts)
             .addOnSuccessListener {
                 // Add the contact locally. In addition, we need to delete every single conversation
-                addBlockedContact(userId)
                 for(c in conversations){
                     if(c.user1Id == userId || c.user2Id == userId){
                         deleteConversationFromDb(c.convoId)
@@ -321,7 +321,7 @@ class User() {
                 }
             }
             .addOnFailureListener {
-                // Do nothing on failure
+                blockedContacts.remove(userId)
             }
     }
 
@@ -338,9 +338,9 @@ class User() {
     }
 
     // Untestable - relies on database functionality
-    fun getBlockList(userId: String) {
+    fun getBlockList() {
         var temp = mutableListOf<String>()
-        val docref = db.collection("users").document(userId)
+        val docref = db.collection("users").document(this.userId)
         docref.get()
             .addOnSuccessListener { document ->
                 val blockedlist = document.data?.get("block_list") as MutableList<String>?
@@ -366,7 +366,7 @@ class User() {
 
         //database deletion.
         val newBlockedContacts = mapOf("block_list" to tempBlockedContacts)
-        db.collection("users").document(userId)
+        db.collection("users").document(this.userId)
             .update(newBlockedContacts)
             .addOnSuccessListener {
                 // If successful, we delete locally
