@@ -236,57 +236,13 @@ class ConversationActivity : AppCompatActivity() {
 
             // Add messages to local backend objects
             for (dc in snapshot!!.documentChanges) {
-              // Convert server data to message objects
-                val type = dc.document.data.getValue("message_type")
-                val senderId = dc.document.data.getValue("sender_id") as String
-                val recipientId = dc.document.data.getValue("recipient_id") as String
-                val timestamp = dc.document.data.getValue("timestamp") as Long
-                val recipientEncryptedAesKey =
-                    (dc.document.data.getValue("recipient_encrypted_aes_key") as Blob).toBytes()
-                val senderEncryptedAesKey =
-                    (dc.document.data.getValue("sender_encrypted_aes_key") as Blob).toBytes()
 
-                when (type) {
-                    "text" -> {
-                        val data = (dc.document.data.getValue("data") as Blob).toBytes()
-                        val encryptedMessage = EncryptedMessage(
-                            data,
-                            convoId,
-                            "text",
-                            senderId,
-                            recipientId,
-                            timestamp,
-                            senderEncryptedAesKey,
-                            recipientEncryptedAesKey
-                        )
-                        val decryptedMessage =
-                            currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
-                        currentUser.receiveMsg(decryptedMessage)
-                        displayMessages()
-                    }
-                    "image" -> {
-                        val bucketUrl = dc.document.data.getValue("bucket_url") as String
-                        val imgRef = storage.getReferenceFromUrl(bucketUrl)
-                        imgRef.getBytes(1000000000) // 100 MB
-                            .addOnSuccessListener {
-                                val encryptedMessage = EncryptedMessage(
-                                    it, convoId,
-                                    "image", senderId, recipientId,
-                                    timestamp, senderEncryptedAesKey, recipientEncryptedAesKey
-                                )
-                                val decryptedMessage =
-                                    currentUser.device.cipher.decryptEncryptedMessage(
-                                        encryptedMessage
-                                    )
-                                currentUser.receiveMsg(decryptedMessage)
-                                displayMessages()
-                                Log.d("addMessageListener", "Success!")
-                            }
-                            .addOnFailureListener {
-                                Log.d("addMessageListener", "Failed to retrieve bucket img")
-                            }
-                    }
-                    else -> throw Exception("Unknown message type")
+                when (dc.type) {
+
+                    DocumentChange.Type.ADDED -> addMessage(dc, convoId)
+                    DocumentChange.Type.REMOVED -> deleteMessage(dc, convoId)
+                    else -> println("====== neither added nor removed =======")
+
                 }
             }
             displayMessages()
