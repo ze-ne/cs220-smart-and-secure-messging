@@ -433,7 +433,7 @@ class User() {
                     "sender_id" to encryptedMessage.senderId,
                     "recipient_id" to encryptedMessage.recipientId,
                     "timestamp" to encryptedMessage.timestamp,
-                    //"is_visible" to unencryptedMsg.isVisible,
+                    "is_visible" to unencryptedMsg.isVisible,
                     "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
                     "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
                 )
@@ -468,7 +468,7 @@ class User() {
                             "sender_id" to encryptedMessage.senderId,
                             "recipient_id" to encryptedMessage.recipientId,
                             "timestamp" to encryptedMessage.timestamp,
-                            //"is_visible" to unencryptedMsg.isVisible,
+                            "is_visible" to unencryptedMsg.isVisible,
                             "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
                             "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
                         )
