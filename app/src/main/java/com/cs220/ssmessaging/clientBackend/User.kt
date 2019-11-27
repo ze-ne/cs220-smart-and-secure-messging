@@ -12,6 +12,8 @@ import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.time.Instant
+import java.util.Timer
+import kotlin.concurrent.schedule
 import java.util.*
 
 const val TAG = "User"
@@ -406,6 +408,19 @@ class User() {
         sendEncryptedMsg(txtMsg, convo)
     }
 
+    // Sends text message to server
+    fun sendDestructMsg(msg: String, convo: Conversation) {
+        val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
+        val timestamp = Instant.now().toEpochMilli()
+        val txtMsg = TextMessage(msg, convo.convoId, this.userId, recipient, timestamp)
+        convo.addMessage(txtMsg)
+
+        deleteMessageTimer(convo.convoId, txtMsg, 10)
+        sendEncryptedMsg(txtMsg, convo)
+    }
+
+
+
     // Fully untestable because all this does is hit the server
     private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
         val encryptedMessage: EncryptedMessage =
@@ -597,6 +612,12 @@ class User() {
                 println("== dsmfb FAIL ====")
 
             }
+    }
+
+    fun deleteMessageTimer(convoId: String, message: Message, seconds: Long) {
+        Timer("delete_timer", false).schedule(seconds*1000) {
+            deleteSentMessageFromDb(convoId, message)
+        }
     }
 
     // Add your own public key to server - Untestable because it deals with server

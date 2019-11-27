@@ -32,6 +32,7 @@ const val REQUEST_HIDDEN_IMAGE_GET = 2
 class ConversationActivity : AppCompatActivity() {
     private lateinit var conversationToolbar: Toolbar
     private lateinit var sendMessageButton: ImageButton
+    private lateinit var sendDestructMessageButton: ImageButton
     private lateinit var imageButton: ImageButton
     private lateinit var hiddenImageButton: ImageButton
     private lateinit var userMessageInput: EditText
@@ -65,6 +66,8 @@ class ConversationActivity : AppCompatActivity() {
         addMessageListener(conversation.convoId)
 
         sendMessageButton = findViewById(R.id.send_message_button)
+        sendDestructMessageButton = findViewById(R.id.send_destruction_timer)
+
         userMessageInput = findViewById(R.id.message_input)
         imageButton = findViewById(R.id.add_image_button)
         hiddenImageButton = findViewById(R.id.add_hidden_image_button)
@@ -73,6 +76,14 @@ class ConversationActivity : AppCompatActivity() {
             val message = userMessageInput.text
             if (message.isNotEmpty()) {
                 currentUser.sendTextMsg(message.toString(), conversation)
+                userMessageInput.text.clear()
+            }
+        }
+
+        sendDestructMessageButton.setOnClickListener {
+            val message = userMessageInput.text
+            if (message.isNotEmpty()) {
+                currentUser.sendDestructMsg(message.toString(), conversation)
                 userMessageInput.text.clear()
             }
         }
