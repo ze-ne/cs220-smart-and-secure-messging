@@ -182,7 +182,7 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                         box.layoutParams = params
                         box.setOnClickListener {
                             box.visibility = View.INVISIBLE
-                            box.postDelayed({ box.visibility = View.VISIBLE }, 4000)
+                            box.postDelayed({ box.visibility = View.VISIBLE }, 7000)
                         }
                     }
                 } else {
@@ -305,7 +305,7 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                         box.layoutParams = params
                         box.setOnClickListener {
                             box.visibility = View.INVISIBLE
-                            box.postDelayed({ box.visibility = View.VISIBLE }, 4000)
+                            box.postDelayed({ box.visibility = View.VISIBLE }, 7000)
                         }
                     }
                 } else {
