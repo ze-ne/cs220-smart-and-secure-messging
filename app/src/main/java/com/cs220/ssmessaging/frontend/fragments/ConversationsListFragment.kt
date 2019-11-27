@@ -185,14 +185,14 @@ class ConversationsListFragment : Fragment() {
                 currentUser.deleteConversationFromDb(conversation.convoId)
             }
             viewHolder.itemView.block_button.setOnClickListener {
-                currentUser.addBlockedContactToDb(otherUser, {
+                currentUser.addBlockedContactToDb(otherUser) {
                     val currentFragment =
                         fragmentManager?.findFragmentById(R.id.home_tab_pager)
                     val transaction = fragmentManager?.beginTransaction()
                     transaction?.detach(currentFragment!!)
                     transaction?.attach(currentFragment!!)
                     transaction?.commit()
-                })
+                }
             }
         }
 

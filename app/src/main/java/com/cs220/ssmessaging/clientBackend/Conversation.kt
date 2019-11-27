@@ -206,7 +206,7 @@ class ToneChatCallback(var conversation : Conversation) : ServiceCallback<Uttera
         var i = 0
         for (msg in conversation.messages.filterIsInstance<TextMessage>()) {
             msg.sentiment = analyses[i].tones[0].toneName
-            i = i + 1
+            i += 1
         }
 
     }
