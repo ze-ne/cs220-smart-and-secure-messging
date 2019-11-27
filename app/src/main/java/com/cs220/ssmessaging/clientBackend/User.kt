@@ -306,14 +306,16 @@ class User() {
     // This function is untestable since it adds the blocked contact to Db
     // It also uses the addBlockedContact (local addition) if it successfully adds to Db.
     // However note that addBlockedContact has been unit tested
-    fun addBlockedContactToDb(userId : String) {
+    fun addBlockedContactToDb(userId : String, callback: (() -> Unit)?) {
         if (checkIfInBlockList(userId) || !isValidUserId(userId))
             return
         // Add to Db
-        addBlockedContact(userId)
-        val newBlockedContacts = mapOf("block_list" to blockedContacts)
+        val newBlockedContacts = this.blockedContacts.toMutableList()
+        newBlockedContacts.add(userId)
+
+        val newBlockedContactsMap = mapOf("block_list" to newBlockedContacts)
         db.collection("users").document(this.userId)
-            .update(newBlockedContacts)
+            .update(newBlockedContactsMap)
             .addOnSuccessListener {
                 // Add the contact locally. In addition, we need to delete every single conversation
                 for(c in conversations){
@@ -321,8 +323,9 @@ class User() {
                         deleteConversationFromDb(c.convoId)
                         break
                     }
-
                 }
+                callback?.invoke()
+
             }
             .addOnFailureListener {
                 blockedContacts.remove(userId)
