@@ -73,6 +73,8 @@ class ConversationsListFragment : Fragment() {
             currentUser.getUserPublicKey(otherUser).addOnSuccessListener {
                 Log.i("Key Exchange", "Key Exchange passed and now adding conversation")
                 currentUser.addConversation(conversation)
+                Log.i("Conversations", currentUser.conversations.toString())
+                Log.i("Conversations", currentUser.conversations.size.toString())
                 displayConversations()
             }
         } catch (e: Exception) {
@@ -113,9 +115,11 @@ class ConversationsListFragment : Fragment() {
     }
 
     private fun displayConversations() {
-        conversationsListAdapter =
-            ConversationsListAdapter(activity as Context, currentUser.conversations)
-        conversations_recycler_list.adapter = conversationsListAdapter
+        if(activity != null) {
+            conversationsListAdapter =
+                ConversationsListAdapter(activity as Context, currentUser.conversations)
+            conversations_recycler_list.adapter = conversationsListAdapter
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

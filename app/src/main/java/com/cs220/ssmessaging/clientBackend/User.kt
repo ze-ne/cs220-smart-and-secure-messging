@@ -192,14 +192,6 @@ class User() {
         return true
     }
 
-    // Gets conversation and public keys from the database - Untestable because server
-    fun receiveConversation(convo: Conversation): Boolean {
-        getUserPublicKey(convo.user1Id)
-        getUserPublicKey(convo.user2Id)
-        addConversation(convo)
-        return false
-    }
-
     fun getConversationByUserId(recipientId: String): Conversation? {
         var retConvoList: List<Conversation> = this.conversations
             .filter { x -> (x.user1Id == recipientId || x.user2Id == recipientId) }
@@ -318,12 +310,12 @@ class User() {
         if (checkIfInBlockList(userId) || !isValidUserId(userId))
             return
         // Add to Db
-        addBlockedContact(userId)
         val newBlockedContacts = mapOf("block_list" to blockedContacts)
         db.collection("users").document(this.userId)
             .update(newBlockedContacts)
             .addOnSuccessListener {
                 // Add the contact locally. In addition, we need to delete every single conversation
+                addBlockedContact(userId)
                 for(c in conversations){
                     if(c.user1Id == userId || c.user2Id == userId){
                         deleteConversationFromDb(c.convoId)
@@ -333,7 +325,7 @@ class User() {
                 }
             }
             .addOnFailureListener {
-                blockedContacts.remove(userId)
+                // Do nothing
             }
     }
 
@@ -504,14 +496,16 @@ class User() {
         val keyTask: Task<DocumentSnapshot> = db.collection("users").document(userId)
             .get()
             .addOnSuccessListener { documentSnapshot ->
-                val keyField = documentSnapshot.getBlob("publicKey")!!
-                Log.d("We got the key: ", keyField.toString())
-                val publicKey: PublicKey =
-                    keyFactory.generatePublic(X509EncodedKeySpec(keyField.toBytes()))
+                val keyField = documentSnapshot.getBlob("publicKey")
+                if(keyField != null){
+                    Log.d("We got the key: ", keyField.toString())
+                    val publicKey: PublicKey =
+                        keyFactory.generatePublic(X509EncodedKeySpec(keyField.toBytes()))
 
-                val fileUserId = if (this.userId == userId) "myKey" else userId
+                    val fileUserId = if (this.userId == userId) "myKey" else userId
 
-                device.addUserPublicKey(fileUserId, publicKey)
+                    device.addUserPublicKey(fileUserId, publicKey)
+                }
             }.addOnFailureListener { e ->
                 throw e
             }
