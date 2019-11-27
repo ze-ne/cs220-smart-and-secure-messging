@@ -26,9 +26,9 @@ class BlockedListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         currentUser = MyApplication.currentUser!!
+        currentUser.getBlockList({displayBlockList()})
         setHasOptionsMenu(true)
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,6 +41,11 @@ class BlockedListFragment : Fragment() {
         blockListRecyclerView.layoutManager = LinearLayoutManager(context)
         displayBlockList()
         return blockListView
+    }
+
+    override fun onStart() {
+        super.onStart()
+        displayBlockList()
     }
 
     fun displayBlockList(){

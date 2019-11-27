@@ -14,7 +14,6 @@ import java.security.spec.X509EncodedKeySpec
 import java.time.Instant
 import java.util.*
 
-
 const val TAG = "User"
 
 class User() {
@@ -40,7 +39,6 @@ class User() {
             this.userId = userId
             this.firstName = firstName
             this.lastName = lastName
-            getBlockList()
         }
     }
 
@@ -79,7 +77,6 @@ class User() {
             this.lastName = lastName
             this.contacts = contacts
             this.conversations = conversations
-            getBlockList()
         }
     }
 
@@ -333,14 +330,15 @@ class User() {
     }
 
     // Untestable - relies on database functionality
-    fun getBlockList() {
+    fun getBlockList(callback: (() -> Unit)?) {
         var temp = mutableListOf<String>()
         val docref = db.collection("users").document(this.userId)
         docref.get()
             .addOnSuccessListener { document ->
                 val blockedlist = document.data?.get("block_list")
-                if(blockedlist != null){
+                if(blockedlist != null) {
                     blockedContacts = blockedlist as MutableList<String>
+                    callback?.invoke()
                 }
             }
     }
