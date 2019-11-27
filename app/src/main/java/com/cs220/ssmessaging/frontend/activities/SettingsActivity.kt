@@ -45,22 +45,23 @@ class SettingsActivity : AppCompatActivity() {
             val firstName = firstNameField.text.toString()
             if (isNullOrEmpty(firstName)) {
                 Toast.makeText(this, "First Name Change Failed", Toast.LENGTH_SHORT).show()
-            }
-            else {
+            } else {
                 MyApplication.currentUser?.updateFirstName(firstName)
                 MyApplication.currentUser?.firstName = firstName
+                firstNameField.text.clear()
                 Toast.makeText(this, "First Name Change Successful", Toast.LENGTH_SHORT).show()
             }
+
         }
 
         changeLastNameButton.setOnClickListener {
             val lastName = lastNameField.text.toString()
             if (isNullOrEmpty(lastName)) {
                 Toast.makeText(this, "Last Name Change Failed", Toast.LENGTH_SHORT).show()
-            }
-            else {
-                MyApplication.currentUser?.updateLastName (lastName)
+            } else {
+                MyApplication.currentUser?.updateLastName(lastName)
                 MyApplication.currentUser?.lastName = lastName
+                lastNameField.text.clear()
                 Toast.makeText(this, "Last Name Change Successful", Toast.LENGTH_SHORT).show()
             }
         }
