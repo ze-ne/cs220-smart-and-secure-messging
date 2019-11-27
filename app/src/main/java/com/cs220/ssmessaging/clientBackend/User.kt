@@ -294,26 +294,30 @@ class User() {
     // This function is untestable since it adds the blocked contact to Db
     // It also uses the addBlockedContact (local addition) if it successfully adds to Db.
     // However note that addBlockedContact has been unit tested
-    fun addBlockedContactToDb(userId : String) {
+    fun addBlockedContactToDb(userId : String, callback: (() -> Unit)?) {
         if (checkIfInBlockList(userId) || !isValidUserId(userId))
             return
         // Add to Db
-        addBlockedContact(userId)
-        val newBlockedContacts = mapOf("block_list" to blockedContacts)
+        val newBlockedContacts = this.blockedContacts.toMutableList()
+        newBlockedContacts.add(userId)
+
+        val newBlockedContactsMap = mapOf("block_list" to newBlockedContacts)
         db.collection("users").document(this.userId)
-            .update(newBlockedContacts)
+            .update(newBlockedContactsMap)
             .addOnSuccessListener {
                 // Add the contact locally. In addition, we need to delete every single conversation
+                addBlockedContact(userId)
+                callback?.invoke()
                 for(c in conversations){
                     if(c.user1Id == userId || c.user2Id == userId){
                         deleteConversationFromDb(c.convoId)
                         break
                     }
-
                 }
             }
             .addOnFailureListener {
-                blockedContacts.remove(userId)
+                // Else do nothing : Remove the line below
+                //blockedContacts.remove(userId)
             }
     }
 
@@ -418,7 +422,7 @@ class User() {
                     "sender_id" to encryptedMessage.senderId,
                     "recipient_id" to encryptedMessage.recipientId,
                     "timestamp" to encryptedMessage.timestamp,
-                    //"is_visible" to unencryptedMsg.isVisible,
+                    "is_visible" to unencryptedMsg.isVisible,
                     "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
                     "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
                 )
@@ -453,7 +457,7 @@ class User() {
                             "sender_id" to encryptedMessage.senderId,
                             "recipient_id" to encryptedMessage.recipientId,
                             "timestamp" to encryptedMessage.timestamp,
-                            //"is_visible" to unencryptedMsg.isVisible,
+                            "is_visible" to unencryptedMsg.isVisible,
                             "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
                             "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
                         )

@@ -29,6 +29,7 @@ class BlockedListFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,11 +43,11 @@ class BlockedListFragment : Fragment() {
         return blockListView
     }
 
-    private fun displayBlockList(){
-        val activity = activity as Context
-        blockListAdapter = BlockListAdapter(activity, currentUser.blockedContacts)
+    fun displayBlockList(){
+        blockListAdapter = BlockListAdapter(activity as Context, currentUser.blockedContacts)
         blockListRecyclerView.adapter = blockListAdapter
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)

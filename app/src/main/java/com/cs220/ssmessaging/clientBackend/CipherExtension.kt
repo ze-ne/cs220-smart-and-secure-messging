@@ -113,6 +113,8 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         val recipientIdPublicKey : PublicKey? = publicKeyRing[unencryptedMsg.recipientId]
         val myKey : PublicKey? = publicKeyRing["myKey"]
 
+        println("KEY " + recipientIdPublicKey)
+        println("KEY " + myKey)
         if(recipientIdPublicKey == null || myKey  == null){
             throw NullPointerException("recipientId or my public key not found. This means that the keys are unsynced with the server")
         }

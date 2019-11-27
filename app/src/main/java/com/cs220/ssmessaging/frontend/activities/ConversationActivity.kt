@@ -126,6 +126,12 @@ class ConversationActivity : AppCompatActivity() {
                 )
                 val decryptedMessage =
                     currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
+
+                val isVisible = dc.document.data.get("is_visible")
+                if(isVisible != null){
+                    decryptedMessage.isVisible = isVisible as Boolean
+                }
+
                 currentUser.receiveMsg(decryptedMessage)
                 displayMessages()
             }
@@ -141,6 +147,10 @@ class ConversationActivity : AppCompatActivity() {
                         )
                         val decryptedMessage =
                             currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
+                        val isVisible = dc.document.data.get("is_visible")
+                        if(isVisible != null){
+                            decryptedMessage.isVisible = isVisible as Boolean
+                        }
                         currentUser.receiveMsg(decryptedMessage)
                         displayMessages()
                         Log.d("addMessageListener", "Success!")
