@@ -415,7 +415,7 @@ class User() {
         val txtMsg = TextMessage(msg, convo.convoId, this.userId, recipient, timestamp)
         convo.addMessage(txtMsg)
 
-        deleteMessageTimer(convo.convoId, txtMsg, 10)
+        deleteMessageTimer(convo.convoId, txtMsg, 5)
         sendEncryptedMsg(txtMsg, convo)
     }
 

@@ -87,8 +87,8 @@
 
             <ImageButton
                 android:id="@+id/send_destruction_timer"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#865050"
                 android:clickable="true"
