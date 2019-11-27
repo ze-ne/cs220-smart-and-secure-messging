@@ -18,17 +18,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/delete_conversation_button"
-        android:text="BLOCK" />
+        android:text="BLOCK"
+        android:theme="@style/AppTheme.Button" />
 
     <ImageButton
         android:id="@+id/delete_conversation_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#FFFFFFFF"
-        android:padding="10dp"
         android:layout_alignParentRight="true"
-        android:src="@drawable/ic_delete"
-        android:layout_gravity="right"/>
+        android:layout_gravity="right"
+        android:background="@null"
+        android:padding="10dp"
+        android:src="@drawable/ic_delete" />
 
 
 </RelativeLayout>
