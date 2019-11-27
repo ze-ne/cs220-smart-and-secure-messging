@@ -57,7 +57,7 @@ class AddConversationDialog : DialogFragment() {
                                 documentReference.documents[0].get("block_list") as MutableList<String>?
 
                             // Only start new conversation if the other person's blockList does not exist or you are not in it
-                            if (blockList == null || !blockList.contains(currentUser.userId)) {
+                            if(blockList == null || !blockList.contains(currentUser.userId) || currentUser.blockedContacts.contains(participantUsername)){
                                 currentUser.startConversation(newConvo)
                                 newConversationInput.text.clear()
                                 val conversationIntent =
