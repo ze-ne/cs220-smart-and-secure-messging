@@ -74,6 +74,8 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             decryptedRecpientAESKeyBytes = byteArrayOf()
         }
 
+        decryptorCipher.init(Cipher.DECRYPT_MODE, privateKey)
+
         try{
             decryptedSenderAESKeyBytes = decryptorCipher.doFinal(encryptedMsg.encryptedSenderAESKey)
         }
