@@ -109,7 +109,7 @@ class ConversationActivity : AppCompatActivity() {
             override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
                 if (isChecked) {
                     println("TOGGLE ON: ")
-                    conversation.getAnalytics()
+                    conversation.getAnalytics({displayMessages()})
                     messagesAdapter.display = 1
                     for (message in conversation.messages) {
                         if (message is TextMessage) {

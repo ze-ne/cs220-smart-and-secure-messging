@@ -191,13 +191,13 @@ class Conversation() {
         return Conversation(user1Id, user2Id, subMessages)
     }
 
-    fun getAnalytics() {
+    fun getAnalytics(callback: () -> Unit) {
         //TODO
         /* might exclude from unit testing on account of having a
            relatively low monthly limit on api calls before we have to pay */
 
-        val (indexes, messages) = filterMessagesForAnalytics()
-        val utterances = messages
+        val filteredMessages = messages.filterIsInstance<TextMessage>().filter { it.sentiment.isEmpty()}
+        val utterances = filteredMessages
             .map {
                 Utterance.Builder()
                     .user(it.senderId)
@@ -210,30 +210,23 @@ class Conversation() {
         val toneChatOptions = ToneChatOptions.Builder()
             .utterances(utterances)
             .build()
-        toneAnalyzer.toneChat(toneChatOptions).enqueue(ToneChatCallback(this, indexes))
-    }
-
-    fun filterMessagesForAnalytics(): Pair<List<Int>,List<TextMessage>>{
-        val messages = mutableListOf<TextMessage>()
-        val indexes = mutableListOf<Int>()
-        for ((i,m) in messages.withIndex()){
-            if (m is TextMessage && m.sentiment.isEmpty()){
-                messages.add(m)
-                indexes.add(i)
-            }
-        }
-        return Pair(indexes, messages)
+        toneAnalyzer.toneChat(toneChatOptions).enqueue(ToneChatCallback(this, filteredMessages, callback))
     }
 }
 
-class ToneChatCallback(var conversation : Conversation, private val indexes: List<Int>) : ServiceCallback<UtteranceAnalyses> {
+class ToneChatCallback(var conversation : Conversation, private val filteredMessages: List<TextMessage>, private val callback: () -> Unit) : ServiceCallback<UtteranceAnalyses> {
     override fun onResponse(response: Response<UtteranceAnalyses>?) {
         Log.d("ToneChatCallback", "ToneChatCallback succeeded")
         val analyses: List<UtteranceAnalysis> = response?.result?.utterancesTone!!
-        for ((i,a) in indexes.zip(analyses)){
-            var msg = conversation.messages[i] as TextMessage
-            msg.sentiment = a.tones[0].toneName
+        var i = 0
+        for (msg in filteredMessages) {
+            if (analyses[i].tones.isNotEmpty())
+                msg.sentiment = analyses[i].tones[0].toneName
+            else
+                msg.sentiment = "No sentiment"
+            i += 1
         }
+        callback.invoke()
     }
 
     override fun onFailure(e: Exception?) {
