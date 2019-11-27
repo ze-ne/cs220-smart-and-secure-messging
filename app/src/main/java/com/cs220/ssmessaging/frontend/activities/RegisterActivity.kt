@@ -6,12 +6,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.User
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterActivity : AppCompatActivity() {
 
+    private lateinit var homeToolbar: Toolbar
     private lateinit var username: EditText
     private lateinit var phoneNumber: EditText
     private lateinit var firstname: EditText
@@ -21,6 +23,9 @@ class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+
+        homeToolbar = findViewById(R.id.home_toolbar)
+        setSupportActionBar(homeToolbar)
 
         username = findViewById(R.id.register_username)
         phoneNumber = findViewById(R.id.register_phone_number)
