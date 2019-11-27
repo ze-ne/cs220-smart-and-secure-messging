@@ -4,6 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".frontend.activities.ConversationActivity" >
     <item
+        android:id="@+id/app_bar_switch"
+        android:title="Switch"
+        app:actionLayout="@layout/switch_item"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/conversation_menu_analytics"
         android:title="Get Analytics"
         android:icon="@drawable/ic_show_chart"
