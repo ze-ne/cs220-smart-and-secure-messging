@@ -328,7 +328,8 @@ class User() {
 
             }
             .addOnFailureListener {
-                blockedContacts.remove(userId)
+                // Else do nothing : Remove the line below
+                //blockedContacts.remove(userId)
             }
     }
 
