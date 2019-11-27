@@ -127,7 +127,6 @@ class ConversationsListFragment : Fragment() {
         inflater.inflate(R.menu.conversations_list_fragment_menu, menu)
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem.actionView as SearchView
-
         searchView.imeOptions = EditorInfo.IME_ACTION_DONE
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
