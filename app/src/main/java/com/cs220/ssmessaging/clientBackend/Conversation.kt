@@ -151,7 +151,28 @@ class Conversation() {
         }
 
         if(addMessage) {
-            _messages.add(msg)
+            //_messages.add(msg)
+            // We now insert messages in order to prevent them from desyncing in the conversation
+            val messageIndices = _messages.indices
+            val lastIndex = messageIndices.endInclusive
+            val msgTimestamp = msg.timestamp
+
+            var messageAdded = false
+
+            // Note this is not the most efficient way to order messages. We will optimize later.
+            for(index in messageIndices) {
+                if (msgTimestamp < _messages[index].timestamp) {
+                    _messages.add(index, msg)
+                    messageAdded = true
+                    break
+                }
+            }
+
+            // If this message is not added, then add to the end
+            if(messageAdded == false){
+                _messages.add(msg)
+            }
+
             // Last time synched must also be updated
             lastTimeSynced = msg.timestamp
         }
