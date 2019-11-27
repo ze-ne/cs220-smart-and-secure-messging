@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".frontend.activities.ConversationActivity" >
     <item
-        android:id="@+id/app_bar_switch"
+        android:id="@+id/analytics_switch"
         android:title="Switch"
         app:actionLayout="@layout/switch_item"
         app:showAsAction="always" />

@@ -41,8 +41,8 @@ class CipherExtensionUnitTests{
         // getters to verify results.
         var testCipherExtension =
             CipherExtension(testPrivateKey, mutableMapOf("person1" to testPublicKey, "person2" to testPublicKey2))
-        assertEquals("RSA", testCipherExtension.decryptorCipher.algorithm)
-        assertEquals("RSA", testCipherExtension.encryptorCipher.algorithm)
+        assertEquals("RSA/ECB/PKCS1Padding", testCipherExtension.decryptorCipher.algorithm)
+        assertEquals("RSA/ECB/PKCS1Padding", testCipherExtension.encryptorCipher.algorithm)
         assertEquals(testCipherExtension.publicKeyRing.size, 2)
 
         // FIX: As described in Device unit tests, we need to use assertArrayEquals rather than assertEquals

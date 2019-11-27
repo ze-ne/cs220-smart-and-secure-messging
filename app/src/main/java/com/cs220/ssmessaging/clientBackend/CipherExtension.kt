@@ -46,9 +46,9 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
 
     init{
         // Init ciphers
-        decryptorCipher = Cipher.getInstance("RSA")
+        decryptorCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
         decryptorCipher.init(Cipher.DECRYPT_MODE, privateKey)
-        encryptorCipher = Cipher.getInstance("RSA")
+        encryptorCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
     }
 
     fun addKeyToPublicKeyRing(userId : String, publicKey: PublicKey) : Unit {
@@ -73,6 +73,8 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         catch(e : Exception){
             decryptedRecpientAESKeyBytes = byteArrayOf()
         }
+
+        decryptorCipher.init(Cipher.DECRYPT_MODE, privateKey)
 
         try{
             decryptedSenderAESKeyBytes = decryptorCipher.doFinal(encryptedMsg.encryptedSenderAESKey)

@@ -582,9 +582,6 @@ class User() {
         val timestamp = message.timestamp
         println("=============TIMESTAMP=================" + timestamp)
         println("=============senderID=================" + senderId)
-
-
-
         val convo = db.collection("conversations").document(convoId)
         //val query = db.collection("conversation").document(convoId).collection("messages")
         val query = convo.collection("messages")
