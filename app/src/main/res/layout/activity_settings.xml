@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".frontend.activities.SettingsActivity">
@@ -17,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="248dp"
         android:ems="10"
-        android:hint="Change First Name"
+        android:hint="first name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.277"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +26,9 @@
         android:id="@+id/changeFirstNameButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Change >"
+        android:layout_marginStart="16dp"
+        android:text="Change"
+        android:theme="@style/AppTheme.Button"
         app:layout_constraintBottom_toBottomOf="@+id/settings_firstName"
         app:layout_constraintStart_toEndOf="@+id/settings_firstName"
         app:layout_constraintTop_toTopOf="@+id/settings_firstName" />
@@ -38,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="340dp"
         android:ems="10"
-        android:hint="Change Last Name"
+        android:hint="last name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.277"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +49,9 @@
         android:id="@+id/changeLastNameButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Change >"
+        android:layout_marginStart="16dp"
+        android:text="Change"
+        android:theme="@style/AppTheme.Button"
         app:layout_constraintBottom_toBottomOf="@+id/settings_lastName"
         app:layout_constraintStart_toEndOf="@+id/settings_lastName"
         app:layout_constraintTop_toTopOf="@+id/settings_lastName" />
@@ -57,7 +60,10 @@
         android:id="@+id/logoutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:text="Logout"
-        tools:layout_editor_absoluteX="153dp"
-        tools:layout_editor_absoluteY="523dp" />
+        android:theme="@style/AppTheme.Button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_lastName" />
 </androidx.constraintlayout.widget.ConstraintLayout>
