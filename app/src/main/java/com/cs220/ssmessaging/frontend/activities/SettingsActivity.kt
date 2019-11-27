@@ -9,9 +9,11 @@ import com.google.common.base.Strings.isNullOrEmpty
 import com.google.firebase.auth.FirebaseAuth
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.cs220.ssmessaging.R
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var homeToolbar: Toolbar
     private lateinit var firstNameField: EditText
     private lateinit var lastNameField: EditText
     private lateinit var changeFirstNameButton: Button
@@ -22,6 +24,9 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        homeToolbar = findViewById(R.id.home_toolbar)
+        setSupportActionBar(homeToolbar)
 
         firstNameField = findViewById(R.id.settings_firstName)
         lastNameField = findViewById(R.id.settings_lastName)
