@@ -39,10 +39,10 @@ class AddConversationDialog : DialogFragment() {
 
         newConversationButton.setOnClickListener {
             val participantUsername = newConversationInput.text.toString()
-            if (currentUser.checkIfInBlockList(participantUsername)){
+            if (currentUser.checkIfInBlockList(participantUsername)) {
                 Toast.makeText(
                     activity,
-                    "Unable to start conversation. " + participantUsername + " has been blocked",
+                    "Unable to start conversation. $participantUsername has been blocked",
                     Toast.LENGTH_LONG
                 ).show()
             } else if (participantUsername.isNotEmpty()) {
@@ -53,20 +53,22 @@ class AddConversationDialog : DialogFragment() {
                         if (documentReference.size() == 1) {
                             val newConvo = Conversation(currentUser.userId, participantUsername)
                             // Check if you're in the other user's block list
-                            val blockList : MutableList<String>? = documentReference.documents[0].get("block_list") as MutableList<String>?
+                            val blockList: MutableList<String>? =
+                                documentReference.documents[0].get("block_list") as MutableList<String>?
 
                             // Only start new conversation if the other person's blockList does not exist or you are not in it
-                            if(blockList == null || !blockList.contains(currentUser.userId)){
+                            if (blockList == null || !blockList.contains(currentUser.userId)) {
                                 currentUser.startConversation(newConvo)
                                 newConversationInput.text.clear()
                                 val conversationIntent =
                                     Intent(activity, ConversationActivity::class.java)
                                 conversationIntent.putExtra("receiver_name", participantUsername)
                                 startActivity(conversationIntent)
+                                this.dismiss()
                             } else {
                                 Toast.makeText(
                                     activity,
-                                    "Unable to start conversation. You have been blocked by " + participantUsername,
+                                    "Unable to start conversation. You have been blocked by $participantUsername",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
