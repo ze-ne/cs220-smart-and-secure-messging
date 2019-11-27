@@ -198,12 +198,8 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                 deleteMessage.visibility = View.GONE
             }
 
-            // TODO: fix
             confirmDeleteMessage.setOnClickListener {
-                println("CLICK")
                 currentUser.deleteSentMessageFromDb(convoId, message)
-                //currentUser.deleteSentMessage(message)
-                //deleteMessage.visibility = View.GONE
             }
         }
     }

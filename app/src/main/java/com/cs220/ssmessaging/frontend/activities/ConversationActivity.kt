@@ -6,6 +6,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -82,8 +84,18 @@ class ConversationActivity : AppCompatActivity() {
         hiddenImageButton.setOnClickListener {
             selectHiddenImage()
         }
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.conversation_options_menu, menu)
+        return true
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+        Toast.makeText(this, "Test toast", Toast.LENGTH_LONG).show()
+        return true
     }
 
     private fun addMessage(dc: DocumentChange, convoId: String) {
