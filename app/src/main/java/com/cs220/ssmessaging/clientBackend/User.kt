@@ -192,14 +192,6 @@ class User() {
         return true
     }
 
-    // Gets conversation and public keys from the database - Untestable because server
-    fun receiveConversation(convo: Conversation): Boolean {
-        getUserPublicKey(convo.user1Id)
-        getUserPublicKey(convo.user2Id)
-        addConversation(convo)
-        return false
-    }
-
     fun getConversationByUserId(recipientId: String): Conversation? {
         var retConvoList: List<Conversation> = this.conversations
             .filter { x -> (x.user1Id == recipientId || x.user2Id == recipientId) }
@@ -343,9 +335,10 @@ class User() {
         val docref = db.collection("users").document(this.userId)
         docref.get()
             .addOnSuccessListener { document ->
-                val blockedlist = document.data?.get("block_list") as MutableList<String>?
-                if(blockedlist != null)
-                    blockedContacts = blockedlist
+                val blockedlist = document.data?.get("block_list")
+                if(blockedlist != null){
+                    blockedContacts = blockedlist as MutableList<String>
+                }
             }
     }
 
@@ -492,14 +485,16 @@ class User() {
         val keyTask: Task<DocumentSnapshot> = db.collection("users").document(userId)
             .get()
             .addOnSuccessListener { documentSnapshot ->
-                val keyField = documentSnapshot.getBlob("publicKey")!!
-                Log.d("We got the key: ", keyField.toString())
-                val publicKey: PublicKey =
-                    keyFactory.generatePublic(X509EncodedKeySpec(keyField.toBytes()))
+                val keyField = documentSnapshot.getBlob("publicKey")
+                if(keyField != null){
+                    Log.d("We got the key: ", keyField.toString())
+                    val publicKey: PublicKey =
+                        keyFactory.generatePublic(X509EncodedKeySpec(keyField.toBytes()))
 
-                val fileUserId = if (this.userId == userId) "myKey" else userId
+                    val fileUserId = if (this.userId == userId) "myKey" else userId
 
-                device.addUserPublicKey(fileUserId, publicKey)
+                    device.addUserPublicKey(fileUserId, publicKey)
+                }
             }.addOnFailureListener { e ->
                 throw e
             }

@@ -278,7 +278,7 @@ class UserUnitTests{
         val oldLength: Int = conversation.messages.size
         assertEquals(conversation.messages.size, 0)
 
-        user1.sendImageMsg(ByteArray(0), conversation)
+        user1.sendImageMsg(byteArrayOf(1,2,3), conversation)
 
         assertEquals(conversation.messages.size, oldLength + 1)
         assertEquals((conversation.messages[0] as ImageMessage).message, null)
