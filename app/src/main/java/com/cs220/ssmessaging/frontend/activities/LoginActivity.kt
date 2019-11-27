@@ -7,11 +7,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import com.cs220.ssmessaging.R
 import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
 
+    private lateinit var homeToolbar: Toolbar
     private lateinit var username: EditText
     private lateinit var phoneNumber: EditText
     private lateinit var newAccountLink: TextView
@@ -20,6 +22,9 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        homeToolbar = findViewById(R.id.home_toolbar)
+        setSupportActionBar(homeToolbar)
 
         username = findViewById(R.id.login_username)
         phoneNumber = findViewById(R.id.login_phone_number)

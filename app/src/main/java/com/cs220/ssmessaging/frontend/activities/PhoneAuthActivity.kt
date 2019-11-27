@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.User
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit
 
 class PhoneAuthActivity : AppCompatActivity() {
 
+    private lateinit var homeToolbar: Toolbar
     private lateinit var phonenumber: String
     private var verificationId: String = ""
     private lateinit var signinButton: Button
@@ -32,6 +34,9 @@ class PhoneAuthActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_phone_auth)
+
+        homeToolbar = findViewById(R.id.home_toolbar)
+        setSupportActionBar(homeToolbar)
 
         phonenumber = intent.getStringExtra("phonenumber")
         sendPhoneVerification(phonenumber)
@@ -82,7 +87,11 @@ class PhoneAuthActivity : AppCompatActivity() {
                     }
                     startActivity(homeIntent)
                 } else {
-                    Toast.makeText(applicationContext, "The code you have entered is incorrect. Please make sure to enter the code you received.", Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        applicationContext,
+                        "The code you have entered is incorrect. Please make sure to enter the code you received.",
+                        Toast.LENGTH_LONG
+                    )
                         .show()
                 }
             }
