@@ -86,7 +86,7 @@ class ConversationActivity : AppCompatActivity() {
         sendDestructMessageButton.setOnClickListener {
             val message = userMessageInput.text
             if (message.isNotEmpty()) {
-                currentUser.sendDestructMsg(message.toString(), conversation)
+                currentUser.sendTextMsg(message.toString(), conversation, deletionTimer = 5)
                 userMessageInput.text.clear()
             }
         }
@@ -163,8 +163,12 @@ class ConversationActivity : AppCompatActivity() {
                     currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
 
                 val isVisible = dc.document.data.get("is_visible")
+                val deletionTimer = dc.document.data.get("deletion_timer")
                 if(isVisible != null){
                     decryptedMessage.isVisible = isVisible as Boolean
+                }
+                if(deletionTimer != null){
+                    decryptedMessage.deletionTimer = deletionTimer as Long
                 }
 
                 currentUser.receiveMsg(decryptedMessage)
@@ -183,8 +187,12 @@ class ConversationActivity : AppCompatActivity() {
                         val decryptedMessage =
                             currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
                         val isVisible = dc.document.data.get("is_visible")
+                        val deletionTimer = dc.document.data.get("deletion_timer")
                         if(isVisible != null){
                             decryptedMessage.isVisible = isVisible as Boolean
+                        }
+                        if(deletionTimer != null){
+                            decryptedMessage.deletionTimer = deletionTimer as Long
                         }
                         currentUser.receiveMsg(decryptedMessage)
                         displayMessages()

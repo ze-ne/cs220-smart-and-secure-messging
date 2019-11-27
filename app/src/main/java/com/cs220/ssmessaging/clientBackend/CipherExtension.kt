@@ -71,6 +71,7 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             decryptedRecpientAESKeyBytes = decryptorCipher.doFinal(encryptedMsg.encryptedRecipientAESKey)
         }
         catch(e : Exception){
+            Log.e("ERROR Rec", e.toString())
             decryptedRecpientAESKeyBytes = byteArrayOf()
         }
 
@@ -80,6 +81,7 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             decryptedSenderAESKeyBytes = decryptorCipher.doFinal(encryptedMsg.encryptedSenderAESKey)
         }
         catch(e: Exception){
+            Log.e("ERROR Sen", e.toString())
             decryptedSenderAESKeyBytes = byteArrayOf()
         }
 
@@ -88,6 +90,9 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
                 decryptedRecpientAESKeyBytes
             else
                 decryptedSenderAESKeyBytes
+
+        println("RECIPIENT KEY SIZE: " + decryptedRecpientAESKeyBytes.size)
+        println("SENDER KEY SIZE: " + decryptedSenderAESKeyBytes.size)
 
         val aesKey = SecretKeySpec(trueDecryptedBytes, "AES")
 
@@ -115,8 +120,8 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         val recipientIdPublicKey : PublicKey? = publicKeyRing[unencryptedMsg.recipientId]
         val myKey : PublicKey? = publicKeyRing["myKey"]
 
-        println("KEY " + recipientIdPublicKey)
-        println("KEY " + myKey)
+        Log.d("RECIPIENT ID: ", unencryptedMsg.recipientId)
+        Log.d("Equal?", myKey?.equals(recipientIdPublicKey).toString())
         if(recipientIdPublicKey == null || myKey  == null){
             throw NullPointerException("recipientId or my public key not found. This means that the keys are unsynced with the server")
         }

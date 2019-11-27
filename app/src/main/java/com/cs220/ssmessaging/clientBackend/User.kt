@@ -178,7 +178,8 @@ class User() {
             "users" to listOf<String>(convo.user1Id, convo.user2Id)
         )
         // IMPORTANT: Implement somewhere the function to delete this added conversation IF key exchange or adding conversation fails!!!
-        addConversation(convo)
+        if(!addConversation(convo))
+            return false
         db.collection("conversations").document(convo.convoId)
             .set(toAdd)
             .addOnSuccessListener {
@@ -388,38 +389,27 @@ class User() {
     }
 
     // Sends image message to server - partially testable
-    fun sendImageMsg(msg: ByteArray, convo: Conversation, isVisible: Boolean = true) {
+    fun sendImageMsg(msg: ByteArray, convo: Conversation, isVisible: Boolean = true, deletionTimer: Long = -1.toLong()) {
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
         val msg = ImageMessage(msg, convo.convoId, this.userId, recipient, timestamp)
         msg.isVisible = isVisible
+        msg.deletionTimer = deletionTimer
         convo.addMessage(msg)
 
         sendEncryptedMsg(msg, convo)
     }
 
     // Sends text message to server
-    fun sendTextMsg(msg: String, convo: Conversation) {
+    fun sendTextMsg(msg: String, convo: Conversation, deletionTimer : Long = -1.toLong()) {
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
         val txtMsg = TextMessage(msg, convo.convoId, this.userId, recipient, timestamp)
+        txtMsg.deletionTimer = deletionTimer
         convo.addMessage(txtMsg)
 
         sendEncryptedMsg(txtMsg, convo)
     }
-
-    // Sends text message to server
-    fun sendDestructMsg(msg: String, convo: Conversation) {
-        val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
-        val timestamp = Instant.now().toEpochMilli()
-        val txtMsg = TextMessage(msg, convo.convoId, this.userId, recipient, timestamp)
-        convo.addMessage(txtMsg)
-
-        deleteMessageTimer(convo.convoId, txtMsg, 5)
-        sendEncryptedMsg(txtMsg, convo)
-    }
-
-
 
     // Fully untestable because all this does is hit the server
     private fun sendEncryptedMsg(unencryptedMsg: UnencryptedMessage, convo: Conversation) {
@@ -437,7 +427,8 @@ class User() {
                     "timestamp" to encryptedMessage.timestamp,
                     "is_visible" to unencryptedMsg.isVisible,
                     "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
-                    "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
+                    "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey),
+                    "deletion_timer" to unencryptedMsg.deletionTimer
                 )
 
                 db.collection("conversations")
@@ -472,7 +463,8 @@ class User() {
                             "timestamp" to encryptedMessage.timestamp,
                             "is_visible" to unencryptedMsg.isVisible,
                             "sender_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedSenderAESKey),
-                            "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey)
+                            "recipient_encrypted_aes_key" to Blob.fromBytes(encryptedMessage.encryptedRecipientAESKey),
+                            "deletion_timer" to unencryptedMsg.deletionTimer
                         )
 
                         db.collection("conversations")
@@ -534,6 +526,11 @@ class User() {
         var localConvoObject = getConversationByUserId(getOtherUser(decryptedMsg))
         localConvoObject ?: return false
         localConvoObject?.addMessage(decryptedMsg)
+
+        // If there is a deletion timer, then set up for deletion if you are the message recipient
+        if(decryptedMsg.deletionTimer > 0 && userId == decryptedMsg.recipientId){
+            deleteMessageTimer(localConvoObject.convoId, decryptedMsg, decryptedMsg.deletionTimer)
+        }
         return true
     }
 

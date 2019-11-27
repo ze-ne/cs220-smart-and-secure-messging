@@ -108,6 +108,7 @@ class EncryptedMessage(_message : ByteArray, _conversationId : String,
 
 interface UnencryptedMessage : Message {
     var isVisible : Boolean
+    var deletionTimer : Long
 }
 
 class TextMessage(_message : String, _conversationId : String,
@@ -129,6 +130,7 @@ class TextMessage(_message : String, _conversationId : String,
     override val recipientId : String
     override val timestamp : Long
     override var isVisible : Boolean = true
+    override var deletionTimer = -1.toLong()
 
     val message : String
     var sentiment : String = ""
@@ -198,6 +200,7 @@ class ImageMessage(_message : ByteArray, _conversationId : String,
     override val recipientId : String
     override val timestamp : Long
     override var isVisible : Boolean = true
+    override var deletionTimer = -1.toLong()
 
     val message : ByteArray
     var pathToImage : String = ""
