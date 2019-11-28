@@ -4,7 +4,8 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-tools:context=".frontend.fragments.ConversationsListFragment">
+    android:id="@+id/block_fragment"
+tools:context=".frontend.fragments.BlockedListFragment">
 
 <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/block_recycler_list"

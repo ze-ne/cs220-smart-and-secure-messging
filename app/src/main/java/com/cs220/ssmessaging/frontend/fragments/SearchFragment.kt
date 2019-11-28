@@ -84,7 +84,9 @@ class SearchFragment : Fragment() {
             viewHolder.itemView.search_block_button.setOnClickListener {
                 val otherUser = user.substringBefore(":")
                 currentUser.addBlockedContactToDb(otherUser) {
-                    fragmentManager?.findFragmentById(R.id.home_tab_pager)?.onStart()
+                    for (frag in fragmentManager?.fragments!!) {
+                        frag.onStart()
+                    }
                 }
                 Toast.makeText(activity, "$otherUser has been blocked", Toast.LENGTH_SHORT).show()
             }
