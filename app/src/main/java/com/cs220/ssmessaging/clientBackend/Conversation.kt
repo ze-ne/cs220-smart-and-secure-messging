@@ -255,7 +255,7 @@ class ToneGeneralCallback(private val callback: ((String) -> Unit)?) : ServiceCa
         val tones: List<ToneScore> = response?.result?.documentTone?.tones!!
         tones.sortedWith(compareBy{it.score})
         var response = ""
-        val end : Int = kotlin.math.max(2, tones.size)
+        val end : Int = kotlin.math.min(2, tones.size)
         val topTones = tones.subList(0,end)
         for ((i,tone) in topTones.withIndex()){
             response += tone.toneName + ": " + kotlin.math.round(tone.score * 100) + "%"

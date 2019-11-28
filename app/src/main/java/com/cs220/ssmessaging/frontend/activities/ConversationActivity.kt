@@ -131,6 +131,7 @@ class ConversationActivity : AppCompatActivity() {
         sentimentsSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 conversation.getGeneralTone {str ->
+                    Log.d("toneSwitch", str)
                     runOnUiThread {
                         Toast.makeText(this@ConversationActivity, str, Toast.LENGTH_LONG).show()
                     }
