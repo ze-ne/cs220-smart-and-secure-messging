@@ -3,6 +3,7 @@ package com.cs220.ssmessaging.frontend.activities
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -29,6 +30,7 @@ import android.widget.CompoundButton
 import kotlinx.android.synthetic.main.switch_item.view.*
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.graphics.createBitmap
 import com.google.firebase.firestore.ListenerRegistration
 
 
@@ -38,7 +40,6 @@ const val REQUEST_HIDDEN_IMAGE_GET = 2
 class ConversationActivity : AppCompatActivity() {
     private lateinit var conversationToolbar: Toolbar
     private lateinit var sendMessageButton: ImageButton
-    private lateinit var sendDestructMessageButton: ImageButton
     private lateinit var imageButton: ImageButton
     private lateinit var hiddenImageButton: ImageButton
     private lateinit var userMessageInput: EditText
@@ -49,6 +50,7 @@ class ConversationActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
+    private var timedDeletion : Boolean = false
 
     // Refreshes conversation
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,26 +74,13 @@ class ConversationActivity : AppCompatActivity() {
         addMessageListener(conversation.convoId)
 
         sendMessageButton = findViewById(R.id.send_message_button)
-        sendDestructMessageButton = findViewById(R.id.send_destruction_timer)
 
         userMessageInput = findViewById(R.id.message_input)
         imageButton = findViewById(R.id.add_image_button)
         hiddenImageButton = findViewById(R.id.add_hidden_image_button)
 
         sendMessageButton.setOnClickListener {
-            val message = userMessageInput.text
-            if (message.isNotEmpty()) {
-                currentUser.sendTextMsg(message.toString(), conversation)
-                userMessageInput.text.clear()
-            }
-        }
-
-        sendDestructMessageButton.setOnClickListener {
-            val message = userMessageInput.text
-            if (message.isNotEmpty()) {
-                currentUser.sendTextMsg(message.toString(), conversation, deletionTimer = 5)
-                userMessageInput.text.clear()
-            }
+           onSendTextMessage()
         }
 
         imageButton.setOnClickListener {
@@ -100,6 +89,19 @@ class ConversationActivity : AppCompatActivity() {
 
         hiddenImageButton.setOnClickListener {
             selectHiddenImage()
+        }
+    }
+
+    fun onSendTextMessage(){
+        val message = userMessageInput.text
+        if (message.isEmpty())
+            return
+        if (this.timedDeletion){
+            currentUser.sendTextMsg(message.toString(), conversation, deletionTimer = 5)
+            userMessageInput.text.clear()
+        } else {
+            currentUser.sendTextMsg(message.toString(), conversation)
+            userMessageInput.text.clear()
         }
     }
 
@@ -112,6 +114,13 @@ class ConversationActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.conversation_options_menu, menu)
+
+        val deletionSwitch: Switch = menu!!.findItem(R.id.deletion_switch).actionView.switchForActionBar
+        deletionSwitch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+            override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
+                timedDeletion = isChecked
+            }
+        })
 
         val sentimentsSwitch: Switch = menu!!.findItem(R.id.analytics_switch).actionView.switchForActionBar
         sentimentsSwitch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
@@ -265,21 +274,16 @@ class ConversationActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_IMAGE_GET && resultCode == Activity.RESULT_OK) {
+        if ((requestCode == REQUEST_IMAGE_GET  || requestCode == REQUEST_HIDDEN_IMAGE_GET) && resultCode == Activity.RESULT_OK) {
             Log.i("TestImage", "2")
             val fullPhotoUri: Uri = data!!.data!!
             val bitmap = ImageHandler.getImageFromStorage(fullPhotoUri)
-            currentUser.sendImageMsg(ImageHandler.getByteArrayFromImage(bitmap), conversation)
-        }
-        if (requestCode == REQUEST_HIDDEN_IMAGE_GET && resultCode == Activity.RESULT_OK) {
-            Log.i("TestImage", "2")
-            val fullPhotoUri: Uri = data!!.data!!
-            val bitmap = ImageHandler.getImageFromStorage(fullPhotoUri)
-            currentUser.sendImageMsg(
-                ImageHandler.getByteArrayFromImage(bitmap),
-                conversation,
-                false
-            )
+            val hidden = requestCode == REQUEST_IMAGE_GET
+            if(this.timedDeletion){
+                currentUser.sendImageMsg(ImageHandler.getByteArrayFromImage(bitmap), conversation, isVisible = hidden, deletionTimer = 5)
+            } else {
+                currentUser.sendImageMsg(ImageHandler.getByteArrayFromImage(bitmap), conversation, isVisible = hidden)
+            }
         }
     }
 

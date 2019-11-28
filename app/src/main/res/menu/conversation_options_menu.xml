@@ -3,6 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".frontend.activities.ConversationActivity" >
+
+    <item
+        android:id="@+id/deletion_text"
+        android:title="Deletion"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/deletion_switch"
+        android:title="Deletion Switch"
+        app:actionLayout="@layout/switch_item"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/analytics_text"
+        android:title="Analytics"
+        app:showAsAction="always"/>
+
     <item
         android:id="@+id/analytics_switch"
         android:title="Switch"
@@ -14,5 +29,4 @@
         android:title="Get Analytics"
         android:icon="@drawable/ic_show_chart"
         app:showAsAction="always" />
-
 </menu>
