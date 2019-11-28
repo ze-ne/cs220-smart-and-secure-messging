@@ -186,7 +186,9 @@ class ConversationsListFragment : Fragment() {
             }
             viewHolder.itemView.block_button.setOnClickListener {
                 currentUser.addBlockedContactToDb(otherUser) {
-                    fragmentManager?.findFragmentById(R.id.home_tab_pager)?.onStart()
+                    for (frag in fragmentManager?.fragments!!) {
+                        frag.onStart()
+                    }
                 }
             }
         }
