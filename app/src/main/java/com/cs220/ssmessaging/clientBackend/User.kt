@@ -251,7 +251,7 @@ class User() {
                     var firstName = doc.data?.get("first_name")
                     var lastName = doc.data?.get("last_name")
                     if(userName != null && firstName != null && lastName  != null)
-                        outputList.add((userName  as String) + ": " + (firstName as String) + ": " + (lastName as String))
+                        outputList.add((userName  as String) + ": " + (firstName as String) + " " + (lastName as String))
                 }
 
                 // Search for users based on first name
@@ -266,7 +266,7 @@ class User() {
                             val userInfoString : String
                             if(userName != null && firstName != null && lastName  != null){
                                 userInfoString =
-                                    (userName  as String) + ": " + (firstName as String) + ": " + (lastName as String)
+                                    (userName  as String) + ": " + (firstName as String) + " " + (lastName as String)
                                 if(!outputList.contains(userInfoString))
                                     outputList.add(userInfoString)
                             }
@@ -284,7 +284,7 @@ class User() {
                                     val userInfoString: String
                                     if (userName != null && firstName != null && lastName != null) {
                                         userInfoString =
-                                            (userName as String) + ": " + (firstName as String) + ": " + (lastName as String)
+                                            (userName as String) + ": " + (firstName as String) + " " + (lastName as String)
                                         if (!outputList.contains(userInfoString))
                                             outputList.add(userInfoString)
                                     }
