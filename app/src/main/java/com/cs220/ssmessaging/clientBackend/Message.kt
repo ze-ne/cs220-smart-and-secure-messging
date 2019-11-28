@@ -1,8 +1,5 @@
 package com.cs220.ssmessaging.clientBackend
 
-import android.graphics.Bitmap
-import java.lang.IllegalArgumentException
-
 /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
  * This is because variables are properties and all properties have a private field.
  * Therefore we achieve encapsulation Kotlin by defining custom getters and setters.

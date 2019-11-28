@@ -7,7 +7,6 @@ import android.net.Uri
 import android.provider.MediaStore
 import com.cs220.ssmessaging.MyApplication.MyApplication
 import java.io.ByteArrayOutputStream
-import java.sql.Timestamp
 
 object ImageHandler {
     val uriToImagesDirectory : Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI

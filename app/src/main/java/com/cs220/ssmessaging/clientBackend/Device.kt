@@ -5,17 +5,14 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
-import java.io.PrintWriter
 import java.nio.file.Files
 import java.security.*
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.security.Security
-import javax.crypto.Cipher
-import javax.crypto.CipherSpi
 
 
-class Device() {
+class Device {
     /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
      * This is because variables are properties and all properties have a private field.
      * Therefore we achieve encapsulation Kotlin by defining custom getters and setters.

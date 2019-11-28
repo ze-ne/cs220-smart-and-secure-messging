@@ -70,7 +70,6 @@ class MessagesAdapter(
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
-        println("SHOW: " + display)
         val message = messages[position]
         holder.bind(message)
         if (holder is MyMessageViewHolder) {
@@ -86,7 +85,6 @@ class MessagesAdapter(
                         { myMessage.setTextColor(Color.parseColor("#506F86")) },
                         7000
                     )
-                    println("CLICKING SOME TEXT")
                 }
             }
         } else {
@@ -98,7 +96,6 @@ class MessagesAdapter(
                         { otherMessage.setTextColor(Color.parseColor("#2F3C4F")) },
                         7000
                     )
-                    println("CLICKING SOME TEXT")
                 }
             }
         }
@@ -185,8 +182,6 @@ class MessagesAdapter(
                 if (!message.isVisible) {
                     messageText.setTextColor(Color.parseColor("#506F86"))
                 }
-
-                println("SENTIMENT: " + message.sentiment)
 
                 if (!display) {
                     analyticsText.visibility = View.GONE

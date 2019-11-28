@@ -3,12 +3,10 @@ package com.cs220.ssmessaging.frontend.activities
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
 import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -44,7 +42,7 @@ class ConversationActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
-    private var timedDeletion : Boolean = false
+    private var timedDeletion: Boolean = false
 
     // Refreshes conversation
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,7 +73,7 @@ class ConversationActivity : AppCompatActivity() {
         hiddenImageButton = findViewById(R.id.add_hidden_image_button)
 
         sendMessageButton.setOnClickListener {
-           onSendTextMessage()
+            onSendTextMessage()
         }
 
         sendHiddenMessageButton.setOnClickListener {
@@ -95,11 +93,11 @@ class ConversationActivity : AppCompatActivity() {
         }
     }
 
-    fun onSendTextMessage(){
+    fun onSendTextMessage() {
         val message = userMessageInput.text
         if (message.isEmpty())
             return
-        if (this.timedDeletion){
+        if (this.timedDeletion) {
             currentUser.sendTextMsg(message.toString(), conversation, deletionTimer = 5)
             userMessageInput.text.clear()
         } else {
@@ -108,24 +106,28 @@ class ConversationActivity : AppCompatActivity() {
         }
     }
 
-    val analyticsCallback = {runOnUiThread {
+    val analyticsCallback = {
+        runOnUiThread {
             // Stuff that updates the UI
             messagesAdapter.display = true
             messagesAdapter.notifyDataSetChanged()
-        }}
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.conversation_options_menu, menu)
 
-        val deletionSwitch: Switch = menu!!.findItem(R.id.deletion_switch).actionView.switchForActionBar
+        val deletionSwitch: Switch =
+            menu!!.findItem(R.id.deletion_switch).actionView.switchForActionBar
         deletionSwitch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
                 timedDeletion = isChecked
             }
         })
 
-        val sentimentsSwitch: Switch = menu!!.findItem(R.id.analytics_switch).actionView.switchForActionBar
+        val sentimentsSwitch: Switch =
+            menu!!.findItem(R.id.analytics_switch).actionView.switchForActionBar
         sentimentsSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 conversation.getGeneralTone {str ->
@@ -176,10 +178,10 @@ class ConversationActivity : AppCompatActivity() {
 
                 val isVisible = dc.document.data.get("is_visible")
                 val deletionTimer = dc.document.data.get("deletion_timer")
-                if(isVisible != null){
+                if (isVisible != null) {
                     decryptedMessage.isVisible = isVisible as Boolean
                 }
-                if(deletionTimer != null){
+                if (deletionTimer != null) {
                     decryptedMessage.deletionTimer = deletionTimer as Long
                 }
 
@@ -200,10 +202,10 @@ class ConversationActivity : AppCompatActivity() {
                             currentUser.device.cipher.decryptEncryptedMessage(encryptedMessage)
                         val isVisible = dc.document.data.get("is_visible")
                         val deletionTimer = dc.document.data.get("deletion_timer")
-                        if(isVisible != null){
+                        if (isVisible != null) {
                             decryptedMessage.isVisible = isVisible as Boolean
                         }
-                        if(deletionTimer != null){
+                        if (deletionTimer != null) {
                             decryptedMessage.deletionTimer = deletionTimer as Long
                         }
                         currentUser.receiveMsg(decryptedMessage)
@@ -236,7 +238,13 @@ class ConversationActivity : AppCompatActivity() {
             }
             "image" -> {
                 val imageMessage =
-                    ImageMessage(fillerText.toByteArray(), convoId, senderId, recipientId, timestamp)
+                    ImageMessage(
+                        fillerText.toByteArray(),
+                        convoId,
+                        senderId,
+                        recipientId,
+                        timestamp
+                    )
                 currentUser.deleteSentMessage(imageMessage)
             }
             else -> throw Exception("Unknown message type")
@@ -272,15 +280,24 @@ class ConversationActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if ((requestCode == REQUEST_IMAGE_GET  || requestCode == REQUEST_HIDDEN_IMAGE_GET) && resultCode == Activity.RESULT_OK) {
+        if ((requestCode == REQUEST_IMAGE_GET || requestCode == REQUEST_HIDDEN_IMAGE_GET) && resultCode == Activity.RESULT_OK) {
             Log.i("TestImage", "2")
             val fullPhotoUri: Uri = data!!.data!!
             val bitmap = ImageHandler.getImageFromStorage(fullPhotoUri)
             val hidden = requestCode == REQUEST_IMAGE_GET
-            if(this.timedDeletion){
-                currentUser.sendImageMsg(ImageHandler.getByteArrayFromImage(bitmap), conversation, isVisible = hidden, deletionTimer = 5)
+            if (this.timedDeletion) {
+                currentUser.sendImageMsg(
+                    ImageHandler.getByteArrayFromImage(bitmap),
+                    conversation,
+                    isVisible = hidden,
+                    deletionTimer = 5
+                )
             } else {
-                currentUser.sendImageMsg(ImageHandler.getByteArrayFromImage(bitmap), conversation, isVisible = hidden)
+                currentUser.sendImageMsg(
+                    ImageHandler.getByteArrayFromImage(bitmap),
+                    conversation,
+                    isVisible = hidden
+                )
             }
         }
     }
@@ -306,7 +323,12 @@ class ConversationActivity : AppCompatActivity() {
     // Display the messages onscreen
     private fun displayMessages() {
         messagesAdapter =
-            MessagesAdapter(this, conversation.messages as ArrayList<UnencryptedMessage>, conversation.convoId, false)
+            MessagesAdapter(
+                this,
+                conversation.messages as ArrayList<UnencryptedMessage>,
+                conversation.convoId,
+                false
+            )
         message_recycler_view.scrollToPosition(conversation.messages.size - 1)
         message_recycler_view.adapter = messagesAdapter
     }

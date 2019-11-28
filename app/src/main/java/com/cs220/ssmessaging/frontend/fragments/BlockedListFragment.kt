@@ -26,7 +26,7 @@ class BlockedListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         currentUser = MyApplication.currentUser!!
-        currentUser.getBlockList({displayBlockList()})
+        currentUser.getBlockList({ displayBlockList() })
         setHasOptionsMenu(true)
     }
 
@@ -48,7 +48,7 @@ class BlockedListFragment : Fragment() {
         displayBlockList()
     }
 
-    fun displayBlockList(){
+    fun displayBlockList() {
         blockListAdapter = BlockListAdapter(activity as Context, currentUser.blockedContacts)
         blockListRecyclerView.adapter = blockListAdapter
     }
@@ -100,7 +100,7 @@ class BlockedListFragment : Fragment() {
             viewHolder.bind(user)
 
             val btn = viewHolder.itemView.findViewById<Button>(R.id.unblock_button)
-            btn.setOnClickListener{
+            btn.setOnClickListener {
                 currentUser.deleteBlockedContactFromDb(user, { displayBlockList() })
             }
         }

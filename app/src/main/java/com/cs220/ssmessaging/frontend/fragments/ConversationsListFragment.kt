@@ -116,7 +116,7 @@ class ConversationsListFragment : Fragment() {
     }
 
     private fun displayConversations() {
-        if(activity != null) {
+        if (activity != null) {
             conversationsListAdapter =
                 ConversationsListAdapter(activity as Context, currentUser.conversations)
             conversations_recycler_list.adapter = conversationsListAdapter

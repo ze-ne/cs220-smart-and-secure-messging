@@ -72,13 +72,15 @@ class PhoneAuthActivity : AppCompatActivity() {
     }
 
     private fun verifyCode(code: String) {
-        try{
+        try {
             val credential = PhoneAuthProvider.getCredential(verificationId, code)
             signInWithCredential(credential)
-        } catch(e : Exception){
-            Toast.makeText(applicationContext,
+        } catch (e: Exception) {
+            Toast.makeText(
+                applicationContext,
                 "unable to log in due to connectivity issues, please try again",
-                Toast.LENGTH_LONG).show()
+                Toast.LENGTH_LONG
+            ).show()
         }
 
     }
