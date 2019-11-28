@@ -26,7 +26,7 @@ class HomeTabAdapter(fragmentManager: FragmentManager) :
         return when (position) {
             0 -> "Conversations"
             1 -> "Blocked Users"
-            2 -> "Search"
+            2 -> "Search Users"
             else -> ""
         }
     }
