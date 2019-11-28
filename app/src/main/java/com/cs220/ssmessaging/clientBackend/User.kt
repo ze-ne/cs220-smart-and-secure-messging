@@ -3,10 +3,6 @@ package com.cs220.ssmessaging.clientBackend
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.Blob
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import java.security.KeyFactory
 import java.security.PublicKey
@@ -15,6 +11,8 @@ import java.time.Instant
 import java.util.Timer
 import kotlin.concurrent.schedule
 import java.util.*
+import android.os.Handler
+import com.google.firebase.firestore.*
 
 const val TAG = "User"
 
@@ -129,6 +127,8 @@ class User() {
 
     var conversations: MutableList<Conversation> = mutableListOf()
         private set
+
+    var listeners: MutableList<ListenerRegistration> = mutableListOf()
 
     var device: Device = Device()
         get() {
@@ -550,7 +550,7 @@ class User() {
         localConvoObject?.addMessage(decryptedMsg)
 
         // If there is a deletion timer, then set up for deletion if you are the message recipient
-        if(decryptedMsg.deletionTimer > 0 && userId == decryptedMsg.recipientId){
+        if(decryptedMsg.deletionTimer > 0 && this.userId == decryptedMsg.recipientId){
             deleteMessageTimer(localConvoObject.convoId, decryptedMsg, decryptedMsg.deletionTimer)
         }
         return true
@@ -674,5 +674,16 @@ class User() {
                 Log.d("addSelfToDatabase", "User add failed")
             }
         return true
+    }
+
+    fun addListener(listener: ListenerRegistration){
+        listeners.add(listener)
+    }
+
+    fun removeListeners(){
+        for(l in listeners){
+            l.remove()
+        }
+        listeners = mutableListOf()
     }
 }

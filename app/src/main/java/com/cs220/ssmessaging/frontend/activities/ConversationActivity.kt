@@ -29,8 +29,7 @@ import android.widget.CompoundButton
 import kotlinx.android.synthetic.main.switch_item.view.*
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
-
-
+import com.google.firebase.firestore.ListenerRegistration
 
 
 const val REQUEST_IMAGE_GET = 1
@@ -243,7 +242,7 @@ class ConversationActivity : AppCompatActivity() {
         // Query messages within target conversation, sorted in chronological order
         val msgRef = db.collection("conversations").document(convoId)
         val msgCollection = msgRef.collection("messages").orderBy("timestamp")
-        msgCollection.addSnapshotListener { snapshot, e ->
+        val messsageListener = msgCollection.addSnapshotListener { snapshot, e ->
             if (e != null) {
                 return@addSnapshotListener
             }
@@ -261,6 +260,7 @@ class ConversationActivity : AppCompatActivity() {
             }
             displayMessages()
         }
+        currentUser.addListener(messsageListener)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -308,5 +308,4 @@ class ConversationActivity : AppCompatActivity() {
         message_recycler_view.scrollToPosition(conversation.messages.size - 1)
         message_recycler_view.adapter = messagesAdapter
     }
-
 }
