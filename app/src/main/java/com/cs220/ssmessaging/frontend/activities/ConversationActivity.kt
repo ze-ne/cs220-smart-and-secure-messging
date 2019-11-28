@@ -73,15 +73,11 @@ class ConversationActivity : AppCompatActivity() {
         hiddenImageButton = findViewById(R.id.add_hidden_image_button)
 
         sendMessageButton.setOnClickListener {
-            onSendTextMessage()
+            onSendTextMessage(true)
         }
 
         sendHiddenMessageButton.setOnClickListener {
-            val message = userMessageInput.text
-            if (message.isNotEmpty()) {
-                currentUser.sendTextMsg(message.toString(), conversation, isVisible = false)
-                userMessageInput.text.clear()
-            }
+            onSendTextMessage(false)
         }
 
         imageButton.setOnClickListener {
@@ -93,15 +89,15 @@ class ConversationActivity : AppCompatActivity() {
         }
     }
 
-    fun onSendTextMessage() {
+    fun onSendTextMessage(isVisible: Boolean) {
         val message = userMessageInput.text
         if (message.isEmpty())
             return
         if (this.timedDeletion) {
-            currentUser.sendTextMsg(message.toString(), conversation, deletionTimer = 5)
+            currentUser.sendTextMsg(message.toString(), conversation, isVisible = isVisible, deletionTimer = 5)
             userMessageInput.text.clear()
         } else {
-            currentUser.sendTextMsg(message.toString(), conversation)
+            currentUser.sendTextMsg(message.toString(), conversation, isVisible = isVisible)
             userMessageInput.text.clear()
         }
     }
