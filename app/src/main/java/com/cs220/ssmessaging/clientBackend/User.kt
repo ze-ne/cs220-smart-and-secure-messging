@@ -259,7 +259,7 @@ class User() {
                     .addOnSuccessListener { it2 ->
                         val documents2 = it2.documents
                         for(doc in documents2){
-                            var userName = doc.data?.get("cannonicalId")
+                            var userName = doc.data?.get("canonicalId")
                             var firstName = doc.data?.get("first_name")
                             var lastName = doc.data?.get("last_name")
 

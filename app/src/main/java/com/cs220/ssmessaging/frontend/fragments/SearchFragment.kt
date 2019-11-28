@@ -28,8 +28,6 @@ class SearchFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         currentUser = MyApplication.currentUser!!
-
-        // TODO: get all users to list of userIds gotten from database
         foundUsers = mutableListOf()
     }
 
@@ -50,14 +48,10 @@ class SearchFragment : Fragment() {
         searchButton.setOnClickListener {
             val text = searchBar.text.toString()
             if (!isNullOrEmpty(text)) {
-                println("TEXT: " + text)
                 currentUser.getAllUsersWithSearchTerm(text) { list ->
-                    println("LIST: " + list)
                     foundUsers = list
-                    println("FOUND: " + foundUsers)
                     searchAdapter.notifyDataSetChanged()
                 }
-                // TODO: search database then return list of users and add to adapter --> notifyDatasetChange
                 searchBar.text.clear()
             }
         }
@@ -67,14 +61,13 @@ class SearchFragment : Fragment() {
     }
 
     private fun displayUsers() {
-        searchAdapter = SearchAdapter(activity as Context, foundUsers)
+        searchAdapter = SearchAdapter(activity as Context)
         searchRecyclerView.adapter = searchAdapter
     }
 
 
     internal inner class SearchAdapter(
-        context: Context,
-        private val usersList: MutableList<String>
+        context: Context
     ) :
         RecyclerView.Adapter<ViewHolder>() {
         private val layoutInflater = LayoutInflater.from(context)
@@ -85,7 +78,7 @@ class SearchFragment : Fragment() {
         }
 
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-            val user = usersList[position]
+            val user = foundUsers[position]
             viewHolder.bind(user)
 
             viewHolder.itemView.search_block_button.setOnClickListener {
@@ -93,6 +86,7 @@ class SearchFragment : Fragment() {
                 currentUser.addBlockedContactToDb(otherUser) {
                     fragmentManager?.findFragmentById(R.id.home_tab_pager)?.onStart()
                 }
+                Toast.makeText(activity, "$otherUser has been blocked", Toast.LENGTH_SHORT).show()
             }
 
             viewHolder.itemView.search_add_conversation_button.setOnClickListener {
@@ -150,7 +144,7 @@ class SearchFragment : Fragment() {
             }
         }
 
-        override fun getItemCount() = usersList.size
+        override fun getItemCount() = foundUsers.size
     }
 
     internal inner class ViewHolder constructor(itemView: View) :
