@@ -191,7 +191,7 @@ class Conversation() {
         return Conversation(user1Id, user2Id, subMessages)
     }
 
-    fun getAnalytics(callback: () -> Unit) {
+    fun getAnalytics(callback: () -> Unit): Boolean {
         //TODO
         /* might exclude from unit testing on account of having a
            relatively low monthly limit on api calls before we have to pay */
@@ -210,7 +210,12 @@ class Conversation() {
         val toneChatOptions = ToneChatOptions.Builder()
             .utterances(utterances)
             .build()
-        toneAnalyzer.toneChat(toneChatOptions).enqueue(ToneChatCallback(this, filteredMessages, callback))
+        if (filteredMessages.isNotEmpty()) {
+            toneAnalyzer.toneChat(toneChatOptions)
+                .enqueue(ToneChatCallback(this, filteredMessages, callback))
+            return true
+        }
+        return false
     }
 }
 

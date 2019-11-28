@@ -27,6 +27,10 @@ import java.lang.Exception
 import kotlin.collections.ArrayList
 import android.widget.CompoundButton
 import kotlinx.android.synthetic.main.switch_item.view.*
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+
+
 
 
 const val REQUEST_IMAGE_GET = 1
@@ -100,6 +104,12 @@ class ConversationActivity : AppCompatActivity() {
         }
     }
 
+    val analyticsCallback = {runOnUiThread {
+            // Stuff that updates the UI
+            messagesAdapter.display = true
+            messagesAdapter.notifyDataSetChanged()
+        }}
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.conversation_options_menu, menu)
@@ -109,16 +119,12 @@ class ConversationActivity : AppCompatActivity() {
             override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
                 if (isChecked) {
                     println("TOGGLE ON: ")
-                    conversation.getAnalytics({displayMessages()})
-                    messagesAdapter.display = 1
-                    for (message in conversation.messages) {
-                        if (message is TextMessage) {
-                            println("ANALYTICS: " + message.sentiment)
-                        }
+                    if (!conversation.getAnalytics(analyticsCallback)) {
+                        messagesAdapter.display = true
                     }
                 } else {
                     println("TOGGLE OFF")
-                    messagesAdapter.display = 0
+                    messagesAdapter.display = false
                 }
                 messagesAdapter.notifyDataSetChanged()
             }
@@ -298,7 +304,7 @@ class ConversationActivity : AppCompatActivity() {
     // Display the messages onscreen
     private fun displayMessages() {
         messagesAdapter =
-            MessagesAdapter(this, conversation.messages as ArrayList<UnencryptedMessage>, conversation.convoId, 0)
+            MessagesAdapter(this, conversation.messages as ArrayList<UnencryptedMessage>, conversation.convoId, false)
         message_recycler_view.scrollToPosition(conversation.messages.size - 1)
         message_recycler_view.adapter = messagesAdapter
     }

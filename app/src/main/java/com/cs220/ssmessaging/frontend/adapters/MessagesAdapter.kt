@@ -23,7 +23,7 @@ import kotlin.collections.ArrayList
 private const val MY_MESSAGE = 1
 private const val OTHER_MESSAGE = 2
 
-class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedMessage>, val convoId: String, var display: Int) :
+class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedMessage>, val convoId: String, var display: Boolean) :
     RecyclerView.Adapter<MessageViewHolder>() {
     val currentUser = MyApplication.currentUser!!
 
@@ -151,7 +151,7 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
 
                 println("SENTIMENT: " + message.sentiment)
 
-                if (display == 0) {
+                if (!display) {
                     analyticsText.visibility = View.GONE
                 } else {
                     analyticsText.visibility = View.VISIBLE
@@ -281,7 +281,7 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                 messageImage.visibility = View.GONE
                 analyticsText.text = message.sentiment
 
-                if (display == 0) {
+                if (!display) {
                     analyticsText.visibility = View.GONE
                 } else {
                     analyticsText.visibility = View.VISIBLE
