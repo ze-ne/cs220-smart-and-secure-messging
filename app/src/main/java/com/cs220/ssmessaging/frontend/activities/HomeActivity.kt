@@ -33,6 +33,10 @@ class HomeActivity : AppCompatActivity() {
         homeTabLayout.setupWithViewPager(homeViewPager)
     }
 
+    override fun onBackPressed() {
+        return
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.home_options_menu, menu)

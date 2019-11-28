@@ -89,11 +89,10 @@
                 android:id="@+id/send_destruction_timer"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="#865050"
+                android:background="@color/colorPrimaryDark"
                 android:clickable="true"
                 android:gravity="center"
-                android:paddingStart="10dp"
+                android:paddingStart="12dp"
                 android:paddingEnd="6dp"
                 android:src="@drawable/ic_send" />
 
@@ -101,7 +100,7 @@
                 android:id="@+id/send_message_button"
                 android:src="@drawable/ic_send"
                 android:layout_width="wrap_content"
-                android:paddingStart="10dp"
+                android:paddingStart="12dp"
                 android:paddingEnd="6dp"
                 android:background="@color/colorPrimary"
                 android:layout_height="48dp"
