@@ -93,13 +93,25 @@ class SearchFragment : Fragment() {
 
             viewHolder.itemView.search_add_conversation_button.setOnClickListener {
                 val participantUsername = user.substringBefore(":")
-                if (currentUser.checkIfInBlockList(participantUsername)) {
+                var stop = false
+                for(c in currentUser.conversations){
+                    if(c.user1Id == participantUsername || c.user2Id == participantUsername){
+                        Toast.makeText(
+                            activity,
+                            "Unable to start conversation. You already have a conversation with $participantUsername",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        stop = true
+                        break
+                    }
+                }
+                if (currentUser.checkIfInBlockList(participantUsername) && !stop) {
                     Toast.makeText(
                         activity,
                         "Unable to start conversation. $participantUsername has been blocked",
                         Toast.LENGTH_LONG
                     ).show()
-                } else if (participantUsername.isNotEmpty()) {
+                } else if (participantUsername.isNotEmpty() && !stop) {
                     FirebaseFirestore.getInstance().collection("users")
                         .whereEqualTo("canonicalId", participantUsername)
                         .get()
