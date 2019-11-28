@@ -1,4 +1,5 @@
 package com.cs220.ssmessaging.clientBackend
+import android.graphics.Bitmap
 import android.util.Log
 import java.lang.Exception
 import java.security.*
@@ -6,6 +7,9 @@ import java.security.*
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.spec.SecretKeySpec
+import org.bouncycastle.asn1.iana.IANAObjectIdentifiers.security
+import java.io.ByteArrayOutputStream
+
 
 class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, PublicKey>) {
 
@@ -71,7 +75,6 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             decryptedRecpientAESKeyBytes = decryptorCipher.doFinal(encryptedMsg.encryptedRecipientAESKey)
         }
         catch(e : Exception){
-            Log.e("ERROR Rec", e.toString())
             decryptedRecpientAESKeyBytes = byteArrayOf()
         }
 
@@ -81,7 +84,6 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             decryptedSenderAESKeyBytes = decryptorCipher.doFinal(encryptedMsg.encryptedSenderAESKey)
         }
         catch(e: Exception){
-            Log.e("ERROR Sen", e.toString())
             decryptedSenderAESKeyBytes = byteArrayOf()
         }
 
@@ -91,8 +93,30 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
             else
                 decryptedSenderAESKeyBytes
 
-        println("RECIPIENT KEY SIZE: " + decryptedRecpientAESKeyBytes.size)
-        println("SENDER KEY SIZE: " + decryptedSenderAESKeyBytes.size)
+        // Now we need to check if the trueDecryptedBytes is not equal to 16.
+        // If not, then make the message a "corruption message"
+        if(trueDecryptedBytes.size != 16){
+            if(encryptedMsg.messageType == "image") {
+                val bmp : Bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888)
+                val byteStream = ByteArrayOutputStream()
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, byteStream)
+                val emptyBitmapBytes = byteStream.toByteArray()
+
+                return ImageMessage(
+                    emptyBitmapBytes,
+                    encryptedMsg.conversationId,
+                    encryptedMsg.senderId,
+                    encryptedMsg.recipientId,
+                    encryptedMsg.timestamp
+                )
+            }
+            else {
+                return TextMessage("Corruption: Keys have changed! " +
+                            "This means that the app was reinstalled and the keys were overwritten. " +
+                            "This user or the other user is now useless.",
+                        encryptedMsg.conversationId, encryptedMsg.senderId, encryptedMsg.recipientId, encryptedMsg.timestamp)
+            }
+        }
 
         val aesKey = SecretKeySpec(trueDecryptedBytes, "AES")
 
@@ -120,8 +144,6 @@ class CipherExtension(privateKey: PrivateKey, publicKeys : MutableMap<String, Pu
         val recipientIdPublicKey : PublicKey? = publicKeyRing[unencryptedMsg.recipientId]
         val myKey : PublicKey? = publicKeyRing["myKey"]
 
-        Log.d("RECIPIENT ID: ", unencryptedMsg.recipientId)
-        Log.d("Equal?", myKey?.equals(recipientIdPublicKey).toString())
         if(recipientIdPublicKey == null || myKey  == null){
             throw NullPointerException("recipientId or my public key not found. This means that the keys are unsynced with the server")
         }

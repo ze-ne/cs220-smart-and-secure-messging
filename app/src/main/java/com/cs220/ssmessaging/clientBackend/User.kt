@@ -236,46 +236,14 @@ class User() {
         return true
     }
 
-    // Untestable - relies on database functionality
-    fun getUserIdsByFirstName(firstName: String, callBack: (List<String>) -> Unit) {
-        val retList = mutableListOf<String>()
-        val query = db.collection("users").whereEqualTo("first_name", firstName)
-        query.get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    retList.add(document.data.getValue("canonicalId") as String)
-                }
-                callBack(retList)
-            }
-    }
-
-    // Untestable - relies on database functionality
-    fun getUserIdsByLastName(lastName: String, callBack: (List<String>) -> Unit) {
-        val retList = mutableListOf<String>()
-        val query = db.collection("users").whereEqualTo("last_name", lastName)
-        query.get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    retList.add(document.data.getValue("canonicalId") as String)
-                }
-                callBack(retList)
-            }
-    }
-
-    // Untestable - relies on database functionality
-    fun doesUserExistByUserId(userId: String, callBack: () -> Unit) {
-        db.collection("users").document(userId).get()
-            .addOnSuccessListener {
-                callBack()
-            }
-    }
-
     // Pairs in the mutable list follow the format: (userId, Firstname + " " + Lastname)
-    // gets all users from the database and returns in a callback.
-    fun getAllUsersFromDb(callback: ((MutableList<Pair<String, String>>) -> Unit)? = null)
+    // gets all users from the database that have userId, first name, or lastname equal to the searchTerm
+    // Refactor in next iteration for readability.
+    fun getAllUsersWithSearchTerm(searchTerm : String, callback: ((MutableList<String>) -> Unit)? = null)
     {
-        val outputList : MutableList<Pair<String, String>> = mutableListOf()
-        db.collection("users").get()
+        val outputList : MutableList<String> = mutableListOf()
+        val usersRef = db.collection("users")
+        usersRef.whereEqualTo("cannonicalId", searchTerm).get()
             .addOnSuccessListener { it ->
                 val documents = it.documents
                 for(doc in documents){
@@ -283,13 +251,50 @@ class User() {
                     var firstName = doc.data?.get("first_name")
                     var lastName = doc.data?.get("last_name")
                     if(userName != null && firstName != null && lastName  != null)
-                        outputList.add(Pair(userName as String, (firstName as String) + " " + (lastName as String)))
+                        outputList.add((userName  as String) + ": " + (firstName as String) + " " + (lastName as String))
                 }
-                callback?.invoke(outputList)
+
+                // Search for users based on first name
+                usersRef.whereEqualTo("first_name", searchTerm).get()
+                    .addOnSuccessListener { it2 ->
+                        val documents2 = it2.documents
+                        for(doc in documents2){
+                            var userName = doc.data?.get("cannonicalId")
+                            var firstName = doc.data?.get("first_name")
+                            var lastName = doc.data?.get("last_name")
+
+                            val userInfoString : String
+                            if(userName != null && firstName != null && lastName  != null){
+                                userInfoString =
+                                    (userName  as String) + ": " + (firstName as String) + " " + (lastName as String)
+                                if(!outputList.contains(userInfoString))
+                                    outputList.add(userInfoString)
+                            }
+                        }
+
+                        // Search for users based on last name
+                        usersRef.whereEqualTo("last_name", searchTerm).get()
+                            .addOnSuccessListener { it3 ->
+                                val documents3 = it3.documents
+                                for (doc in documents3) {
+                                    var userName = doc.data?.get("cannonicalId")
+                                    var firstName = doc.data?.get("first_name")
+                                    var lastName = doc.data?.get("last_name")
+
+                                    val userInfoString: String
+                                    if (userName != null && firstName != null && lastName != null) {
+                                        userInfoString =
+                                            (userName as String) + ": " + (firstName as String) + " " + (lastName as String)
+                                        if (!outputList.contains(userInfoString))
+                                            outputList.add(userInfoString)
+                                    }
+                                }
+                                callback?.invoke(outputList)
+                            }.addOnFailureListener{ callback?.invoke(outputList) }
+                    }
+                    .addOnFailureListener{ callback?.invoke(outputList) }
             }
-            .addOnFailureListener {
-                callback?.invoke(outputList)
-            }
+            .addOnFailureListener { callback?.invoke(outputList) }
     }
 
     fun updateFirstName(newFirst: String) {
