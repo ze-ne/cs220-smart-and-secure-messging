@@ -136,14 +136,6 @@ class TextMessage(_message : String, _conversationId : String,
 
 
     override fun mEquals(m : Message) : Boolean{
-        println("============ checking ============")
-        println("== " + m.senderId + " " + senderId + "==")
-        println("== " + m.recipientId + " " + recipientId + "==")
-        println("== " + m.timestamp + " " + timestamp + "==")
-        println("==================================")
-
-
-
         return if(m is ImageMessage|| m is EncryptedMessage)
             false
         else {

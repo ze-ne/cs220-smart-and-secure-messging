@@ -565,8 +565,6 @@ class User() {
     // Iteration 2
     // Remove a message from a conversation in conversations list
     fun deleteSentMessage(message: Message): Boolean {
-        println("============ deleting ============")
-
         /* We delete a message based on a few criteria:
          * timestamps are the same (this should be unique since you can't send two messages at the same exact millisecond)
          * sender and receiver ids are the same
@@ -577,16 +575,12 @@ class User() {
         val timestamp = message.timestamp
         val possibleConvoId1 = senderId + "-" + recipientId
         val possibleConvoId2 = recipientId + "-" + senderId
-        println("==" + possibleConvoId1 + " or " + possibleConvoId2 + "==")
         for (c in conversations) {
-            println("==" + c.convoId + "==")
 
             if (c.convoId == possibleConvoId1 || c.convoId == possibleConvoId2) {
-                println("============ found convo ============")
 
                 val messages = c.messages
                 for (index in messages.indices) {
-                    println("============ searching list ============")
 
                     if (message.mEquals(messages[index])) {
                         messages.removeAt(index)
@@ -601,12 +595,8 @@ class User() {
     }
 
     fun deleteSentMessageFromDb(convoId: String, message: Message, callback: (() -> Unit)? = null) {
-        // TODO: remove prints
-        println("=============DELETE SENT MESSAGE=================")
         val senderId = message.senderId
         val timestamp = message.timestamp
-        println("=============TIMESTAMP=================" + timestamp)
-        println("=============senderID=================" + senderId)
         val convo = db.collection("conversations").document(convoId)
         //val query = db.collection("conversation").document(convoId).collection("messages")
         val query = convo.collection("messages")
@@ -615,23 +605,17 @@ class User() {
             .limit(1)
         query.get()
             .addOnSuccessListener { documents ->
-                println("== dsmfb SUCCESS ====")
-                println("size::: " + documents.size())
-                println("docs:::" + documents)
 
                 for (document in documents) {
                     document.reference.delete()
                         .addOnFailureListener {
                             callback?.invoke()
-                            println("FAILURE")
                         }
-                    println("DELETED")
                 }
 
 
             }
             .addOnFailureListener() {
-                println("== dsmfb FAIL ====")
 
             }
     }
