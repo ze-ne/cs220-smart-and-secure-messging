@@ -8,8 +8,27 @@
         android:id="@+id/user_item_id"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:lineSpacingExtra="12sp"
         android:layout_alignParentLeft="true"
+        android:lineSpacingExtra="12sp"
         android:text="User"
         android:textSize="18sp" />
+
+    <ImageButton
+        android:id="@+id/search_add_conversation_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/search_block_button"
+        android:background="@null"
+        android:padding="8dp"
+        android:src="@drawable/ic_add" />
+
+    <ImageButton
+        android:id="@+id/search_block_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="right"
+        android:background="@null"
+        android:padding="8dp"
+        android:src="@drawable/ic_block" />
 </RelativeLayout>

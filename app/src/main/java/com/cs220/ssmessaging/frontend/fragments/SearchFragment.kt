@@ -1,35 +1,36 @@
 package com.cs220.ssmessaging.frontend.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import android.view.inputmethod.EditorInfo
-import android.widget.Filter
-import android.widget.Filterable
-import android.widget.TextView
-import androidx.appcompat.widget.SearchView
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.R
+import com.cs220.ssmessaging.clientBackend.Conversation
 import com.cs220.ssmessaging.clientBackend.User
+import com.cs220.ssmessaging.frontend.activities.ConversationActivity
+import com.google.common.base.Strings.isNullOrEmpty
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.item_search.view.*
 
 class SearchFragment : Fragment() {
     private lateinit var currentUser: User
     private lateinit var searchRecyclerView: RecyclerView
     private lateinit var searchAdapter: SearchAdapter
-    private lateinit var allUsers: MutableList<String>
-    val db = FirebaseFirestore.getInstance()
+    private lateinit var foundUsers: MutableList<String>
+    private lateinit var searchBar: EditText
+    private lateinit var searchButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         currentUser = MyApplication.currentUser!!
-        setHasOptionsMenu(true)
 
         // TODO: get all users to list of userIds gotten from database
-        allUsers = mutableListOf()
+        foundUsers = mutableListOf()
     }
 
 
@@ -42,49 +43,40 @@ class SearchFragment : Fragment() {
             inflater.inflate(R.layout.fragment_search, container, false)
         searchRecyclerView = searchView.findViewById(R.id.search_recycler_list)
         searchRecyclerView.layoutManager = LinearLayoutManager(context)
+
+        searchBar = searchView.findViewById(R.id.search_text)
+        searchButton = searchView.findViewById(R.id.search_button)
+
+        searchButton.setOnClickListener {
+            val text = searchBar.text.toString()
+            if (!isNullOrEmpty(text)) {
+                println("TEXT: " + text)
+                currentUser.getAllUsersWithSearchTerm(text) { list ->
+                    println("LIST: " + list)
+                    foundUsers = list
+                    println("FOUND: " + foundUsers)
+                    searchAdapter.notifyDataSetChanged()
+                }
+                // TODO: search database then return list of users and add to adapter --> notifyDatasetChange
+                searchBar.text.clear()
+            }
+        }
+
         displayUsers()
         return searchView
     }
 
-    private fun displayUsers(){
-        searchAdapter = SearchAdapter(activity as Context, allUsers)
+    private fun displayUsers() {
+        searchAdapter = SearchAdapter(activity as Context, foundUsers)
         searchRecyclerView.adapter = searchAdapter
     }
 
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.search_fragment_menu, menu)
-        val searchItem = menu.findItem(R.id.user_search)
-        val searchView = searchItem.actionView as SearchView
-
-        searchView.imeOptions = EditorInfo.IME_ACTION_DONE
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                searchAdapter.filter.filter(newText)
-                return false
-            }
-        })
-    }
 
     internal inner class SearchAdapter(
         context: Context,
         private val usersList: MutableList<String>
     ) :
-        RecyclerView.Adapter<ViewHolder>(), Filterable {
-        private var usersListFull = mutableListOf<String>()
-
-        init {
-            for (userId in usersList) {
-                usersListFull.add(userId)
-            }
-        }
-
+        RecyclerView.Adapter<ViewHolder>() {
         private val layoutInflater = LayoutInflater.from(context)
 
         override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): ViewHolder {
@@ -95,48 +87,77 @@ class SearchFragment : Fragment() {
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
             val user = usersList[position]
             viewHolder.bind(user)
+
+            viewHolder.itemView.search_block_button.setOnClickListener {
+                val otherUser = user.substringBefore(":")
+                currentUser.addBlockedContactToDb(otherUser) {
+                    fragmentManager?.findFragmentById(R.id.home_tab_pager)?.onStart()
+                }
+            }
+
+            viewHolder.itemView.search_add_conversation_button.setOnClickListener {
+                val participantUsername = user.substringBefore(":")
+                if (currentUser.checkIfInBlockList(participantUsername)) {
+                    Toast.makeText(
+                        activity,
+                        "Unable to start conversation. $participantUsername has been blocked",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else if (participantUsername.isNotEmpty()) {
+                    FirebaseFirestore.getInstance().collection("users")
+                        .whereEqualTo("canonicalId", participantUsername)
+                        .get()
+                        .addOnSuccessListener { documentReference ->
+                            if (documentReference.size() == 1) {
+                                val newConvo = Conversation(currentUser.userId, participantUsername)
+                                // Check if you're in the other user's block list
+                                val blockList: MutableList<String>? =
+                                    documentReference.documents[0].get("block_list") as MutableList<String>?
+
+                                // Only start new conversation if the other person's blockList does not exist or you are not in it
+                                if (blockList == null || !blockList.contains(currentUser.userId) || currentUser.blockedContacts.contains(
+                                        participantUsername
+                                    )
+                                ) {
+                                    currentUser.startConversation(newConvo)
+                                    val conversationIntent =
+                                        Intent(activity, ConversationActivity::class.java)
+                                    conversationIntent.putExtra(
+                                        "receiver_name",
+                                        participantUsername
+                                    )
+                                    startActivity(conversationIntent)
+                                } else {
+                                    Toast.makeText(
+                                        activity,
+                                        "Unable to start conversation. You have been blocked by $participantUsername",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+
+                            } else {
+                                Toast.makeText(
+                                    activity,
+                                    "User could not be found. Check the username and try again.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Toast.makeText(activity, exception.message, Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
         }
 
         override fun getItemCount() = usersList.size
-
-        override fun getFilter(): Filter {
-            return usersListFilter
-        }
-
-        private val usersListFilter = object : Filter() {
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val filteredList = ArrayList<String>()
-
-                if (constraint == null || constraint.isEmpty()) {
-                    filteredList.addAll(usersListFull)
-                } else {
-                    val filterPattern = constraint.toString().toLowerCase().trim { it <= ' ' }
-
-                    for (item in usersListFull) {
-                        if (item.toLowerCase().contains(filterPattern)) {
-                            filteredList.add(item)
-                        }
-                    }
-                }
-                val results = FilterResults()
-                results.values = filteredList
-
-                return results
-            }
-
-            override fun publishResults(constraint: CharSequence, results: FilterResults) {
-                usersList.clear()
-                usersList.addAll(results.values as List<String>)
-                notifyDataSetChanged()
-            }
-        }
     }
 
     internal inner class ViewHolder constructor(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
 
-        fun bind(username: String) {
-            itemView.findViewById<TextView>(R.id.user_item_id).text = username
+        fun bind(userInfo: String) {
+            itemView.findViewById<TextView>(R.id.user_item_id).text = userInfo
         }
     }
 }

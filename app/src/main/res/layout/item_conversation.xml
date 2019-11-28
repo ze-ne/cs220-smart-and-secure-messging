@@ -13,13 +13,14 @@
         android:text="Full name"
         android:textSize="18sp" />
 
-    <Button
+    <ImageButton
         android:id="@+id/block_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/delete_conversation_button"
-        android:text="BLOCK"
-        android:theme="@style/AppTheme.Button" />
+        android:background="@null"
+        android:padding="8dp"
+        android:src="@drawable/ic_block" />
 
     <ImageButton
         android:id="@+id/delete_conversation_button"
@@ -28,7 +29,7 @@
         android:layout_alignParentRight="true"
         android:layout_gravity="right"
         android:background="@null"
-        android:padding="10dp"
+        android:padding="8dp"
         android:src="@drawable/ic_delete" />
 
 

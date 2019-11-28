@@ -185,9 +185,9 @@ class ConversationsListFragment : Fragment() {
                 currentUser.deleteConversationFromDb(conversation.convoId)
             }
             viewHolder.itemView.block_button.setOnClickListener {
-                currentUser.addBlockedContactToDb(otherUser, {
+                currentUser.addBlockedContactToDb(otherUser) {
                     fragmentManager?.findFragmentById(R.id.home_tab_pager)?.onStart()
-                })
+                }
             }
         }
 
