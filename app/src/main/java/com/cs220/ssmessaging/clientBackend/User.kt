@@ -428,10 +428,11 @@ class User() {
     }
 
     // Sends text message to server
-    fun sendTextMsg(msg: String, convo: Conversation, deletionTimer : Long = -1.toLong()) {
+    fun sendTextMsg(msg: String, convo: Conversation, isVisible: Boolean = true, deletionTimer : Long = -1.toLong()) {
         val recipient = if (convo.user1Id == this.userId) convo.user2Id else convo.user1Id
         val timestamp = Instant.now().toEpochMilli()
         val txtMsg = TextMessage(msg, convo.convoId, this.userId, recipient, timestamp)
+        txtMsg.isVisible = isVisible
         txtMsg.deletionTimer = deletionTimer
         convo.addMessage(txtMsg)
 

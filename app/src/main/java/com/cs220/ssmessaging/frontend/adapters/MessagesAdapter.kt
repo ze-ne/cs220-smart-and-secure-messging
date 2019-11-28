@@ -1,6 +1,7 @@
 package com.cs220.ssmessaging.frontend.adapters
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,8 @@ import com.cs220.ssmessaging.clientBackend.ImageHandler
 import com.cs220.ssmessaging.clientBackend.ImageMessage
 import com.cs220.ssmessaging.clientBackend.TextMessage
 import com.cs220.ssmessaging.clientBackend.UnencryptedMessage
+import kotlinx.android.synthetic.main.item_my_message.view.*
+import kotlinx.android.synthetic.main.item_other_message.view.*
 import java.lang.Integer.min
 import java.text.SimpleDateFormat
 import java.util.*
@@ -23,7 +26,12 @@ import kotlin.collections.ArrayList
 private const val MY_MESSAGE = 1
 private const val OTHER_MESSAGE = 2
 
-class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedMessage>, val convoId: String, var display: Boolean) :
+class MessagesAdapter(
+    val context: Context,
+    val messages: ArrayList<UnencryptedMessage>,
+    val convoId: String,
+    var display: Boolean
+) :
     RecyclerView.Adapter<MessageViewHolder>() {
     val currentUser = MyApplication.currentUser!!
 
@@ -69,6 +77,30 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
             holder.itemView.setOnClickListener {
                 holder.deleteMessage.visibility = View.VISIBLE
             }
+
+            if (!message.isVisible) {
+                val myMessage = holder.itemView.my_message_text
+                myMessage.setOnClickListener {
+                    myMessage.setTextColor(Color.WHITE)
+                    myMessage.postDelayed(
+                        { myMessage.setTextColor(Color.parseColor("#506F86")) },
+                        7000
+                    )
+                    println("CLICKING SOME TEXT")
+                }
+            }
+        } else {
+            if (!message.isVisible) {
+                val otherMessage = holder.itemView.other_message_text
+                otherMessage.setOnClickListener {
+                    otherMessage.setTextColor(Color.WHITE)
+                    otherMessage.postDelayed(
+                        { otherMessage.setTextColor(Color.parseColor("#2F3C4F")) },
+                        7000
+                    )
+                    println("CLICKING SOME TEXT")
+                }
+            }
         }
     }
 
@@ -85,7 +117,8 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
         private var messageImage: ImageView = view.findViewById(R.id.my_message_image)
         private var timeText: TextView = view.findViewById(R.id.my_message_time)
         private var analyticsText: TextView = view.findViewById(R.id.my_message_analytics)
-        private var confirmDeleteMessage: TextView = view.findViewById(R.id.message_deletion_confirm)
+        private var confirmDeleteMessage: TextView =
+            view.findViewById(R.id.message_deletion_confirm)
         private var cancelDeleteMessage: TextView = view.findViewById(R.id.message_deletion_cancel)
         var deleteMessage: RelativeLayout = view.findViewById(R.id.message_deletion)
 
@@ -148,6 +181,10 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                 messageText.visibility = View.VISIBLE
                 messageImage.visibility = View.GONE
                 analyticsText.text = message.sentiment
+
+                if (!message.isVisible) {
+                    messageText.setTextColor(Color.parseColor("#506F86"))
+                }
 
                 println("SENTIMENT: " + message.sentiment)
 
@@ -280,6 +317,10 @@ class MessagesAdapter(val context: Context, val messages: ArrayList<UnencryptedM
                 messageText.visibility = View.VISIBLE
                 messageImage.visibility = View.GONE
                 analyticsText.text = message.sentiment
+
+                if (!message.isVisible) {
+                    messageText.setTextColor(Color.parseColor("#2F3C4F"))
+                }
 
                 if (!display) {
                     analyticsText.visibility = View.GONE

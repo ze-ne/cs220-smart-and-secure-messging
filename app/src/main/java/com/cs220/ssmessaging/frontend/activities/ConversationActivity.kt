@@ -22,17 +22,10 @@ import com.google.firebase.firestore.Blob
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-
 import kotlinx.android.synthetic.main.activity_conversation.*
 import java.lang.Exception
 import kotlin.collections.ArrayList
-import android.widget.CompoundButton
 import kotlinx.android.synthetic.main.switch_item.view.*
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.graphics.createBitmap
-import com.google.firebase.firestore.ListenerRegistration
-
 
 const val REQUEST_IMAGE_GET = 1
 const val REQUEST_HIDDEN_IMAGE_GET = 2
@@ -40,6 +33,7 @@ const val REQUEST_HIDDEN_IMAGE_GET = 2
 class ConversationActivity : AppCompatActivity() {
     private lateinit var conversationToolbar: Toolbar
     private lateinit var sendMessageButton: ImageButton
+    private lateinit var sendHiddenMessageButton: ImageButton
     private lateinit var imageButton: ImageButton
     private lateinit var hiddenImageButton: ImageButton
     private lateinit var userMessageInput: EditText
@@ -74,6 +68,7 @@ class ConversationActivity : AppCompatActivity() {
         addMessageListener(conversation.convoId)
 
         sendMessageButton = findViewById(R.id.send_message_button)
+        sendHiddenMessageButton = findViewById(R.id.send_hidden_text_button)
 
         userMessageInput = findViewById(R.id.message_input)
         imageButton = findViewById(R.id.add_image_button)
@@ -81,6 +76,14 @@ class ConversationActivity : AppCompatActivity() {
 
         sendMessageButton.setOnClickListener {
            onSendTextMessage()
+        }
+
+        sendHiddenMessageButton.setOnClickListener {
+            val message = userMessageInput.text
+            if (message.isNotEmpty()) {
+                currentUser.sendTextMsg(message.toString(), conversation, isVisible = false)
+                userMessageInput.text.clear()
+            }
         }
 
         imageButton.setOnClickListener {
@@ -123,27 +126,19 @@ class ConversationActivity : AppCompatActivity() {
         })
 
         val sentimentsSwitch: Switch = menu!!.findItem(R.id.analytics_switch).actionView.switchForActionBar
-        sentimentsSwitch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
-            override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-                if (isChecked) {
-                    println("TOGGLE ON: ")
-                    if (!conversation.getAnalytics(analyticsCallback)) {
-                        messagesAdapter.display = true
-                    }
-                } else {
-                    println("TOGGLE OFF")
-                    messagesAdapter.display = false
+        sentimentsSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                println("TOGGLE ON: ")
+                if (!conversation.getAnalytics(analyticsCallback)) {
+                    messagesAdapter.display = true
                 }
-                messagesAdapter.notifyDataSetChanged()
+            } else {
+                println("TOGGLE OFF")
+                messagesAdapter.display = false
             }
-        })
+            messagesAdapter.notifyDataSetChanged()
+        }
 
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        super.onOptionsItemSelected(item)
-        Toast.makeText(this, "Test toast", Toast.LENGTH_LONG).show()
         return true
     }
 
