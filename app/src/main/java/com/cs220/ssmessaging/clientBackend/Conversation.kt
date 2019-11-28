@@ -4,12 +4,11 @@ import com.ibm.cloud.sdk.core.http.Response
 import com.ibm.cloud.sdk.core.http.ServiceCallback
 import com.ibm.cloud.sdk.core.security.IamAuthenticator
 import com.ibm.watson.tone_analyzer.v3.ToneAnalyzer
-import com.ibm.watson.tone_analyzer.v3.model.ToneChatOptions
-import com.ibm.watson.tone_analyzer.v3.model.Utterance
-import com.ibm.watson.tone_analyzer.v3.model.UtteranceAnalyses
-import com.ibm.watson.tone_analyzer.v3.model.UtteranceAnalysis
+import com.ibm.watson.tone_analyzer.v3.model.*
 import org.w3c.dom.Text
 import java.lang.Exception
+import kotlin.math.roundToLong
+
 
 class Conversation() {
     /* For TAs: all accesses (except for the constructor) in Kotlin must go through the getter and setter.
@@ -191,11 +190,22 @@ class Conversation() {
         return Conversation(user1Id, user2Id, subMessages)
     }
 
+    fun getGeneralTone(callback: ((String) -> Unit)?) {
+        toneAnalyzer.serviceUrl = WATSON_URL
+
+        val text = messages.filterIsInstance<TextMessage>().fold("", {acc, msg -> acc + msg.message })
+
+        val toneOptions = ToneOptions.Builder()
+            .text(text)
+            .build()
+
+        toneAnalyzer.tone(toneOptions).enqueue(ToneGeneralCallback(callback))
+    }
+
     fun getAnalytics(callback: () -> Unit): Boolean {
         //TODO
         /* might exclude from unit testing on account of having a
            relatively low monthly limit on api calls before we have to pay */
-
         val filteredMessages = messages.filterIsInstance<TextMessage>().filter { it.sentiment.isEmpty()}
         val utterances = filteredMessages
             .map {
@@ -236,5 +246,29 @@ class ToneChatCallback(var conversation : Conversation, private val filteredMess
 
     override fun onFailure(e: Exception?) {
         Log.d("ToneChatCallback", e.toString())
+    }
+}
+
+class ToneGeneralCallback(private val callback: ((String) -> Unit)?) : ServiceCallback<ToneAnalysis> {
+    override fun onResponse(response: Response<ToneAnalysis>?) {
+        Log.d("ToneGeneralCallback", "ToneGeneralCallback succeeded")
+        val tones: List<ToneScore> = response?.result?.documentTone?.tones!!
+        tones.sortedWith(compareBy{it.score})
+        var response = ""
+        val end : Int = kotlin.math.max(2, tones.size)
+        val topTones = tones.subList(0,end)
+        for ((i,tone) in topTones.withIndex()){
+            response += tone.toneName + ": " + kotlin.math.round(tone.score * 100) + "%"
+            if (i + 1 != end)
+                response += ", "
+        }
+        if (response.isBlank()){
+            response = "No sentiment"
+        }
+        callback?.invoke(response)
+    }
+
+    override fun onFailure(e: Exception?) {
+        Log.d("ToneGeneralCallback", e.toString())
     }
 }

@@ -128,12 +128,15 @@ class ConversationActivity : AppCompatActivity() {
         val sentimentsSwitch: Switch = menu!!.findItem(R.id.analytics_switch).actionView.switchForActionBar
         sentimentsSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                println("TOGGLE ON: ")
+                conversation.getGeneralTone {str ->
+                    runOnUiThread {
+                        Toast.makeText(this@ConversationActivity, str, Toast.LENGTH_LONG).show()
+                    }
+                }
                 if (!conversation.getAnalytics(analyticsCallback)) {
                     messagesAdapter.display = true
                 }
             } else {
-                println("TOGGLE OFF")
                 messagesAdapter.display = false
             }
             messagesAdapter.notifyDataSetChanged()
