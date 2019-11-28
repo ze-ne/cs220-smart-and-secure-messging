@@ -243,11 +243,11 @@ class User() {
     {
         val outputList : MutableList<String> = mutableListOf()
         val usersRef = db.collection("users")
-        usersRef.whereEqualTo("cannonicalId", searchTerm).get()
+        usersRef.whereEqualTo("canonicalId", searchTerm).get()
             .addOnSuccessListener { it ->
                 val documents = it.documents
                 for(doc in documents){
-                    var userName = doc.data?.get("cannonicalId")
+                    var userName = doc.data?.get("canonicalId")
                     var firstName = doc.data?.get("first_name")
                     var lastName = doc.data?.get("last_name")
                     if(userName != null && firstName != null && lastName  != null)
@@ -277,7 +277,7 @@ class User() {
                             .addOnSuccessListener { it3 ->
                                 val documents3 = it3.documents
                                 for (doc in documents3) {
-                                    var userName = doc.data?.get("cannonicalId")
+                                    var userName = doc.data?.get("canonicalId")
                                     var firstName = doc.data?.get("first_name")
                                     var lastName = doc.data?.get("last_name")
 
