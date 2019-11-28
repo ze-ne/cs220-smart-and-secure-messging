@@ -270,6 +270,28 @@ class User() {
             }
     }
 
+    // Pairs in the mutable list follow the format: (userId, Firstname + " " + Lastname)
+    // gets all users from the database and returns in a callback.
+    fun getAllUsersFromDb(callback: ((MutableList<Pair<String, String>>) -> Unit)? = null)
+    {
+        val outputList : MutableList<Pair<String, String>> = mutableListOf()
+        db.collection("users").get()
+            .addOnSuccessListener { it ->
+                val documents = it.documents
+                for(doc in documents){
+                    var userName = doc.data?.get("cannonicalId")
+                    var firstName = doc.data?.get("first_name")
+                    var lastName = doc.data?.get("last_name")
+                    if(userName != null && firstName != null && lastName  != null)
+                        outputList.add(Pair(userName as String, (firstName as String) + " " + (lastName as String)))
+                }
+                callback?.invoke(outputList)
+            }
+            .addOnFailureListener {
+                callback?.invoke(outputList)
+            }
+    }
+
     fun updateFirstName(newFirst: String) {
         val newData = hashMapOf("first_name" to newFirst)
         val userDoc = db.collection("users").document(userId)
