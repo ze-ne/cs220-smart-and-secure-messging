@@ -341,7 +341,7 @@ class UserUnitTests{
     fun testIsValidName(){
         assertTrue(User.isValidName("Henri"))
         assertTrue(User.isValidName("J"))
-        assertTrue(User.isValidName("123Jane"))
+        assertFalse(User.isValidName("123Jane"))
         assertFalse(User.isValidName("John 1"))
         assertFalse(User.isValidName("!!!@___"))
         assertFalse(User.isValidName("<"))
