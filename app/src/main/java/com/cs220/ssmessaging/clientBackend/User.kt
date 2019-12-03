@@ -193,12 +193,12 @@ class User() {
                 addConversation(convo)
                 callback?.invoke()
                 if(activity != null)
-                    Toast.makeText(activity, "Successfully started conversation", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "Successfully started conversation in database", Toast.LENGTH_LONG).show()
                 Log.d("startConversation", "success")
             }
             .addOnFailureListener {
                 if(activity != null)
-                    Toast.makeText(activity, "Failed to start conversation", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "Failed to start conversation in database", Toast.LENGTH_LONG).show()
                 Log.d("startConversation", "failure")
             }
 
