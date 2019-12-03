@@ -61,16 +61,25 @@ class LoginActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { documentQuery ->
                 if (documentQuery.size() == 1) {
-                    val firstname = documentQuery.documents[0].getString("first_name")
-                    val lastname = documentQuery.documents[0].getString("last_name")
+                    val phoneNumber = documentQuery.documents[0].getString("phone")
                     val fullNumber = "+1$number"
-                    val authIntent = Intent(this, PhoneAuthActivity::class.java)
-                    authIntent.putExtra("phonenumber", fullNumber)
-                    authIntent.putExtra("firstname", firstname)
-                    authIntent.putExtra("lastname", lastname)
-                    authIntent.putExtra("username", usernameText)
-                    authIntent.putExtra("newuser", false)
-                    startActivity(authIntent)
+                    //if (phoneNumber == fullNumber) {
+                        val firstName = documentQuery.documents[0].getString("first_name")
+                        val lastName = documentQuery.documents[0].getString("last_name")
+                        val authIntent = Intent(this, PhoneAuthActivity::class.java)
+                        authIntent.putExtra("phonenumber", fullNumber)
+                        authIntent.putExtra("firstname", firstName)
+                        authIntent.putExtra("lastname", lastName)
+                        authIntent.putExtra("username", usernameText)
+                        authIntent.putExtra("newuser", false)
+                        startActivity(authIntent)
+                   /* } else {
+                        Toast.makeText(
+                            this,
+                            "Username and phone number do not match. Try again or make an account.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }*/
                 } else {
                     Toast.makeText(
                         this,

@@ -18,7 +18,7 @@
             android:layout_alignParentStart="true"
             android:layout_marginStart="16dp"
             android:ems="10"
-            android:hint="search name or username" />
+            android:hint="name or username" />
 
         <Button
             android:id="@+id/search_button"

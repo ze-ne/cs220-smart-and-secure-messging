@@ -16,6 +16,7 @@ import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.*
 import com.cs220.ssmessaging.frontend.adapters.MessagesAdapter
+import com.cs220.ssmessaging.frontend.fragments.SetTimerDialog
 import com.google.firebase.firestore.Blob
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
@@ -94,7 +95,8 @@ class ConversationActivity : AppCompatActivity() {
         if (message.isEmpty())
             return
         if (this.timedDeletion) {
-            currentUser.sendTextMsg(message.toString(), conversation, isVisible = isVisible, deletionTimer = 5)
+            val setTimerFragmentDialog = SetTimerDialog(message.toString(), conversation, isVisible)
+            setTimerFragmentDialog.show(supportFragmentManager, "SetTimerDialog")
             userMessageInput.text.clear()
         } else {
             currentUser.sendTextMsg(message.toString(), conversation, isVisible = isVisible)
@@ -116,17 +118,14 @@ class ConversationActivity : AppCompatActivity() {
 
         val deletionSwitch: Switch =
             menu!!.findItem(R.id.deletion_switch).actionView.switchForActionBar
-        deletionSwitch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
-            override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-                timedDeletion = isChecked
-            }
-        })
+
+        deletionSwitch.setOnCheckedChangeListener { _, isChecked -> timedDeletion = isChecked }
 
         val sentimentsSwitch: Switch =
             menu!!.findItem(R.id.analytics_switch).actionView.switchForActionBar
         sentimentsSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                conversation.getGeneralTone {str ->
+                conversation.getGeneralTone { str ->
                     Log.d("toneSwitch", str)
                     runOnUiThread {
                         Toast.makeText(this@ConversationActivity, str, Toast.LENGTH_LONG).show()
@@ -287,7 +286,7 @@ class ConversationActivity : AppCompatActivity() {
                     ImageHandler.getByteArrayFromImage(bitmap),
                     conversation,
                     isVisible = hidden,
-                    deletionTimer = 5
+                    deletionTimer = 10
                 )
             } else {
                 currentUser.sendImageMsg(
