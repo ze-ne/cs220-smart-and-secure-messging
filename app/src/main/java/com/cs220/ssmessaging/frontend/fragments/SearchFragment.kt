@@ -83,12 +83,21 @@ class SearchFragment : Fragment() {
 
             viewHolder.itemView.search_block_button.setOnClickListener {
                 val otherUser = user.substringBefore(":")
-                currentUser.addBlockedContactToDb(otherUser) {
-                    for (frag in fragmentManager?.fragments!!) {
-                        frag.onStart()
+                if (otherUser == currentUser.userId){
+                    Toast.makeText(
+                        activity,
+                        "You cannot block yourself",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    currentUser.addBlockedContactToDb(otherUser) {
+                        for (frag in fragmentManager?.fragments!!) {
+                            frag.onStart()
+                        }
                     }
+                    Toast.makeText(activity, "$otherUser has been blocked", Toast.LENGTH_SHORT)
+                        .show()
                 }
-                Toast.makeText(activity, "$otherUser has been blocked", Toast.LENGTH_SHORT).show()
             }
 
             viewHolder.itemView.search_add_conversation_button.setOnClickListener {
