@@ -82,13 +82,19 @@ class AddConversationDialog : DialogFragment() {
                                     participantUsername
                                 )
                             ) {
-                                currentUser.startConversation(newConvo)
-                                newConversationInput.text.clear()
-                                val conversationIntent =
-                                    Intent(activity, ConversationActivity::class.java)
-                                conversationIntent.putExtra("receiver_name", participantUsername)
-                                startActivity(conversationIntent)
-                                this.dismiss()
+                                currentUser.startConversation(newConvo, activity) {
+                                    newConversationInput.text.clear()
+                                    if(activity != null) {
+                                        val conversationIntent =
+                                            Intent(activity, ConversationActivity::class.java)
+                                        conversationIntent.putExtra(
+                                            "receiver_name",
+                                            participantUsername
+                                        )
+                                        startActivity(conversationIntent)
+                                    }
+                                    this.dismiss()
+                                }
                             } else {
                                 Toast.makeText(
                                     activity,

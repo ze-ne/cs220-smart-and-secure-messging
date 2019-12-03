@@ -145,14 +145,17 @@ class SearchFragment : Fragment() {
                                         participantUsername
                                     )
                                 ) {
-                                    currentUser.startConversation(newConvo)
-                                    val conversationIntent =
-                                        Intent(activity, ConversationActivity::class.java)
-                                    conversationIntent.putExtra(
-                                        "receiver_name",
-                                        participantUsername
-                                    )
-                                    startActivity(conversationIntent)
+                                    currentUser.startConversation(newConvo, activity){
+                                        if(activity != null) {
+                                            val conversationIntent =
+                                                Intent(activity, ConversationActivity::class.java)
+                                            conversationIntent.putExtra(
+                                                "receiver_name",
+                                                participantUsername
+                                            )
+                                            startActivity(conversationIntent)
+                                        }
+                                    }
                                 } else {
                                     Toast.makeText(
                                         activity,

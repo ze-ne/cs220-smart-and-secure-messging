@@ -12,6 +12,8 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 import java.util.*
 import android.os.Handler
+import android.widget.Toast
+import androidx.fragment.app.FragmentActivity
 import com.google.firebase.firestore.*
 
 const val TAG = "User"
@@ -171,21 +173,30 @@ class User() {
     }
 
     // start conversation with another user by sending conversation to database
-    fun startConversation(convo: Conversation): Boolean {
+    fun startConversation(convo: Conversation, activity : FragmentActivity?, callback: (() -> Unit)? = null): Boolean {
         val toAdd = hashMapOf(
             "canonicalId" to convo.convoId,
             "created" to Timestamp.now(),
             "users" to listOf<String>(convo.user1Id, convo.user2Id)
         )
-        // IMPORTANT: Implement somewhere the function to delete this added conversation IF key exchange or adding conversation fails!!!
-        if(!addConversation(convo))
-            return false
+
+        // Check if the conversation exists
+        for (c in this.conversations){
+            if(c.convoId == convo.convoId)
+                return false
+        }
         db.collection("conversations").document(convo.convoId)
             .set(toAdd)
             .addOnSuccessListener {
+                addConversation(convo)
+                callback?.invoke()
+                if(activity != null)
+                    Toast.makeText(activity, "Successfully started conversation", Toast.LENGTH_LONG).show()
                 Log.d("startConversation", "success")
             }
             .addOnFailureListener {
+                if(activity != null)
+                    Toast.makeText(activity, "Failed to start conversation", Toast.LENGTH_LONG).show()
                 Log.d("startConversation", "failure")
             }
 
