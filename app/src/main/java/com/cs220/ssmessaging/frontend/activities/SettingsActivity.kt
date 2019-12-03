@@ -8,14 +8,15 @@ import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.google.common.base.Strings.isNullOrEmpty
 import com.google.firebase.auth.FirebaseAuth
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.cs220.ssmessaging.MyApplication.MyApplication.Companion.currentUser
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.User
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var homeToolbar: Toolbar
+    private lateinit var usernameText: TextView
     private lateinit var firstNameField: EditText
     private lateinit var lastNameField: EditText
     private lateinit var changeFirstNameButton: Button
@@ -31,11 +32,14 @@ class SettingsActivity : AppCompatActivity() {
         currentUser = MyApplication.currentUser!!
 
         homeToolbar = findViewById(R.id.home_toolbar)
+        homeToolbar.title = "Profile"
         setSupportActionBar(homeToolbar)
 
+        usernameText = findViewById(R.id.username_text)
         firstNameField = findViewById(R.id.settings_firstName)
         lastNameField = findViewById(R.id.settings_lastName)
 
+        usernameText.text = currentUser.userId
         firstNameField.hint = currentUser.firstName
         lastNameField.hint = currentUser.lastName
 
