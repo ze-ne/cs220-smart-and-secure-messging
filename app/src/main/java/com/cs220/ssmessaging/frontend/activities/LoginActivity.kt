@@ -63,7 +63,7 @@ class LoginActivity : AppCompatActivity() {
                 if (documentQuery.size() == 1) {
                     val phoneNumber = documentQuery.documents[0].getString("phone")
                     val fullNumber = "+1$number"
-                    //if (phoneNumber == fullNumber) {
+                    if (phoneNumber == fullNumber) {
                         val firstName = documentQuery.documents[0].getString("first_name")
                         val lastName = documentQuery.documents[0].getString("last_name")
                         val authIntent = Intent(this, PhoneAuthActivity::class.java)
@@ -73,13 +73,13 @@ class LoginActivity : AppCompatActivity() {
                         authIntent.putExtra("username", usernameText)
                         authIntent.putExtra("newuser", false)
                         startActivity(authIntent)
-                   /* } else {
+                    } else {
                         Toast.makeText(
                             this,
                             "Username and phone number do not match. Try again or make an account.",
                             Toast.LENGTH_SHORT
                         ).show()
-                    }*/
+                    }
                 } else {
                     Toast.makeText(
                         this,

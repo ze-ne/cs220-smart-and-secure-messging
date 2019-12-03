@@ -67,6 +67,7 @@ class PhoneAuthActivity : AppCompatActivity() {
     private fun setCurrentUser() {
         if (firstname != null && lastname != null && username != null) {
             val newUser = User(username.toString(), firstname.toString(), lastname.toString())
+            newUser.phoneNumber = phonenumber
             MyApplication.currentUser = newUser
         }
     }
