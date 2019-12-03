@@ -48,6 +48,10 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        return
+    }
+
     private fun usernameExists(
         usernameText: String,
         number: String
