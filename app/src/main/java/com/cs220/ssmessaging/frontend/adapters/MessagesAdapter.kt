@@ -35,6 +35,7 @@ class MessagesAdapter(
 ) :
     RecyclerView.Adapter<MessageViewHolder>() {
     val currentUser = MyApplication.currentUser!!
+    var hiddenTextClicked = false
 
     override fun getItemCount(): Int {
         return messages.size
@@ -83,22 +84,34 @@ class MessagesAdapter(
             if (!message.isVisible) {
                 val myMessage = holder.itemView.my_message_text
                 myMessage.setOnClickListener {
-                    myMessage.setTextColor(Color.WHITE)
-                    myMessage.postDelayed(
-                        { myMessage.setTextColor(Color.parseColor("#506F86")) },
-                        7000
-                    )
+                    if (!hiddenTextClicked) {
+                        hiddenTextClicked = true
+                        myMessage.setTextColor(Color.WHITE)
+                        myMessage.postDelayed(
+                            {
+                                myMessage.setTextColor(Color.parseColor("#506F86"))
+                                hiddenTextClicked = false
+                            },
+                            7000
+                        )
+                    }
                 }
             }
         } else {
             if (!message.isVisible) {
                 val otherMessage = holder.itemView.other_message_text
                 otherMessage.setOnClickListener {
-                    otherMessage.setTextColor(Color.WHITE)
-                    otherMessage.postDelayed(
-                        { otherMessage.setTextColor(Color.parseColor("#2F3C4F")) },
-                        7000
-                    )
+                    if (!hiddenTextClicked) {
+                        hiddenTextClicked = true
+                        otherMessage.setTextColor(Color.WHITE)
+                        otherMessage.postDelayed(
+                            {
+                                otherMessage.setTextColor(Color.parseColor("#2F3C4F"))
+                                hiddenTextClicked = false
+                            },
+                            7000
+                        )
+                    }
                 }
             }
         }
