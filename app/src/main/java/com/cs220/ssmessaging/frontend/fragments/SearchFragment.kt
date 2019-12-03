@@ -94,15 +94,24 @@ class SearchFragment : Fragment() {
             viewHolder.itemView.search_add_conversation_button.setOnClickListener {
                 val participantUsername = user.substringBefore(":")
                 var stop = false
-                for(c in currentUser.conversations){
-                    if(c.user1Id == participantUsername || c.user2Id == participantUsername){
-                        Toast.makeText(
-                            activity,
-                            "Unable to start conversation. You already have a conversation with $participantUsername",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        stop = true
-                        break
+                if (participantUsername == currentUser.userId){
+                    Toast.makeText(
+                        activity,
+                        "Conversations with yourself are not permitted.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    stop = true
+                } else {
+                    for (c in currentUser.conversations) {
+                        if (c.user1Id == participantUsername || c.user2Id == participantUsername) {
+                            Toast.makeText(
+                                activity,
+                                "Unable to start conversation. You already have a conversation with $participantUsername",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            stop = true
+                            break
+                        }
                     }
                 }
                 if (currentUser.checkIfInBlockList(participantUsername) && !stop) {
