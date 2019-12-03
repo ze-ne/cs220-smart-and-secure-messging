@@ -33,7 +33,7 @@ class User() {
     val storage = FirebaseStorage.getInstance()
 
     constructor(userId: String, firstName: String, lastName: String) : this() {
-        if (!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId)) {
+        if (!isValidName(firstName) || !isValidName(lastName) || !isValidUserId(userId)) {
             this.userId = ""
             this.firstName = ""
             this.lastName = ""
@@ -69,7 +69,7 @@ class User() {
             }
         }
 
-        if (!isValidName(firstName) || !isValidName(lastName) || !isValidName(userId) || invalidContacts || invalidConversation) {
+        if (!isValidName(firstName) || !isValidName(lastName) || !isValidUserId(userId) || invalidContacts || invalidConversation) {
             this.userId = ""
             this.firstName = ""
             this.lastName = ""
@@ -90,7 +90,7 @@ class User() {
             usrId.matches(Regex("^[a-zA-Z0-9_+@.-]*$")) && usrId.isNotEmpty()
 
         fun isValidName(name: String): Boolean =
-            name.matches(Regex("^[a-zA-Z0-9]*$")) && name.isNotEmpty()
+            name.matches(Regex("^[a-zA-Z]*$")) && name.isNotEmpty()
     }
 
     var userId: String = ""
