@@ -56,7 +56,7 @@ class SetTimerDialog(
                 } else {
                     Toast.makeText(
                         activity,
-                        "Please enter a valid time",
+                        "Please enter a valid time in the format hh:mm:ss",
                         Toast.LENGTH_LONG
                     ).show()
                 }

@@ -10,51 +10,106 @@
         android:id="@+id/home_toolbar"
         layout="@layout/layout_toolbar" />
 
-    <EditText
-        android:id="@+id/settings_firstName"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/username_row"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="248dp"
-        android:ems="10"
-        android:hint="first name"
+        android:layout_marginTop="120dp"
+        android:gravity="center"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.277"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/home_toolbar">
 
-    <Button
-        android:id="@+id/changeFirstNameButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Change"
-        android:theme="@style/AppTheme.Button"
-        app:layout_constraintBottom_toBottomOf="@+id/settings_firstName"
-        app:layout_constraintStart_toEndOf="@+id/settings_firstName"
-        app:layout_constraintTop_toTopOf="@+id/settings_firstName" />
+        <TextView
+            android:id="@+id/username_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Username: "
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/settings_lastName"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/username_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="my username"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/firstname_row"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="340dp"
-        android:ems="10"
-        android:hint="last name"
+        android:gravity="center"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.277"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/username_row">
 
-    <Button
-        android:id="@+id/changeLastNameButton"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/firstname_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="First Name: "
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/settings_firstName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="6"
+            android:hint="first name" />
+
+        <Button
+            android:id="@+id/changeFirstNameButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Change"
+            android:theme="@style/AppTheme.Button" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lastname_row"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Change"
-        android:theme="@style/AppTheme.Button"
-        app:layout_constraintBottom_toBottomOf="@+id/settings_lastName"
-        app:layout_constraintStart_toEndOf="@+id/settings_lastName"
-        app:layout_constraintTop_toTopOf="@+id/settings_lastName" />
+        android:gravity="center"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/firstname_row">
+
+        <TextView
+            android:id="@+id/lastname_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Last Name: "
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/settings_lastName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="8"
+            android:hint="last name" />
+
+        <Button
+            android:id="@+id/changeLastNameButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Change"
+            android:theme="@style/AppTheme.Button" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/logoutButton"
@@ -65,5 +120,5 @@
         android:theme="@style/AppTheme.Button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_lastName" />
+        app:layout_constraintTop_toBottomOf="@+id/lastname_row" />
 </androidx.constraintlayout.widget.ConstraintLayout>
