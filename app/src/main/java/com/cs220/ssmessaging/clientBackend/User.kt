@@ -132,6 +132,8 @@ class User() {
 
     var listeners: MutableList<ListenerRegistration> = mutableListOf()
 
+    var phoneNumber: String = ""
+
     var device: Device = Device()
         get() {
             return field
@@ -661,7 +663,7 @@ class User() {
             "first_name" to this.firstName,
             "last_name" to this.lastName,
             "password_hash" to "",
-            "phone" to "123",
+            "phone" to phoneNumber,
             "block_list" to blockedContacts,
             "publicKey" to publicKey
         )
