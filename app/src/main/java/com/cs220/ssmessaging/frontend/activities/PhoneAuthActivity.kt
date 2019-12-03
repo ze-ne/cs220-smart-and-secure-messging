@@ -127,10 +127,7 @@ class PhoneAuthActivity : AppCompatActivity() {
         }
 
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-            val code = credential.smsCode
-            if (code != null) {
-                verifyCode(code)
-            }
+            signInWithCredential(credential)
         }
 
         override fun onVerificationFailed(e: FirebaseException) {
