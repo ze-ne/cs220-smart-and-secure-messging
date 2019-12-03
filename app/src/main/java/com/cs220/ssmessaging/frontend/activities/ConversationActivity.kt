@@ -326,7 +326,11 @@ class ConversationActivity : AppCompatActivity() {
                 conversation.convoId,
                 false
             )
-        message_recycler_view.scrollToPosition(conversation.messages.size - 1)
+        scrollToBottom()
         message_recycler_view.adapter = messagesAdapter
+    }
+
+    fun scrollToBottom() {
+        message_recycler_view.scrollToPosition(conversation.messages.size - 1)
     }
 }

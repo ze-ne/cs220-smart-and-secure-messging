@@ -15,6 +15,7 @@ import com.cs220.ssmessaging.clientBackend.ImageHandler
 import com.cs220.ssmessaging.clientBackend.ImageMessage
 import com.cs220.ssmessaging.clientBackend.TextMessage
 import com.cs220.ssmessaging.clientBackend.UnencryptedMessage
+import com.cs220.ssmessaging.frontend.activities.ConversationActivity
 import kotlinx.android.synthetic.main.item_my_message.view.*
 import kotlinx.android.synthetic.main.item_other_message.view.*
 import java.lang.Integer.min
@@ -75,6 +76,8 @@ class MessagesAdapter(
         if (holder is MyMessageViewHolder) {
             holder.itemView.setOnClickListener {
                 holder.deleteMessage.visibility = View.VISIBLE
+                val activity = context as ConversationActivity
+                activity.scrollToBottom()
             }
 
             if (!message.isVisible) {

@@ -40,8 +40,8 @@ class AddConversationDialog : DialogFragment() {
         newConversationButton.setOnClickListener {
             val participantUsername = newConversationInput.text.toString()
             var stop = false
-            for(c in currentUser.conversations){
-                if(c.user1Id == participantUsername || c.user2Id == participantUsername){
+            for (c in currentUser.conversations) {
+                if (c.user1Id == participantUsername || c.user2Id == participantUsername) {
                     Toast.makeText(
                         activity,
                         "Unable to start conversation. You already have a conversation with $participantUsername",

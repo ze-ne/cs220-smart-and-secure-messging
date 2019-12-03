@@ -5,19 +5,60 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <RelativeLayout
+        android:visibility="visible"
+        android:id="@+id/message_deletion"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:id="@+id/message_deletion_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete message?"
+            android:layout_alignParentEnd="true"
+            android:paddingTop="6dp"
+            android:paddingEnd="8dp"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/message_deletion_text">
+            <TextView
+                android:id="@+id/message_deletion_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CONFIRM"
+                android:clickable="true"
+                android:textColor="@color/colorPrimary"
+                android:layout_alignEnd="@+id/message_deletion_text"
+                android:padding="6dp"/>
+            <TextView
+                android:id="@+id/message_deletion_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CANCEL"
+                android:clickable="true"
+                android:textColor="@color/colorPrimary"
+                android:padding="6dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/my_message_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/my_message_bubble"
         android:elevation="5dp"
+        android:layout_marginTop="8dp"
         android:maxWidth="240dp"
         android:padding="15dp"
         android:clickable="true"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/message_deletion">
 
         <TextView
             android:id="@+id/my_message_text"
@@ -280,44 +321,4 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/my_message_box"
         app:layout_constraintRight_toLeftOf="@+id/my_message_box" />
-
-    <RelativeLayout
-        android:visibility="visible"
-        android:id="@+id/message_deletion"
-        android:layout_width="280dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/my_message_box">
-        <TextView
-            android:id="@+id/message_deletion_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Delete message?"
-            android:layout_alignParentEnd="true"
-            android:paddingTop="6dp"
-            android:paddingEnd="8dp"/>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/message_deletion_text">
-            <TextView
-                android:id="@+id/message_deletion_confirm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CONFIRM"
-                android:clickable="true"
-                android:textColor="@color/colorPrimary"
-                android:layout_alignEnd="@+id/message_deletion_text"
-                android:padding="6dp"/>
-            <TextView
-                android:id="@+id/message_deletion_cancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CANCEL"
-                android:clickable="true"
-                android:textColor="@color/colorPrimary"
-                android:padding="6dp"/>
-        </LinearLayout>
-    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
