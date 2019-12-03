@@ -95,7 +95,13 @@ class ConversationActivity : AppCompatActivity() {
         if (message.isEmpty())
             return
         if (this.timedDeletion) {
-            val setTimerFragmentDialog = SetTimerDialog(message.toString(), conversation, isVisible)
+            val setTimerFragmentDialog = SetTimerDialog(
+                message.toString(),
+                null,
+                false,
+                conversation,
+                isVisible
+            )
             setTimerFragmentDialog.show(supportFragmentManager, "SetTimerDialog")
             userMessageInput.text.clear()
         } else {
@@ -282,12 +288,14 @@ class ConversationActivity : AppCompatActivity() {
             val bitmap = ImageHandler.getImageFromStorage(fullPhotoUri)
             val hidden = requestCode == REQUEST_IMAGE_GET
             if (this.timedDeletion) {
-                currentUser.sendImageMsg(
-                    ImageHandler.getByteArrayFromImage(bitmap),
+                val setTimerFragmentDialog = SetTimerDialog(
+                    "",
+                    bitmap!!,
+                    true,
                     conversation,
-                    isVisible = hidden,
-                    deletionTimer = 10
+                    isMsgVisible = hidden
                 )
+                setTimerFragmentDialog.show(supportFragmentManager, "SetTimerDialog")
             } else {
                 currentUser.sendImageMsg(
                     ImageHandler.getByteArrayFromImage(bitmap),

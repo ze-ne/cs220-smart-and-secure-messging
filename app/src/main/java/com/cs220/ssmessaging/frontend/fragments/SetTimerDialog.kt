@@ -1,5 +1,6 @@
 package com.cs220.ssmessaging.frontend.fragments
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +12,15 @@ import androidx.fragment.app.DialogFragment
 import com.cs220.ssmessaging.MyApplication.MyApplication
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.Conversation
+import com.cs220.ssmessaging.clientBackend.ImageHandler
 import com.cs220.ssmessaging.clientBackend.User
 import java.text.SimpleDateFormat
 
 
 class SetTimerDialog(
-    val message: String,
+    val text: String,
+    val image: Bitmap?,
+    private val isImage: Boolean,
     val conversation: Conversation,
     private val isMsgVisible: Boolean
 ) : DialogFragment() {
@@ -58,12 +62,22 @@ class SetTimerDialog(
                 }
             }
 
-            currentUser.sendTextMsg(
-                message,
-                conversation,
-                isVisible = isMsgVisible,
-                deletionTimer = deletionTime
-            )
+            if (isImage) {
+                currentUser.sendImageMsg(
+                    ImageHandler.getByteArrayFromImage(image),
+                    conversation,
+                    isVisible = isMsgVisible,
+                    deletionTimer = deletionTime
+                )
+            } else {
+                currentUser.sendTextMsg(
+                    text,
+                    conversation,
+                    isVisible = isMsgVisible,
+                    deletionTimer = deletionTime
+                )
+            }
+
             this.dismiss()
         }
         return timerView
