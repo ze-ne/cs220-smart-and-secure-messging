@@ -39,7 +39,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/firstname_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,20 +62,24 @@
             android:id="@+id/settings_firstName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="6"
+            android:layout_alignBaseline="@+id/firstname_label"
+            android:layout_toRightOf="@+id/firstname_label"
+            android:ems="8"
             android:hint="first name" />
 
         <Button
             android:id="@+id/changeFirstNameButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/settings_firstName"
+            android:layout_alignRight="@+id/settings_firstName"
             android:layout_marginStart="16dp"
             android:text="Change"
             android:theme="@style/AppTheme.Button" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/lastname_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -98,6 +102,8 @@
             android:id="@+id/settings_lastName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/lastname_label"
+            android:layout_toRightOf="@+id/lastname_label"
             android:ems="8"
             android:hint="last name" />
 
@@ -105,11 +111,14 @@
             android:id="@+id/changeLastNameButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/settings_lastName"
+            android:layout_alignRight="@+id/settings_lastName"
             android:layout_marginStart="16dp"
+
             android:text="Change"
             android:theme="@style/AppTheme.Button" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <Button
         android:id="@+id/logoutButton"
