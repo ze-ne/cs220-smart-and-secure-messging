@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.cs220.ssmessaging.R
 import com.cs220.ssmessaging.clientBackend.User
+import com.google.firebase.messaging.FirebaseMessaging
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var homeToolbar: Toolbar
@@ -49,6 +50,13 @@ class SettingsActivity : AppCompatActivity() {
 
         logoutButton.setOnClickListener {
             currentUser.removeListeners()
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(currentUser.userId)
+                .addOnSuccessListener {
+                    Toast.makeText(baseContext, "Unsubscribed from push notifications for this user", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(baseContext, "Failed to unsubscribe from push notifications for this user", Toast.LENGTH_SHORT).show()
+                }
             FirebaseAuth.getInstance().signOut()
             val registerIntent = Intent(this, LoginActivity::class.java)
             startActivity(registerIntent)

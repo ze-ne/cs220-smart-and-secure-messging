@@ -14,6 +14,7 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.messaging.FirebaseMessaging
 import java.util.concurrent.TimeUnit
 
 class PhoneAuthActivity : AppCompatActivity() {
@@ -69,6 +70,11 @@ class PhoneAuthActivity : AppCompatActivity() {
             val newUser = User(username.toString(), firstname.toString(), lastname.toString())
             newUser.phoneNumber = phonenumber
             MyApplication.currentUser = newUser
+
+            FirebaseMessaging.getInstance().subscribeToTopic(newUser.userId)
+                .addOnCompleteListener {
+                    Toast.makeText(baseContext, "Subscribed to push notifications for this user", Toast.LENGTH_SHORT).show()
+                }
         }
     }
 
