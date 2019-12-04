@@ -67,7 +67,7 @@ class Conversation() {
                     isValidLastTimeSynched(conversation.lastTimeSynced)
 
         fun isValidConversationId(conversationId : String) : Boolean =
-            conversationId.matches(Regex("^[a-zA-Z0-9_.,/-]*$")) && conversationId.isNotEmpty()
+            conversationId.matches(Regex("^[a-zA-Z0-9_+@.,/-]*$")) && conversationId.isNotEmpty()
 
         fun isValidLastTimeSynched(timeSynced : Long) : Boolean = (timeSynced >= 0)
     }
