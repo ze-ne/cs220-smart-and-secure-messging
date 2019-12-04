@@ -42,23 +42,34 @@ class SetTimerDialog(
         timerSetting = timerView.findViewById(R.id.dialog_set_timer_field)
         sendMessageButton = timerView.findViewById(R.id.dialog_send_timed_message_button)
 
-        sendMessageButton.setOnClickListener {
+        sendMessageButton.setOnClickListener listener@{
             var deletionTime = 5.toLong()
             val str = timerSetting.text.toString()
             if (str.isNotEmpty()) {
-                val formatter = SimpleDateFormat("HH:mm:ss")
-                val date = formatter.parse(str)
-                val time = formatter.format(date)
-                val timePieces = time.split(":")
-                if (timePieces.size == 3) {
-                    deletionTime =
-                        ((timePieces[0].toLong() * 3600) + (timePieces[1].toLong() * 60) + (timePieces[2].toLong()))
-                } else {
+                try {
+                    val formatter = SimpleDateFormat("HH:mm:ss")
+                    val date = formatter.parse(str)
+                    val time = formatter.format(date)
+                    val timePieces = time.split(":")
+                    if (timePieces.size == 3) {
+                        deletionTime =
+                            ((timePieces[0].toLong() * 3600) + (timePieces[1].toLong() * 60) + (timePieces[2].toLong()))
+                    } else {
+                        Toast.makeText(
+                            activity,
+                            "Please enter a valid time in the format hh:mm:ss",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        return@listener
+                    }
+                }
+                catch (e : Exception) {
                     Toast.makeText(
                         activity,
                         "Please enter a valid time in the format hh:mm:ss",
                         Toast.LENGTH_LONG
                     ).show()
+                    return@listener
                 }
             }
 
