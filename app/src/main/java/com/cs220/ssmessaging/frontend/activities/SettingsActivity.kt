@@ -65,27 +65,36 @@ class SettingsActivity : AppCompatActivity() {
         changeFirstNameButton.setOnClickListener {
             val firstName = firstNameField.text.toString()
             if (isNullOrEmpty(firstName)) {
-                Toast.makeText(this, "First Name Change Failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "First name change failed", Toast.LENGTH_SHORT).show()
             } else {
-                currentUser.updateFirstName(firstName)
-                currentUser.firstName = firstName
-                firstNameField.hint = firstName
-                firstNameField.text.clear()
-                Toast.makeText(this, "First Name Change Successful", Toast.LENGTH_SHORT).show()
+                if (User.isValidName(firstName)) {
+                    currentUser.updateFirstName(firstName)
+                    currentUser.firstName = firstName
+                    firstNameField.hint = firstName
+                    firstNameField.text.clear()
+                    Toast.makeText(this, "First name change successful", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Please enter a valid name.", Toast.LENGTH_SHORT).show()
+                    firstNameField.text.clear()
+                }
             }
-
         }
 
         changeLastNameButton.setOnClickListener {
             val lastName = lastNameField.text.toString()
             if (isNullOrEmpty(lastName)) {
-                Toast.makeText(this, "Last Name Change Failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Last name change failed", Toast.LENGTH_SHORT).show()
             } else {
-                MyApplication.currentUser?.updateLastName(lastName)
-                MyApplication.currentUser?.lastName = lastName
-                lastNameField.hint = lastName
-                lastNameField.text.clear()
-                Toast.makeText(this, "Last Name Change Successful", Toast.LENGTH_SHORT).show()
+                if (User.isValidName(lastName)) {
+                    MyApplication.currentUser?.updateLastName(lastName)
+                    MyApplication.currentUser?.lastName = lastName
+                    lastNameField.hint = lastName
+                    lastNameField.text.clear()
+                    Toast.makeText(this, "Last name change successful", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Please enter a valid name.", Toast.LENGTH_SHORT).show()
+                    lastNameField.text.clear()
+                }
             }
         }
     }

@@ -146,15 +146,22 @@ class SearchFragment : Fragment() {
                                     )
                                 ) {
                                     currentUser.startConversation(newConvo, activity){
-                                        if(activity != null) {
-                                            val conversationIntent =
-                                                Intent(activity, ConversationActivity::class.java)
-                                            conversationIntent.putExtra(
-                                                "receiver_name",
-                                                participantUsername
-                                            )
-                                            startActivity(conversationIntent)
+                                        try{
+                                            if(activity != null) {
+                                                val conversationIntent =
+                                                    Intent(activity, ConversationActivity::class.java)
+                                                conversationIntent.putExtra(
+                                                    "receiver_name",
+                                                    participantUsername
+                                                )
+                                                startActivity(conversationIntent)
+                                            }
+                                            else if(MyApplication.appContext != null){
+                                                Toast.makeText(MyApplication.appContext, "You have left the search tab. " +
+                                                        "Conversation screen will not automatically display.", Toast.LENGTH_LONG).show()
+                                            }
                                         }
+                                        catch (e : Exception) {}
                                     }
                                 } else {
                                     Toast.makeText(

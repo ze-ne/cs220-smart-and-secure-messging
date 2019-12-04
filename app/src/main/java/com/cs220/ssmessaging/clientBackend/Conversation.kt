@@ -67,7 +67,7 @@ class Conversation() {
                     isValidLastTimeSynched(conversation.lastTimeSynced)
 
         fun isValidConversationId(conversationId : String) : Boolean =
-            conversationId.matches(Regex("^[a-zA-Z0-9_.,/-]*$")) && conversationId.isNotEmpty()
+            conversationId.matches(Regex("^[a-zA-Z0-9_+@.,/-]*$")) && conversationId.isNotEmpty()
 
         fun isValidLastTimeSynched(timeSynced : Long) : Boolean = (timeSynced >= 0)
     }
@@ -253,10 +253,10 @@ class ToneGeneralCallback(private val callback: ((String) -> Unit)?) : ServiceCa
     override fun onResponse(response: Response<ToneAnalysis>?) {
         Log.d("ToneGeneralCallback", "ToneGeneralCallback succeeded")
         val tones: List<ToneScore> = response?.result?.documentTone?.tones!!
-        tones.sortedWith(compareBy{it.score})
+        val sortedTonesDescending = tones.sortedWith(compareBy{it.score}).asReversed()
         var response = ""
         val end : Int = kotlin.math.min(2, tones.size)
-        val topTones = tones.subList(0,end)
+        val topTones = sortedTonesDescending.subList(0,end)
         for ((i,tone) in topTones.withIndex()){
             response += tone.toneName + ": " + kotlin.math.round(tone.score * 100) + "%"
             if (i + 1 != end)

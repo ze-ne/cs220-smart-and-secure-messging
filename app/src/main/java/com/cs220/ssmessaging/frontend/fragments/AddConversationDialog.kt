@@ -83,17 +83,24 @@ class AddConversationDialog : DialogFragment() {
                                 )
                             ) {
                                 currentUser.startConversation(newConvo, activity) {
-                                    newConversationInput.text.clear()
-                                    if(activity != null) {
-                                        val conversationIntent =
-                                            Intent(activity, ConversationActivity::class.java)
-                                        conversationIntent.putExtra(
-                                            "receiver_name",
-                                            participantUsername
-                                        )
-                                        startActivity(conversationIntent)
+                                    try{
+                                        newConversationInput.text.clear()
+                                        if(activity != null) {
+                                            val conversationIntent =
+                                                Intent(activity, ConversationActivity::class.java)
+                                            conversationIntent.putExtra(
+                                                "receiver_name",
+                                                participantUsername
+                                            )
+                                            startActivity(conversationIntent)
+                                        }
+                                        else if(MyApplication.appContext != null){
+                                            Toast.makeText(MyApplication.appContext, "You have left the start conversation dialog. " +
+                                                    "Conversation screen will not automatically display.", Toast.LENGTH_LONG).show()
+                                        }
+                                        this.dismiss()
                                     }
-                                    this.dismiss()
+                                    catch (e : Exception) {}
                                 }
                             } else {
                                 Toast.makeText(
